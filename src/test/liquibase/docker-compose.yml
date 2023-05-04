@@ -1,0 +1,34 @@
+version: '2.4'
+services:
+  source:
+    image: postgres:10.5
+    environment:
+      POSTGRES_DB: "db"
+      POSTGRES_USER: "db"
+      POSTGRES_PASSWORD: "db"
+    ports:
+      - "5432:5432"
+    labels:
+      - "test.priority=90"
+      - "test.Wait.forLogMessage.regex=.*database system is ready to accept connections.*\\s"
+      - "test.Wait.forLogMessage.times=2"
+      - "test.log=true"
+      - "test.property.liquibase.source.username=db"
+      - "test.property.liquibase.source.password=db"
+      - "test.property.liquibase.source.url=jdbc:postgresql://$${host:source}:$${port:source:5432}/db"
+  target:
+    image: postgres:10.5
+    environment:
+      POSTGRES_DB: "db"
+      POSTGRES_USER: "db"
+      POSTGRES_PASSWORD: "db"
+    ports:
+      - "5433:5432"
+    labels:
+      - "test.priority=90"
+      - "test.Wait.forLogMessage.regex=.*database system is ready to accept connections.*\\s"
+      - "test.Wait.forLogMessage.times=2"
+      - "test.log=true"
+      - "test.property.liquibase.target.username=db"
+      - "test.property.liquibase.target.password=db"
+      - "test.property.liquibase.target.url=jdbc:postgresql://$${host:target}:$${port:target:5432}/db"

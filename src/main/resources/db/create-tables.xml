@@ -1,0 +1,255 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet author="dev (generated)" id="1602773030235-1">
+        <createTable tableName="dm_category">
+            <column name="guid" type="VARCHAR(255)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="dm_category_pkey"/>
+            </column>
+            <column name="creationdate" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="creationuser" type="VARCHAR(255)"/>
+            <column name="modificationdate" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="modificationuser" type="VARCHAR(255)"/>
+            <column name="optlock" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="VARCHAR(255)"/>
+            <column name="name" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="dev (generated)" id="1602773030235-2">
+        <createTable tableName="dm_document_tags">
+            <column name="document_guid" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="tags" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="dev (generated)" id="1602773030235-3">
+        <createTable tableName="dm_document">
+            <column name="guid" type="VARCHAR(255)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="dm_document_pkey"/>
+            </column>
+            <column name="creationdate" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="creationuser" type="VARCHAR(255)"/>
+            <column name="modificationdate" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="modificationuser" type="VARCHAR(255)"/>
+            <column name="optlock" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="VARCHAR(255)"/>
+            <column name="version" type="VARCHAR(255)"/>
+            <column name="status" type="VARCHAR(255)"/>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="channel_guid" type="VARCHAR(255)"/>
+            <column name="related_object_guid" type="VARCHAR(255)"/>
+            <column name="specification_guid" type="VARCHAR(255)"/>
+            <column name="type_guid" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="dev (generated)" id="1602773030235-4">
+        <createTable tableName="dm_document_specification">
+            <column name="guid" type="VARCHAR(255)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="dm_document_specification_pkey"/>
+            </column>
+            <column name="creationdate" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="creationuser" type="VARCHAR(255)"/>
+            <column name="modificationdate" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="modificationuser" type="VARCHAR(255)"/>
+            <column name="optlock" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="version" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="dev (generated)" id="1602773030235-5">
+        <createTable tableName="dm_attachment">
+            <column name="guid" type="VARCHAR(255)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="dm_attachment_pkey"/>
+            </column>
+            <column name="creationdate" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="creationuser" type="VARCHAR(255)"/>
+            <column name="modificationdate" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="modificationuser" type="VARCHAR(255)"/>
+            <column name="optlock" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="VARCHAR(255)"/>
+            <column name="storage_url" type="VARCHAR(255)"/>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="size" type="numeric(19, 2)"/>
+            <column name="size_unit" type="VARCHAR(255)"/>
+            <column name="storage" type="VARCHAR(255)"/>
+            <column name="type" type="VARCHAR(255)"/>
+            <column name="end_date_time" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="start_date_time" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="mimetype_guid" type="VARCHAR(255)"/>
+            <column name="document_guid" type="VARCHAR(255)"/>
+            <column name="filename" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="dev (generated)" id="1602773030235-6">
+        <createTable tableName="dm_document_relationship">
+            <column name="guid" type="VARCHAR(255)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="dm_document_relationship_pkey"/>
+            </column>
+            <column name="creationdate" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="creationuser" type="VARCHAR(255)"/>
+            <column name="modificationdate" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="modificationuser" type="VARCHAR(255)"/>
+            <column name="optlock" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="document_ref_id" type="VARCHAR(255)"/>
+            <column name="type" type="VARCHAR(255)"/>
+            <column name="document_guid" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+ <changeSet author="dev (generated)" id="1602773030235-7">
+        <createTable tableName="dm_supported_mime_type">
+            <column name="guid" type="VARCHAR(255)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="dm_supported_mime_type_pkey"/>
+            </column>
+            <column name="creationdate" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="creationuser" type="VARCHAR(255)"/>
+            <column name="modificationdate" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="modificationuser" type="VARCHAR(255)"/>
+            <column name="optlock" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="VARCHAR(255)"/>
+            <column name="name" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="dev (generated)" id="1602773030235-8">
+        <createTable tableName="dm_document_type">
+            <column name="guid" type="VARCHAR(255)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="dm_document_type_pkey"/>
+            </column>
+            <column name="creationdate" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="creationuser" type="VARCHAR(255)"/>
+            <column name="modificationdate" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="modificationuser" type="VARCHAR(255)"/>
+            <column name="optlock" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="dev (generated)" id="1602773030235-9">
+        <createTable tableName="dm_related_party">
+            <column name="guid" type="VARCHAR(255)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="dm_related_party_pkey"/>
+            </column>
+            <column name="creationdate" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="creationuser" type="VARCHAR(255)"/>
+            <column name="modificationdate" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="modificationuser" type="VARCHAR(255)"/>
+            <column name="optlock" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="role" type="VARCHAR(255)"/>
+            <column name="end_date_time" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="start_date_time" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="document_guid" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="dev (generated)" id="1602773030235-10">
+        <createTable tableName="dm_related_object">
+            <column name="guid" type="VARCHAR(255)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="dm_related_object_pkey"/>
+            </column>
+            <column name="creationdate" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="creationuser" type="VARCHAR(255)"/>
+            <column name="modificationdate" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="modificationuser" type="VARCHAR(255)"/>
+            <column name="optlock" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="involvement" type="VARCHAR(255)"/>
+            <column name="ro_id" type="VARCHAR(255)"/>
+            <column name="ro_type" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="dev (generated)" id="1602773030235-11">
+        <createTable tableName="dm_document_characteristic">
+            <column name="guid" type="VARCHAR(255)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="dm_document_characteristic_pkey"/>
+            </column>
+            <column name="creationdate" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="creationuser" type="VARCHAR(255)"/>
+            <column name="modificationdate" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="modificationuser" type="VARCHAR(255)"/>
+            <column name="optlock" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="value" type="VARCHAR(255)"/>
+            <column name="document_guid" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="dev (generated)" id="1602773030235-12">
+        <createTable tableName="document_category">
+            <column name="document_guid" type="VARCHAR(255)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="document_category_pkey"/>
+            </column>
+            <column name="category_guid" type="VARCHAR(255)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="document_category_pkey"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="dev (generated)" id="1602773030235-13">
+        <createTable tableName="dm_channel">
+            <column name="guid" type="VARCHAR(255)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="dm_channel_pkey"/>
+            </column>
+            <column name="creationdate" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="creationuser" type="VARCHAR(255)"/>
+            <column name="modificationdate" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="modificationuser" type="VARCHAR(255)"/>
+            <column name="optlock" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="dev (generated)" id="1602773030235-14">
+        <addForeignKeyConstraint baseColumnNames="category_guid" baseTableName="document_category" constraintName="fk71dqrfirtvrhjcve4555uwa8m" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="guid" referencedTableName="dm_category" validate="true"/>
+    </changeSet>
+    <changeSet author="dev (generated)" id="1602773030235-15">
+        <addForeignKeyConstraint baseColumnNames="document_guid" baseTableName="dm_related_party" constraintName="fk6jbxskmisv9wqf9tv8dqg63mq" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="guid" referencedTableName="dm_document" validate="true"/>
+    </changeSet>
+    <changeSet author="dev (generated)" id="1602773030235-16">
+        <addForeignKeyConstraint baseColumnNames="document_guid" baseTableName="document_category" constraintName="fk72ay0bqle9snvl0fybggyvuop" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="guid" referencedTableName="dm_document" validate="true"/>
+    </changeSet>
+    <changeSet author="dev (generated)" id="1602773030235-17">
+        <addForeignKeyConstraint baseColumnNames="document_guid" baseTableName="dm_document_relationship" constraintName="fkbpxbcov0h70pkosv0dtgpc8lk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="guid" referencedTableName="dm_document" validate="true"/>
+    </changeSet>
+    <changeSet author="dev (generated)" id="1602773030235-18">
+        <addForeignKeyConstraint baseColumnNames="document_guid" baseTableName="dm_document_tags" constraintName="fkgkfsxgnsbikq07iaunwi3e9l1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="guid" referencedTableName="dm_document" validate="true"/>
+    </changeSet>
+    <changeSet author="dev (generated)" id="1602773030235-19">
+        <addForeignKeyConstraint baseColumnNames="document_guid" baseTableName="dm_document_characteristic" constraintName="fkgr9uxg1v697hfvo2wkabtec8n" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="guid" referencedTableName="dm_document" validate="true"/>
+    </changeSet>
+    <changeSet author="dev (generated)" id="1602773030235-20">
+        <addForeignKeyConstraint baseColumnNames="document_guid" baseTableName="dm_attachment" constraintName="fkkgw1lnypgasooaq1c9263gc47" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="guid" referencedTableName="dm_document" validate="true"/>
+    </changeSet>
+    <changeSet author="dev (generated)" id="1602773030235-21">
+        <addForeignKeyConstraint baseColumnNames="specification_guid" baseTableName="dm_document" constraintName="fk8yi2rxno289ldtfjwo2awl46h" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="guid" referencedTableName="dm_document_specification" validate="true"/>
+    </changeSet>
+    <changeSet author="dev (generated)" id="1602773030235-22">
+        <addForeignKeyConstraint baseColumnNames="mimetype_guid" baseTableName="dm_attachment" constraintName="fk31840kdf5kimo8yr4ivgxcqci" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="guid" referencedTableName="dm_supported_mime_type" validate="true"/>
+    </changeSet>
+    <changeSet author="dev (generated)" id="1602773030235-23">
+        <addForeignKeyConstraint baseColumnNames="type_guid" baseTableName="dm_document" constraintName="fksjsg7301tbcv4swuvx70ypm8f" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="guid" referencedTableName="dm_document_type" validate="true"/>
+    </changeSet>
+    <changeSet author="dev (generated)" id="1602773030235-24">
+        <addForeignKeyConstraint baseColumnNames="related_object_guid" baseTableName="dm_document" constraintName="fkacfj9hbw9k3xwga9v6wgehrab" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="guid" referencedTableName="dm_related_object" validate="true"/>
+    </changeSet>
+    <changeSet author="dev (generated)" id="1602773030235-25">
+        <addForeignKeyConstraint baseColumnNames="channel_guid" baseTableName="dm_document" constraintName="fkqlpkxpbh1jpfrluemr4eff339" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="guid" referencedTableName="dm_channel" validate="true"/>
+    </changeSet>
+</databaseChangeLog>

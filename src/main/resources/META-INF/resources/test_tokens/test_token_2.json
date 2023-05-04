@@ -1,0 +1,35 @@
+{
+    "jti": "e734f6c2-f1af-4e4d-b373-64d6b7f66655",
+    "nbf": 0,
+    "iss": "https://quarkus.io/using-jwt-rbac",
+    "aud": "portal-user-mgmt-ui",
+    "sub": "f586d429-3da2-40cf-94e2-de21276917f8",
+    "typ": "Bearer",
+    "azp": "portal-user-mgmt-ui",
+    "auth_time": 0,
+    "session_state": "e3307cd4-2f2e-4373-b754-7091dad3d6e8",
+    "acr": "1",
+    "allowed-origins": [
+        "http://localhost:4500"
+    ],
+    "realm_access": {
+        "roles": [
+            "offline_access",
+            "uma_authorization",
+            "default-roles-Template"
+        ]
+    },
+    "resource_access": {
+        "account": {
+            "roles": [
+                "manage-account",
+                "manage-account-links",
+                "view-profile"
+            ]
+        }
+    },
+    "name": "Test Test",
+    "preferred_username": "somerandomname",
+    "given_name": "TestGivenName",
+    "family_name": "TestFamilyName"
+}

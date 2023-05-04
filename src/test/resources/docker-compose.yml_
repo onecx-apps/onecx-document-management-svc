@@ -1,0 +1,100 @@
+version: "2.4"
+services:
+
+  mocking-server:
+    container_name: mocking-server
+    image: harbor.1000kit.org/1000kit/mocking-server:master
+    labels:
+      - "test.priority=100"
+      - "test.log=true"
+      - "test.Wait.forLogMessage.regex=.*verbose:.*\\s"
+      - "test.Wait.forLogMessage.times=1"
+    ports:
+      - "9090:8080"
+    networks:
+      - test
+
+
+  documentmanagement-db:
+    container_name: documentmanagement-db
+    image: bitnami/postgresql:12
+    environment:
+      POSTGRES_DB: "documentmanagement"
+      POSTGRES_USER: "documentmanagement"
+      POSTGRES_PASSWORD: "documentmanagement"
+      DISABLE_WELCOME_MESSAGE: "false"
+    labels:
+      - "test.Wait.forLogMessage.regex=.*database system is ready to accept connections.*\\s"
+      - "test.Wait.forLogMessage.times=1"
+      - "test.log=true"
+      - "test.property.quarkus.datasource.jdbc.url=jdbc:postgresql://$${host:documentmanagement-db}:$${port:documentmanagement-db:5432}/documentmanagement?sslmode=disable"
+    ports:
+      - "5432:5432"
+    networks:
+      - test
+
+
+  tkit-documentmanagement-db-import:
+    container_name: tkit-documentmanagement-db-import
+    image: 1000kit/dbimport:0.2.0
+    environment:
+      DB_URL: "jdbc:postgresql://documentmanagement-db:5432/documentmanagement?sslmode=disable"
+      DB_USERNAME: "documentmanagement"
+      DB_PASSWORD: "documentmanagement"
+    ports:
+      - "8811:8080"
+    labels:
+      - "test.Wait.forLogMessage.regex=.*Installed features:.*"
+      - "test.Wait.forLogMessage.times=1"
+      - "test.log=false"
+      - "test.property.tkit.test.dbimport.url=$${url:tkit-documentmanagement-db-import:8080}"
+    networks:
+      - test
+
+  tkit-document-management:
+    image: tkit-document-management:latest
+    ports:
+      - "8080:8080"
+    environment:
+      QUARKUS_DATASOURCE_JDBC_URL: "jdbc:postgresql://documentmanagement-db:5432/documentmanagement?sslmode=disable"
+      MP_JWT_VERIFY_PUBLICKEY_LOCATION: "META-INF/resources/test_publicKey.pem"
+      MP_JWT_VERIFY_ISSUER: "https://quarkus.io/using-jwt-rbac"
+    labels:
+      - "test.unit=false"
+      - "test.priority=101"
+      - "test.image.pull=DEFAULT"
+      - "test.Wait.forLogMessage.regex=.*Installed features:.*"
+      - "test.Wait.forLogMessage.times=1"
+      - "test.log=true"
+    networks:
+      - test
+
+  minio:
+    image: minio/minio
+    container_name: minio
+    ports:
+      - 9000:9000
+      - 9001:9001
+    expose:
+      - 9000
+      - 9001
+    labels:
+      - "test.property.minio.url=http://$${host:minio}:$${port:minio:9000}"
+      - "test.property.minio.accesskey=minioadmin"
+      - "test.property.minio.secretkey=minioadmin"
+    command:
+      - server
+      - /data
+      - --console-address
+      - ":9001"
+    environment:
+      - MINIO_ROOT_USER=minioadmin
+      - MINIO_ROOT_PASSWORD=minioadmin
+    networks:
+      - test
+
+networks:
+  test:
+
+# END
+
