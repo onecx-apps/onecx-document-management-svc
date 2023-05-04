@@ -22,6 +22,11 @@
             <groupId>org.tkit.quarkus.lib</groupId>
             <artifactId>tkit-quarkus-log-rs</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>org.tkit.quarkus.lib</groupId>
+            <artifactId>tkit-quarkus-log-json</artifactId>
+        </dependency>
         
         <dependency>
             <groupId>org.tkit.quarkus.lib</groupId>

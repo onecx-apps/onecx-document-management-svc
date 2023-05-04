@@ -24,7 +24,7 @@ public class QuarkusDevResource implements QuarkusTestResourceLifecycleManager {
             return properties;
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RuntimeException("Could not start localstack server", e);
+            throw new RuntimeException("Could not start server", e);
         }
     }
 
