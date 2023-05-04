@@ -3,12 +3,8 @@ package org.tkit.document.management.test;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.slf4j.LoggerFactory;
 import org.testcontainers.DockerClientFactory;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.output.Slf4jLogConsumer;
-import org.testcontainers.containers.wait.strategy.Wait;
-import org.testcontainers.utility.DockerImageName;
 
 import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
 import lombok.extern.slf4j.Slf4j;
@@ -16,31 +12,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class QuarkusDevResource implements QuarkusTestResourceLifecycleManager {
 
-    private static final DockerImageName MOCKING_IMAGE_NAME = DockerImageName.parse("harbor.1000kit.org/1000kit/mocking-server")
-            .withTag("master");
-
     private String dockerHostIp = null;
-
-    GenericContainer<?> mockingServer = new GenericContainer<>(MOCKING_IMAGE_NAME)
-            .waitingFor(Wait.forListeningPort())
-            .withExposedPorts(8080)
-            .withLogConsumer(new Slf4jLogConsumer(LoggerFactory.getLogger("Mocking")));
 
     @Override
     public Map<String, String> start() {
         DockerClientFactory.instance().client();
 
         try {
-
-            mockingServer.start();
-
-            if ("localhost".equals(mockingServer.getHost())) {
-                dockerHostIp = mockingServer.getContainerInfo().getNetworkSettings().getNetworks().entrySet().iterator().next()
-                        .getValue().getGateway();
-                log.info("DockerHostIp is: {}", dockerHostIp);
-            }
-
-            log.info("MOCKING: " + getUrl(mockingServer, 8080, ""));
 
             Map<String, String> properties = new HashMap<>();
             return properties;
@@ -52,9 +30,6 @@ public class QuarkusDevResource implements QuarkusTestResourceLifecycleManager {
 
     @Override
     public void stop() {
-        if (mockingServer != null) {
-            mockingServer.close();
-        }
     }
 
     private String getUrl(GenericContainer<?> container, Integer port, String path) {
