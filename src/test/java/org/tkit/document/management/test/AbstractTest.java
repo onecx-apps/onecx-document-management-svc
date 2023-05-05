@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
 import io.restassured.config.ObjectMapperConfig;
@@ -15,7 +16,7 @@ import io.restassured.config.RestAssuredConfig;
  * AbstractTest
  */
 @QuarkusTest
-//@QuarkusTestResource(QuarkusDevResource.class)
+@QuarkusTestResource(QuarkusDevResource.class)
 @SuppressWarnings("squid:S2187")
 public abstract class AbstractTest {
     static {
