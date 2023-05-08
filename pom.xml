@@ -43,6 +43,13 @@
         </dependency>
 
 
+    <!--    <dependency>
+            <groupId>org.tkit.quarkus.lib</groupId>
+            <artifactId>tkit-quarkus-data-import</artifactId>
+        </dependency>
+    -->
+
+
         <!--<dependency>
             <groupId>org.tkit.quarkus.lib</groupId>
             <artifactId>tkit-quarkus-jpa-models</artifactId>
