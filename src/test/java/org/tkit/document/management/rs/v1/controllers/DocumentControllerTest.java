@@ -83,7 +83,7 @@ public class DocumentControllerTest extends AbstractTest {
      * }
      */
     @Test
-    @DisplayName("Create bucket for given.")
+    @DisplayName("Create bucket for given name.")
     public void testCreateBucket() {
 
         Response response = given()
