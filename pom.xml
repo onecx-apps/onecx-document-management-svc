@@ -149,6 +149,7 @@
         <dependency>
             <groupId>org.tkit.quarkus.lib</groupId>
             <artifactId>tkit-quarkus-test-db-import</artifactId>
+            <version>0.15.0</version>
             <scope>test</scope>
         </dependency>
 
