@@ -11,7 +11,6 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -34,16 +33,13 @@ import org.tkit.quarkus.rs.exceptions.RestException;
 public class DocumentTypeController {
 
     @Inject
-    private DocumentTypeDAO documentTypeDAO;
+    DocumentTypeDAO documentTypeDAO;
 
     @Inject
-    private DocumentTypeMapper documentTypeMapper;
+    DocumentTypeMapper documentTypeMapper;
 
     @Inject
-    private DocumentDAO documentDAO;
-
-    @Inject
-    JsonWebToken jwt;
+    DocumentDAO documentDAO;
 
     @POST
     @Transactional

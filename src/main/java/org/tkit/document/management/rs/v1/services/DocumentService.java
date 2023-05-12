@@ -54,19 +54,13 @@ public class DocumentService {
     DocumentTypeDAO typeDAO;
 
     @Inject
-    DocumentSpecificationDAO specificationDAO;
-
-    @Inject
     DocumentSpecificationMapper documentSpecificationMapper;
 
     @Inject
     SupportedMimeTypeDAO mimeTypeDAO;
 
     @Inject
-    AttachmentDAO attachmentDAO;
-
-    @Inject
-    private MinioClient minioClient;
+    MinioClient minioClient;
 
     @ConfigProperty(name = "minio.bucket")
     String bucket;
@@ -238,7 +232,7 @@ public class DocumentService {
      * @param dto a {@link DocumentCreateUpdateDTO}
      * @param document a {@link Document}
      */
-    private void setType(@Valid DocumentCreateUpdateDTO dto, Document document) {
+    private void setType(DocumentCreateUpdateDTO dto, Document document) {
         DocumentType documentType = typeDAO.findById(dto.getTypeId());
         if (Objects.isNull(documentType)) {
             throw new RestException(Response.Status.NOT_FOUND, Response.Status.NOT_FOUND,
@@ -254,7 +248,7 @@ public class DocumentService {
      * @param dto a {@link DocumentCreateUpdateDTO}
      * @param document a {@link Document}
      */
-    private void setSpecification(@Valid DocumentCreateUpdateDTO dto, Document document) {
+    private void setSpecification(DocumentCreateUpdateDTO dto, Document document) {
         if (Objects.isNull(dto.getSpecification())) {
             document.setSpecification(null);
         } else {
@@ -288,7 +282,7 @@ public class DocumentService {
      * @param dto a {@link DocumentCreateUpdateDTO}
      * @param document a {@link Document}
      */
-    private void setAttachments(@Valid DocumentCreateUpdateDTO dto, Document document) {
+    private void setAttachments(DocumentCreateUpdateDTO dto, Document document) {
         if (Objects.isNull(dto.getAttachments())) {
             document.setAttachments(null);
         } else {

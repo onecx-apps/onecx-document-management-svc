@@ -27,7 +27,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.io.IOUtils;
-import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.headers.Header;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
@@ -61,22 +60,19 @@ import io.quarkus.logging.Log;
 public class DocumentController {
 
     @Inject
-    JsonWebToken jwt;
+    DocumentDAO documentDAO;
 
     @Inject
-    private DocumentDAO documentDAO;
+    ChannelDAO channelDAO;
 
     @Inject
-    private ChannelDAO channelDAO;
+    AttachmentDAO attachmentDAO;
 
     @Inject
-    private AttachmentDAO attachmentDAO;
+    DocumentMapper documentMapper;
 
     @Inject
-    private DocumentMapper documentMapper;
-
-    @Inject
-    private DocumentService documentService;
+    DocumentService documentService;
 
     public static final DateTimeFormatter CUSTOM_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 

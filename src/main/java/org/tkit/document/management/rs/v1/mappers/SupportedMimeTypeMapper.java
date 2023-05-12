@@ -10,7 +10,7 @@ import org.tkit.document.management.rs.v1.models.SupportedMimeTypeCreateUpdateDT
 import org.tkit.document.management.rs.v1.models.SupportedMimeTypeDTO;
 import org.tkit.quarkus.rs.mappers.OffsetDateTimeMapper;
 
-@Mapper(componentModel = "cdi", uses = OffsetDateTimeMapper.class, injectionStrategy = InjectionStrategy.CONSTRUCTOR)
+@Mapper(uses = OffsetDateTimeMapper.class, injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface SupportedMimeTypeMapper {
 
     SupportedMimeType map(SupportedMimeTypeCreateUpdateDTO dto);

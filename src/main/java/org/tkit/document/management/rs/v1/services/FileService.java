@@ -8,19 +8,19 @@ import java.util.Locale;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 
 import org.tkit.document.management.rs.v1.models.FileInfoDTO;
 
 import io.minio.*;
 import io.minio.errors.*;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @ApplicationScoped
 public class FileService {
     @Inject
-    private MinioClient minioClient;
+    MinioClient minioClient;
 
-    @Transactional
     public FileInfoDTO uploadFile(String path, File file, String bucket)
             throws IOException, ServerException, InsufficientDataException, NoSuchAlgorithmException, InternalException,
             InvalidResponseException, XmlParserException, InvalidKeyException, ErrorResponseException {

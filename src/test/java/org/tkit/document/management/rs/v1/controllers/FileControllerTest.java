@@ -5,6 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.*;
+import java.nio.file.Files;
+
+import javax.ws.rs.core.MediaType;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,8 +33,20 @@ public class FileControllerTest extends AbstractTest {
     private static final String prefix = "fs-prod-";
 
     @Test
+    @DisplayName("Create bucket for given name.")
+    void testCreateBucketTest() {
+
+        given()
+                .accept(MediaType.APPLICATION_JSON)
+                .when()
+                .post(BASE_PATH + "bucket/" + BUCKET_NAME)
+                .then().log().all().statusCode(201);
+
+    }
+
+    @Test
     @DisplayName("Uploads jpg file")
-    public void testSuccessfulUploadJPGFile() {
+    public void testSuccessfulUploadJPGFileTest() {
 
         File sampleFile = new File(SAMPLE_FILE_PATH);
         Response putResponse = given()
@@ -85,27 +100,31 @@ public class FileControllerTest extends AbstractTest {
 
     @Test
     @DisplayName("Modifies jpg file")
-    public void testSuccessfulModifyJPGFile() throws IOException {
+    public void testSuccessfulModifyJPGFileTest() throws IOException {
+
         File sampleFile = new File(SAMPLE_FILE_PATH);
-        InputStream isBefore = new BufferedInputStream(new FileInputStream(sampleFile));
-        byte[] fileBytesBefore = isBefore.readAllBytes();
+        byte[] fileBytesBefore = Files.readAllBytes(sampleFile.toPath());
+
         File sampleFile2 = new File(SAMPLE2_FILE_PATH);
-        InputStream isAfter = new BufferedInputStream(new FileInputStream(sampleFile2));
-        byte[] fileBytesAfter = isAfter.readAllBytes();
-        Response putResponse = given()
+        byte[] fileBytesAfter = Files.readAllBytes(sampleFile2.toPath());
+
+        given()
                 .multiPart(FORM_PARAM_FILE, sampleFile)
                 .when()
-                .put(BASE_PATH + BUCKET_NAME + "/" + MINIO_FILE_PATH);
-        putResponse.then().statusCode(201);
+                .put(BASE_PATH + BUCKET_NAME + "/" + MINIO_FILE_PATH)
+                .then().statusCode(201);
+
         Response getResponseBefore = given()
                 .when()
                 .get(BASE_PATH + BUCKET_NAME + "/" + MINIO_FILE_PATH).andReturn();
         byte[] downloadedBytesBefore = getResponseBefore.asByteArray();
-        Response putResponseAfter = given()
+
+        given()
                 .multiPart(FORM_PARAM_FILE, sampleFile2)
                 .when()
-                .put(BASE_PATH + BUCKET_NAME + "/" + MINIO_FILE_PATH);
-        putResponse.then().statusCode(201);
+                .put(BASE_PATH + BUCKET_NAME + "/" + MINIO_FILE_PATH)
+                .then().statusCode(201);
+
         Response getResponseAfter = given()
                 .when()
                 .get(BASE_PATH + BUCKET_NAME + "/" + MINIO_FILE_PATH).andReturn();

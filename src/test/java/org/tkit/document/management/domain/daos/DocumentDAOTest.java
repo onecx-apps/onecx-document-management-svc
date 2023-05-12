@@ -10,11 +10,14 @@ import org.junit.jupiter.api.Test;
 import org.tkit.document.management.domain.criteria.DocumentSearchCriteria;
 import org.tkit.quarkus.jpa.exceptions.DAOException;
 
-public class DocumentDAOTest {
+import io.quarkus.test.junit.QuarkusTest;
+
+@QuarkusTest
+class DocumentDAOTest {
 
     @Test
     @DisplayName("Throw DAOException for criteria equal null.")
-    public void shouldThrowDAOExceptionWhenTryFindDocumentsByCriteriaEqualNull() {
+    void shouldThrowDAOExceptionWhenTryFindDocumentsByCriteriaEqualNull() {
         //given
         DocumentDAO documentDAO = new DocumentDAO() {
             @Override
@@ -33,7 +36,7 @@ public class DocumentDAOTest {
 
     @Test
     @DisplayName("Throw DAOException for empty criteria.")
-    public void shouldThrowDAOExceptionWhenTryFindDocumentByEmptyCriteria() {
+    void shouldThrowDAOExceptionWhenTryFindDocumentByEmptyCriteria() {
         //given
         DocumentDAO documentDAO = new DocumentDAO() {
             @Override

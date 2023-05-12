@@ -33,13 +33,13 @@ import org.tkit.quarkus.rs.exceptions.RestException;
 public class SupportedMimeTypeController {
 
     @Inject
-    private SupportedMimeTypeDAO supportedMimeTypeDAO;
+    SupportedMimeTypeDAO supportedMimeTypeDAO;
 
     @Inject
-    private SupportedMimeTypeMapper supportedMimeTypeMapper;
+    SupportedMimeTypeMapper supportedMimeTypeMapper;
 
     @Inject
-    private AttachmentDAO attachmentDAO;
+    AttachmentDAO attachmentDAO;
 
     @POST
     @Transactional

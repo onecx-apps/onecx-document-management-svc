@@ -2,7 +2,6 @@ package org.tkit.document.management.rs.v1.controllers;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -30,19 +29,19 @@ import io.minio.GetObjectResponse;
 public class FileController {
 
     @Inject
-    private FileService fileService;
+    FileService fileService;
 
     @ConfigProperty(name = "bucketNamePrefix", defaultValue = "def-")
     String prefix;
 
-    @PUT
+    @POST
     @Path("/bucket/{name}")
     @Operation(operationId = "createBucket", description = "Create a bucket", summary = "Creates a bucket with the given name")
     @APIResponse(responseCode = "201", description = "Created")
     @APIResponse(responseCode = "400", description = "Bad request")
     @APIResponse(responseCode = "403", description = "Not Authorized")
     @APIResponse(responseCode = "500", description = "Internal Server Error")
-
+    @Consumes(MediaType.WILDCARD)
     public Response createBucket(@PathParam("name") String name) {
         if (name == null) {
             return Response.status(Response.Status.BAD_REQUEST).entity("Bucket name has to be provided").build();
@@ -59,7 +58,6 @@ public class FileController {
     @PUT
     @Path("/{bucket}/{path : .+}")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
-    @Transactional
     @Operation(operationId = "uploadFile", description = "Uploads the file", summary = "Uploads a file to the given location")
     @APIResponse(responseCode = "201", description = "Created")
     @APIResponse(responseCode = "400", description = "Bad request")

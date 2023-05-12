@@ -20,7 +20,7 @@ import org.tkit.quarkus.jpa.models.TraceableEntity;
 import org.tkit.quarkus.rs.mappers.OffsetDateTimeMapper;
 import org.tkit.quarkus.rs.models.PageResultDTO;
 
-@Mapper(componentModel = "cdi", uses = OffsetDateTimeMapper.class, injectionStrategy = InjectionStrategy.CONSTRUCTOR)
+@Mapper(uses = OffsetDateTimeMapper.class, injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface DocumentMapper {
 
     DocumentDetailDTO mapDetail(Document document);

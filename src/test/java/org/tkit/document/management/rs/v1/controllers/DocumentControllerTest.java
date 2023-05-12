@@ -13,34 +13,27 @@ import java.util.stream.Collectors;
 
 import javax.ws.rs.core.MediaType;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.tkit.document.management.domain.models.enums.LifeCycleState;
 import org.tkit.document.management.rs.v1.models.*;
 import org.tkit.document.management.test.AbstractTest;
-import org.tkit.document.management.utils.JWTUtils;
 import org.tkit.quarkus.rs.models.PageResultDTO;
 import org.tkit.quarkus.rs.models.TraceableDTO;
 import org.tkit.quarkus.test.WithDBData;
 
-import io.minio.errors.*;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.keycloak.client.KeycloakTestClient;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.response.Response;
 
 @QuarkusTest
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@WithDBData(value = { "document-management-test-data.xls" }, deleteBeforeInsert = true, rinseAndRepeat = true)
+@WithDBData(value = { "document-management-test-data.xml" }, deleteBeforeInsert = true, rinseAndRepeat = true)
 public class DocumentControllerTest extends AbstractTest {
-    /*
-     * @Inject
-     * private FileService fileService;
-     */
+
+    KeycloakTestClient keycloakClient = new KeycloakTestClient();
 
     private static final String BASE_PATH = "/v1/document";
-    private static final String BASE_FILE_PATH = "/v1/files";
     private static final String EXISTING_DOCUMENT_ID = "51";
     private static final String NOT_EXISTING_DOCUMENT_ID = "1000";
     private static final String NAME_OF_DOCUMENT_1 = "document_1";
@@ -61,44 +54,12 @@ public class DocumentControllerTest extends AbstractTest {
     private static final int NUMBER_OF_CATEGORIES_RELATIONSHIPS_OF_DOCUMENT_1 = 3;
     private static final int NUMBER_OF_ATTACHMENTS_RELATIONSHIPS_OF_DOCUMENT_1 = 2;
 
-    private static String default_valid_token;
-    private static String token_role;
-
-    String bucket = "test-bucket";
-
-    @BeforeAll
-    public static void setUp() throws Exception {
-        default_valid_token = JWTUtils.generateTokenString("/META-INF/resources/test_tokens/test_token_1.json",
-                null);
-        token_role = JWTUtils.generateTokenString("/META-INF/resources/test_tokens/test_token_2.json", null);
-    }
-
-    /*
-     * @BeforeAll
-     * public void createBucket() throws ServerException, InsufficientDataException, ErrorResponseException, IOException,
-     * NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
-     *
-     * fileService.checkAndCreateBucket(bucket);
-     *
-     * }
-     */
-    @Test
-    @DisplayName("Create bucket for given name.")
-    public void testCreateBucket() {
-
-        Response response = given()
-                .accept(MediaType.APPLICATION_JSON)
-                .when()
-                .put(BASE_FILE_PATH + "/bucket/" + bucket);
-
-        response.then().statusCode(201);
-
-    }
-
     @Test
     @DisplayName("Returns all documents with no criteria given.")
     public void testSuccessfulGetWithoutCriteria() {
-        Response response = given().header("Authorization", "bearer " + default_valid_token)
+        Response response = given()
+                .auth()
+                .oauth2(keycloakClient.getAccessToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .when()
                 .get(BASE_PATH);
@@ -111,7 +72,9 @@ public class DocumentControllerTest extends AbstractTest {
     @Test
     @DisplayName("Returns all documents with no criteria given with set page size.")
     public void testSuccessfulGetWithoutCriteriaWithPageSize() {
-        Response response = given().header("Authorization", "bearer " + default_valid_token)
+        Response response = given()
+                .auth()
+                .oauth2(keycloakClient.getAccessToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .queryParam("size", 1)
                 .when()
@@ -125,7 +88,9 @@ public class DocumentControllerTest extends AbstractTest {
     @Test
     @DisplayName("Returns all documents with no criteria given with set page size and given page number.")
     public void testSuccessfulGetWithoutCriteriaWithPageSizeAndPageNumber() {
-        Response response = given().header("Authorization", "bearer " + default_valid_token)
+        Response response = given()
+                .auth()
+                .oauth2(keycloakClient.getAccessToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .queryParam("size", 1)
                 .queryParam("page", 1)
@@ -151,7 +116,9 @@ public class DocumentControllerTest extends AbstractTest {
         attachmentIds.add("101");
         attachmentIds.add("102");
 
-        Response response = given().header("Authorization", "bearer " + default_valid_token)
+        Response response = given()
+                .auth()
+                .oauth2(keycloakClient.getAccessToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .when()
                 .get(BASE_PATH + "/" + EXISTING_DOCUMENT_ID);
@@ -186,7 +153,9 @@ public class DocumentControllerTest extends AbstractTest {
     @Test
     @DisplayName("Returns exception when trying to get document for a nonexistent id.")
     public void testFailedGetDocument() {
-        Response response = given().header("Authorization", "bearer " + default_valid_token)
+        Response response = given()
+                .auth()
+                .oauth2(keycloakClient.getAccessToken(USER))
                 .when()
                 .get(BASE_PATH + "/" + NOT_EXISTING_DOCUMENT_ID);
         response.then().statusCode(NOT_FOUND.getStatusCode());
@@ -201,7 +170,9 @@ public class DocumentControllerTest extends AbstractTest {
     @Test
     @DisplayName("Search criteria. Finds document by id.")
     public void testSuccessfulSearchCriteriaFindDocumentById() {
-        Response response = given().header("Authorization", "bearer " + default_valid_token)
+        Response response = given()
+                .auth()
+                .oauth2(keycloakClient.getAccessToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .queryParam("id", EXISTING_DOCUMENT_ID)
                 .when()
@@ -216,7 +187,9 @@ public class DocumentControllerTest extends AbstractTest {
     @Test
     @DisplayName("Search criteria. Returns empty list when trying to find documents for nonexistent param.")
     public void testSuccessfulSearchCriteriaFindDocumentsByNotExistingParam() {
-        Response response = given().header("Authorization", "bearer " + default_valid_token)
+        Response response = given()
+                .auth()
+                .oauth2(keycloakClient.getAccessToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .queryParam("id", NOT_EXISTING_DOCUMENT_ID)
                 .when()
@@ -230,7 +203,9 @@ public class DocumentControllerTest extends AbstractTest {
     @Test
     @DisplayName("Search criteria. Finds documents by name.")
     public void testSuccessfulSearchCriteriaFindDocumentsByName() {
-        Response response = given().header("Authorization", "bearer " + default_valid_token)
+        Response response = given()
+                .auth()
+                .oauth2(keycloakClient.getAccessToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .queryParam("name", NAME_OF_DOCUMENT_1)
                 .when()
@@ -245,7 +220,9 @@ public class DocumentControllerTest extends AbstractTest {
     @Test
     @DisplayName("Search criteria. Finds documents by first letters of name.")
     public void testSuccessfulSearchCriteriaFindDocumentsByFirstLetterOfName() {
-        Response response = given().header("Authorization", "bearer " + default_valid_token)
+        Response response = given()
+                .auth()
+                .oauth2(keycloakClient.getAccessToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .queryParam("name", "docu")
                 .when()
@@ -260,7 +237,9 @@ public class DocumentControllerTest extends AbstractTest {
     @Test
     @DisplayName("Search criteria. Finds documents by state.")
     public void testSuccessfulSearchCriteriaFindDocumentsByState() {
-        Response response = given().header("Authorization", "bearer " + default_valid_token)
+        Response response = given()
+                .auth()
+                .oauth2(keycloakClient.getAccessToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .queryParam("state", STATUS_OF_DOCUMENT_1)
                 .when()
@@ -275,7 +254,9 @@ public class DocumentControllerTest extends AbstractTest {
     @Test
     @DisplayName("Search criteria. Finds documents by type.")
     public void testSuccessfulSearchCriteriaFindDocumentsByType() {
-        Response response = given().header("Authorization", "bearer " + default_valid_token)
+        Response response = given()
+                .auth()
+                .oauth2(keycloakClient.getAccessToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .queryParam("typeId", TYPE_ID_OF_DOCUMENT_1)
                 .when()
@@ -290,7 +271,9 @@ public class DocumentControllerTest extends AbstractTest {
     @Test
     @DisplayName("Search criteria. Finds documents by channel.")
     public void testSuccessfulSearchCriteriaFindDocumentsByChannel() {
-        Response response = given().header("Authorization", "bearer " + default_valid_token)
+        Response response = given()
+                .auth()
+                .oauth2(keycloakClient.getAccessToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .queryParam("channelName", "channel_1")
                 .when()
@@ -305,13 +288,17 @@ public class DocumentControllerTest extends AbstractTest {
     @Test
     @DisplayName("Deletes document by id.")
     public void testSuccessfulDeletesDocumentById() {
-        Response deleteResponse = given().header("Authorization", "bearer " + default_valid_token)
+        Response deleteResponse = given()
+                .auth()
+                .oauth2(keycloakClient.getAccessToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .when()
                 .delete(BASE_PATH + "/" + EXISTING_DOCUMENT_ID);
         deleteResponse.then().statusCode(NO_CONTENT.getStatusCode());
 
-        Response getResponse = given().header("Authorization", "bearer " + default_valid_token)
+        Response getResponse = given()
+                .auth()
+                .oauth2(keycloakClient.getAccessToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .when()
                 .get(BASE_PATH);
@@ -361,7 +348,9 @@ public class DocumentControllerTest extends AbstractTest {
         documentCreateDTO.setChannel(channelDTO);
         documentCreateDTO.setAttachments(attachments);
 
-        Response postResponse = given().header("Authorization", "bearer " + default_valid_token)
+        Response postResponse = given()
+                .auth()
+                .oauth2(keycloakClient.getAccessToken(USER))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(documentCreateDTO)
                 .when()
@@ -454,7 +443,9 @@ public class DocumentControllerTest extends AbstractTest {
         documentCreateDTO.setCategories(documentCategoryDTOs);
         documentCreateDTO.setAttachments(attachments);
 
-        Response postResponse = given().header("Authorization", "bearer " + default_valid_token)
+        Response postResponse = given()
+                .auth()
+                .oauth2(keycloakClient.getAccessToken(USER))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(documentCreateDTO)
                 .when()
@@ -515,7 +506,9 @@ public class DocumentControllerTest extends AbstractTest {
         documentCreateDTO.setChannel(channelDTO);
         documentCreateDTO.setAttachments(attachments);
 
-        Response postResponse = given().header("Authorization", "bearer " + default_valid_token)
+        Response postResponse = given()
+                .auth()
+                .oauth2(keycloakClient.getAccessToken(USER))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(documentCreateDTO)
                 .when()
@@ -551,7 +544,9 @@ public class DocumentControllerTest extends AbstractTest {
         documentCreateDTO.setChannel(channelDTO);
         documentCreateDTO.setAttachments(attachments);
 
-        Response postResponse = given().header("Authorization", "bearer " + default_valid_token)
+        Response postResponse = given()
+                .auth()
+                .oauth2(keycloakClient.getAccessToken(USER))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(documentCreateDTO)
                 .when()
@@ -585,7 +580,9 @@ public class DocumentControllerTest extends AbstractTest {
         documentCreateDTO.setChannel(null);
         documentCreateDTO.setAttachments(attachments);
 
-        Response postResponse = given().header("Authorization", "bearer " + default_valid_token)
+        Response postResponse = given()
+                .auth()
+                .oauth2(keycloakClient.getAccessToken(USER))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(documentCreateDTO)
                 .when()
@@ -692,7 +689,9 @@ public class DocumentControllerTest extends AbstractTest {
         documentCreateDTO.setChannel(channelDTO);
         documentCreateDTO.setAttachments(attachments);
 
-        Response postResponse = given().header("Authorization", "bearer " + default_valid_token)
+        Response postResponse = given()
+                .auth()
+                .oauth2(keycloakClient.getAccessToken(USER))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(documentCreateDTO)
                 .when()
@@ -733,7 +732,9 @@ public class DocumentControllerTest extends AbstractTest {
         documentCreateDTO.setChannel(channelDTO);
         documentCreateDTO.setAttachments(attachments);
 
-        Response postResponse = given().header("Authorization", "bearer " + default_valid_token)
+        Response postResponse = given()
+                .auth()
+                .oauth2(keycloakClient.getAccessToken(USER))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(documentCreateDTO)
                 .when()
@@ -754,7 +755,7 @@ public class DocumentControllerTest extends AbstractTest {
 
     @Test
     @DisplayName("Saves Document  with nonexistent mimeType.")
-    public void testFailedCreateDocumentWithNonexistentMimeType() {
+    void testFailedCreateDocumentWithNonexistentMimeType() {
         final String documentName = "TEST_DOCUMENT_NAME";
         final String attachmentName = "TEST_ATTACHMENT_NAME";
         final String channelName = "TEST_CHANNEL_NAME";
@@ -774,7 +775,9 @@ public class DocumentControllerTest extends AbstractTest {
         documentCreateDTO.setChannel(channelDTO);
         documentCreateDTO.setAttachments(attachments);
 
-        Response postResponse = given().header("Authorization", "bearer " + default_valid_token)
+        Response postResponse = given()
+                .auth()
+                .oauth2(keycloakClient.getAccessToken(USER))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(documentCreateDTO)
                 .when()
@@ -816,7 +819,9 @@ public class DocumentControllerTest extends AbstractTest {
         documentCreateDTO.setChannel(channelDTO);
         documentCreateDTO.setAttachments(attachments);
 
-        Response postResponse = given().header("Authorization", "bearer " + default_valid_token)
+        Response postResponse = given()
+                .auth()
+                .oauth2(keycloakClient.getAccessToken(USER))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(documentCreateDTO)
                 .when()
@@ -996,7 +1001,9 @@ public class DocumentControllerTest extends AbstractTest {
         documentCreateDTO.setRelatedParties(relatedParties);
         documentCreateDTO.setCategories(categories);
 
-        Response putResponse = given().header("Authorization", "bearer " + default_valid_token)
+        Response putResponse = given()
+                .auth()
+                .oauth2(keycloakClient.getAccessToken(USER))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(documentCreateDTO)
                 .when()
@@ -1004,7 +1011,9 @@ public class DocumentControllerTest extends AbstractTest {
 
         putResponse.then().statusCode(201);
 
-        DocumentDetailDTO documentDetailDTO = given().header("Authorization", "bearer " + default_valid_token)
+        DocumentDetailDTO documentDetailDTO = given()
+                .auth()
+                .oauth2(keycloakClient.getAccessToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .when()
                 .get(BASE_PATH + "/" + EXISTING_DOCUMENT_ID)
@@ -1103,7 +1112,9 @@ public class DocumentControllerTest extends AbstractTest {
         documentCreateDTO.setTypeId(documentTypeId);
         documentCreateDTO.setChannel(channelDTO);
         documentCreateDTO.setAttachments(attachments);
-        Response putResponse = given().header("Authorization", "bearer " + default_valid_token)
+        Response putResponse = given()
+                .auth()
+                .oauth2(keycloakClient.getAccessToken(USER))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(documentCreateDTO)
                 .when()
@@ -1121,7 +1132,9 @@ public class DocumentControllerTest extends AbstractTest {
     @Test
     @DisplayName("Gets all channels.")
     public void testSuccessfulGetAllChannels() {
-        Response getResponse = given().header("Authorization", "bearer " + default_valid_token)
+        Response getResponse = given()
+                .auth()
+                .oauth2(keycloakClient.getAccessToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .when()
                 .get(BASE_PATH + "/channels");
