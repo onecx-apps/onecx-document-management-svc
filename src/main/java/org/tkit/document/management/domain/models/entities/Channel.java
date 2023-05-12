@@ -16,6 +16,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "DM_CHANNEL")
+@java.lang.SuppressWarnings("java:S2160")
 public class Channel extends TraceableEntity {
     /**
      * Name of the channel.

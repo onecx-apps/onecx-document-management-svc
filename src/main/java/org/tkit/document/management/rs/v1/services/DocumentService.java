@@ -135,7 +135,7 @@ public class DocumentService {
         } else {
             newAttachmentSet.addAll(document.getAttachments());
         }
-        if (!Objects.isNull(newAttachmentSet)) {
+        if (!newAttachmentSet.isEmpty()) {
             newAttachmentSet.stream()
                     .forEach(attachment -> {
                         Optional<InputPart> matchedInputPart = inputParts.stream().filter(inputPart -> {

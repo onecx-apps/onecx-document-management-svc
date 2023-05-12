@@ -16,6 +16,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "DM_RELATED_OBJECT")
+@java.lang.SuppressWarnings("java:S2160")
 public class RelatedObjectRef extends TraceableEntity {
     /**
      * Describes the involvement to the related object.

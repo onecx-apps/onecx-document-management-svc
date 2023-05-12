@@ -2,7 +2,7 @@ apiVersion: v2
 name: onecx-document-management
 version: 999-SNAPSHOT
 appVersion: 999-SNAPSHOT
-description: Ping quarkus
+description: onecx document management
 keywords:
   - document management
 sources:

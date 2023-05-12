@@ -11,8 +11,8 @@ import javax.persistence.criteria.Root;
 import org.tkit.document.management.domain.models.entities.Attachment;
 import org.tkit.document.management.domain.models.entities.Attachment_;
 import org.tkit.document.management.domain.models.entities.SupportedMimeType;
-import org.tkit.document.management.domain.models.entities.SupportedMimeType_;
 import org.tkit.quarkus.jpa.daos.AbstractDAO;
+import org.tkit.quarkus.jpa.models.TraceableEntity_;
 
 /**
  * AttachmentDAO class.
@@ -30,7 +30,7 @@ public class AttachmentDAO extends AbstractDAO<Attachment> {
         CriteriaQuery<Attachment> criteriaQuery = criteriaBuilder.createQuery(Attachment.class);
         Root<Attachment> root = criteriaQuery.from(Attachment.class);
         criteriaQuery.where(
-                criteriaBuilder.equal(root.get(Attachment_.MIME_TYPE).get(SupportedMimeType_.ID), id));
+                criteriaBuilder.equal(root.get(Attachment_.MIME_TYPE).get(TraceableEntity_.ID), id));
         TypedQuery<Attachment> typedQuery = em.createQuery(criteriaQuery);
         return typedQuery.getResultList();
     }

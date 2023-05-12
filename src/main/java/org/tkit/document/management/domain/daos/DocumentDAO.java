@@ -61,7 +61,7 @@ public class DocumentDAO extends AbstractDAO<Document> {
                 predicates.add(root.get(Document_.LIFE_CYCLE_STATE).in(criteria.getLifeCycleState()));
             }
             if (!criteria.getDocumentTypeId().isEmpty()) {
-                predicates.add(root.get(Document_.TYPE).get(DocumentType_.ID).in(criteria.getDocumentTypeId()));
+                predicates.add(root.get(Document_.TYPE).get(TraceableEntity_.ID).in(criteria.getDocumentTypeId()));
             }
             if (isNotEmpty(criteria.getChannelName())) {
                 predicates.add(cb.equal(cb.lower(root.get(Document_.CHANNEL).get(Channel_.NAME)),
@@ -119,7 +119,7 @@ public class DocumentDAO extends AbstractDAO<Document> {
         CriteriaQuery<Document> criteriaQuery = criteriaBuilder.createQuery(Document.class);
         Root<Document> root = criteriaQuery.from(Document.class);
         criteriaQuery.where(
-                criteriaBuilder.equal(root.get(Document_.TYPE).get(DocumentType_.ID), id));
+                criteriaBuilder.equal(root.get(Document_.TYPE).get(TraceableEntity_.ID), id));
         TypedQuery<Document> typedQuery = em.createQuery(criteriaQuery);
         return typedQuery.getResultList();
     }
@@ -134,7 +134,7 @@ public class DocumentDAO extends AbstractDAO<Document> {
         CriteriaQuery<Document> criteriaQuery = criteriaBuilder.createQuery(Document.class);
         Root<Document> root = criteriaQuery.from(Document.class);
         criteriaQuery.where(
-                criteriaBuilder.equal(root.get(Document_.SPECIFICATION).get(DocumentSpecification_.ID), id));
+                criteriaBuilder.equal(root.get(Document_.SPECIFICATION).get(TraceableEntity_.ID), id));
         TypedQuery<Document> typedQuery = em.createQuery(criteriaQuery);
         return typedQuery.getResultList();
     }

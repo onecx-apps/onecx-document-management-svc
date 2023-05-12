@@ -18,6 +18,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "DM_RELATED_PARTY")
+@java.lang.SuppressWarnings("java:S2160")
 public class RelatedPartyRef extends TraceableEntity {
     /**
      * Name of the related party.

@@ -18,6 +18,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "DM_ATTACHMENT")
+@java.lang.SuppressWarnings("java:S2160")
 public class Attachment extends TraceableEntity {
     /**
      * Name of the attachment.
@@ -74,4 +75,5 @@ public class Attachment extends TraceableEntity {
      */
     @Column(name = "FILENAME")
     private String fileName;
+
 }

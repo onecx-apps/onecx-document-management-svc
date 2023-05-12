@@ -16,6 +16,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "DM_DOCUMENT_CHARACTERISTIC")
+@java.lang.SuppressWarnings("java:S2160")
 public class DocumentCharacteristic extends TraceableEntity {
     /**
      * Name of the characteristic.
