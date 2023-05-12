@@ -1,0 +1,6 @@
+app:
+  image:
+    repository: "onexc-apps/onecx-document-management"
+    tag: 999-SNAPSHOT
+  db:
+    enabled: true
