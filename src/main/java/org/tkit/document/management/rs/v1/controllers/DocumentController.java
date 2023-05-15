@@ -12,6 +12,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -249,10 +250,7 @@ public class DocumentController {
     @APIResponse(responseCode = "204", description = "No content")
     @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RFCProblemDTO.class)))
     public Response getAllDocumentAttachmentsAsZip(@PathParam("documentId") String documentId,
-            @HeaderParam("client-timezone") String clientTimezone)
-            throws IOException, InvalidKeyException,
-            InvalidResponseException, InsufficientDataException, NoSuchAlgorithmException, ServerException,
-            InternalException, XmlParserException, ErrorResponseException {
+            @HeaderParam("client-timezone") String clientTimezone)  {
         try {
             /* Retrieve the document by its ID */
             Document document = documentDAO.findById(documentId);
