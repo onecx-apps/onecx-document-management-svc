@@ -28,6 +28,7 @@ import io.restassured.common.mapper.TypeRef;
 import io.restassured.response.Response;
 
 @QuarkusTest
+@SuppressWarnings("java:S5961")
 @WithDBData(value = { "document-management-test-data.xml" }, deleteBeforeInsert = true, rinseAndRepeat = true)
 public class DocumentControllerTest extends AbstractTest {
 
