@@ -119,7 +119,7 @@ public class DocumentService {
                 attachmentIdList.add(stringTokenizer.nextToken());
             }
             inputParts.remove(0);
-            if (attachmentIdList.size() > 0) {
+            if (attachmentIdList.isEmpty()) {
                 attachmentIdList.stream().forEach(attachmentId -> {
                     Optional<Attachment> matchedAttachment = document.getAttachments().stream().filter(attachment -> {
                         if (attachmentId.equals(attachment.getId())) {
@@ -175,9 +175,7 @@ public class DocumentService {
      * @return a {@link Document}
      */
     @Transactional
-    public Document updateDocument(@Valid Document document, DocumentCreateUpdateDTO dto)
-            throws IOException, InvalidResponseException, InvalidKeyException, NoSuchAlgorithmException, ServerException,
-            InternalException, XmlParserException, InsufficientDataException, ErrorResponseException {
+    public Document updateDocument(@Valid Document document, DocumentCreateUpdateDTO dto) {
         documentMapper.update(dto, document);
         setType(dto, document);
         setSpecification(dto, document);
