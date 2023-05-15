@@ -42,6 +42,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @ApplicationScoped
+@SuppressWarnings("java:S3776")
 public class DocumentService {
 
     @Inject
