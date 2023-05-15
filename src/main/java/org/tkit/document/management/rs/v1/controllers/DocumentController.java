@@ -184,9 +184,7 @@ public class DocumentController {
     @APIResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RFCProblemDTO.class)))
     @APIResponse(responseCode = "403", description = "Not Authorized")
     @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RFCProblemDTO.class)))
-    public Response updateDocument(@PathParam("id") String id, @Valid DocumentCreateUpdateDTO dto)
-            throws IOException, InvalidResponseException, InvalidKeyException, NoSuchAlgorithmException, ServerException,
-            ErrorResponseException, XmlParserException, InsufficientDataException, InternalException {
+    public Response updateDocument(@PathParam("id") String id, @Valid DocumentCreateUpdateDTO dto) {
         Document document = documentDAO.findDocumentById(id);
         if (Objects.isNull(document)) {
             throw new RestException(Response.Status.NOT_FOUND, Response.Status.NOT_FOUND, getDocumentNotFoundMsg(id));
@@ -374,9 +372,7 @@ public class DocumentController {
     @APIResponse(responseCode = "403", description = "Not Authorized")
     @APIResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RFCProblemDTO.class)))
     @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RFCProblemDTO.class)))
-    public Response bulkUpdateDocument(List<DocumentCreateUpdateDTO> dto)
-            throws IOException, InvalidResponseException, InvalidKeyException, NoSuchAlgorithmException, ServerException,
-            ErrorResponseException, XmlParserException, InsufficientDataException, InternalException {
+    public Response bulkUpdateDocument(List<DocumentCreateUpdateDTO> dto) {
         Iterator<DocumentCreateUpdateDTO> it = dto.listIterator();
         List<Document> document1 = new ArrayList<>();
         while (it.hasNext()) {
