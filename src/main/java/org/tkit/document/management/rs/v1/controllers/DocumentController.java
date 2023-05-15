@@ -12,7 +12,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -209,7 +208,7 @@ public class DocumentController {
         //List of unique alphabetically sorted channel names ignoring cases
         List<Channel> uniqueSortedChannelNames = channelDAO.findAllSortedByNameAsc()
                 .filter(distinctByKey(c -> c.getName().toLowerCase(Locale.ROOT)))
-                .collect(Collectors.toList());
+                .toList();
 
         return Response.status(Response.Status.OK)
                 .entity(documentMapper.mapChannels(uniqueSortedChannelNames))

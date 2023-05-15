@@ -1,7 +1,6 @@
 package org.tkit.document.management.rs.v1.controllers;
 
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -80,7 +79,7 @@ public class DocumentTypeController {
 
     public Response getAllTypesOfDocument() {
         return Response.status(Response.Status.OK)
-                .entity(documentTypeMapper.findAllDocumentType(documentTypeDAO.findAll().collect(Collectors.toList())))
+                .entity(documentTypeMapper.findAllDocumentType(documentTypeDAO.findAll().toList()))
                 .build();
     }
 

@@ -73,15 +73,15 @@ public class DocumentService {
 
     private static final Pattern FILENAME_PATTERN = Pattern.compile("filename=\\\"(.*)\\\"");
 
-    private static final String slash = "/";
+    private static final String SLASH = "/";
 
-    private static final String compareMediaType = "text/plain;charset=us-ascii";
+    private static final String COMPLATE_MEDIA_TYPE = "text/plain;charset=us-ascii";
 
-    private static final String formDataMapKey = "file";
+    private static final String FORM_DATA_MAP_KEY = "file";
 
-    private static final String headerKey = "Content-Disposition";
+    private static final String HEADER_KEY = "Content-Disposition";
 
-    private static final String stringTokenizerDelimiter = ",";
+    private static final String STRING_TOKEN_DELIMITER = ",";
 
     public Document createDocument(@Valid DocumentCreateUpdateDTO dto) {
         Document document = documentMapper.map(dto);
@@ -93,7 +93,7 @@ public class DocumentService {
 
     private String extractFileName(InputPart inputPart) {
         MultivaluedMap<String, String> headers = inputPart.getHeaders();
-        Matcher matcher = FILENAME_PATTERN.matcher(headers.getFirst(headerKey));
+        Matcher matcher = FILENAME_PATTERN.matcher(headers.getFirst(HEADER_KEY));
         String filename = null;
         if (matcher.find()) {
             filename = matcher.group(1);
@@ -110,11 +110,11 @@ public class DocumentService {
             throw new RestException(Response.Status.NOT_FOUND, Response.Status.NOT_FOUND);
         }
         Map<String, List<InputPart>> uploadForm = input.getFormDataMap();
-        List<InputPart> inputParts = uploadForm.get(formDataMapKey);
-        if (String.valueOf(inputParts.get(0).getMediaType()).equals(compareMediaType)) {
+        List<InputPart> inputParts = uploadForm.get(FORM_DATA_MAP_KEY);
+        if (String.valueOf(inputParts.get(0).getMediaType()).equals(COMPLATE_MEDIA_TYPE)) {
             List<String> attachmentIdList = new ArrayList<>();
             StringTokenizer stringTokenizer = new StringTokenizer(String.valueOf(inputParts.get(0).getBodyAsString()),
-                    stringTokenizerDelimiter);
+                    STRING_TOKEN_DELIMITER);
             while (stringTokenizer.hasMoreTokens()) {
                 attachmentIdList.add(stringTokenizer.nextToken());
             }
@@ -145,7 +145,7 @@ public class DocumentService {
                             }
                             return false;
                         }).findFirst();
-                        String strFilenameFileId = attachment.getId() + slash + attachment.getName();
+                        String strFilenameFileId = attachment.getId() + SLASH + attachment.getName();
                         try {
                             InputStream inputPartBody = matchedInputPart.get().getBody(InputStream.class, null);
                             byte[] fileBytes = IOUtils.toByteArray(inputPartBody);
@@ -348,7 +348,7 @@ public class DocumentService {
                         .filter(dto -> dto.getId() != null)
                         .filter(dto -> entity.getId().equals(dto.getId()))
                         .findFirst();
-                if (dtoOptional.isPresent() && !dtoOptional.isEmpty()) {
+                if (dtoOptional.isPresent()) {
                     SupportedMimeType mimeType = getSupportedMimeType(dtoOptional.get());
                     documentMapper.updateAttachment(dtoOptional.get(), entity);
                     entity.setMimeType(mimeType);

@@ -1,7 +1,6 @@
 package org.tkit.document.management.rs.v1.controllers;
 
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -82,7 +81,7 @@ public class SupportedMimeTypeController {
     public Response getAllSupportedMimeTypes() {
         return Response.status(Response.Status.OK)
                 .entity(supportedMimeTypeMapper.findAllSupportedMimeTypes(supportedMimeTypeDAO.findAll()
-                        .collect(Collectors.toList())))
+                        .toList()))
                 .build();
 
     }
