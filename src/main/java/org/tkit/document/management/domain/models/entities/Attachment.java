@@ -2,7 +2,16 @@ package org.tkit.document.management.domain.models.entities;
 
 import java.math.BigDecimal;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.tkit.document.management.domain.models.embeddable.TimePeriod;
 import org.tkit.document.management.domain.models.enums.AttachmentUnit;
@@ -76,4 +85,6 @@ public class Attachment extends TraceableEntity {
     @Column(name = "FILENAME")
     private String fileName;
 
+    @Column(name = "STORAGE_UPLOAD_STATUS")
+    private Boolean storageUploadStatus;
 }
