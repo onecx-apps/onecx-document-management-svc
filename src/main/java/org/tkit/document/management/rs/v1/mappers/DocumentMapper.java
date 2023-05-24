@@ -155,12 +155,12 @@ public interface DocumentMapper {
      * or creates new object extends {@link TraceableEntity} and add to collection
      * or remove object extends {@link TraceableEntity} from collection.
      *
-     * @param collection     of objects extends {@link TraceableEntity}
-     * @param collectionDTO  of objects extends {@link IdentifiableTraceableDTO}
+     * @param collection of objects extends {@link TraceableEntity}
+     * @param collectionDTO of objects extends {@link IdentifiableTraceableDTO}
      * @param updateFunction update entity.
-     * @param mapFunction    map from DTO to entity.
-     * @param <T>            extends {@link TraceableEntity}
-     * @param <S>            extends {@link IdentifiableTraceableDTO}
+     * @param mapFunction map from DTO to entity.
+     * @param <T> extends {@link TraceableEntity}
+     * @param <S> extends {@link IdentifiableTraceableDTO}
      */
     default <T extends TraceableEntity, S extends IdentifiableTraceableDTO> void updateTraceableCollection(
             Set<T> collection,

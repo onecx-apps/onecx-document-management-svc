@@ -33,7 +33,6 @@ import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 import org.tkit.document.management.domain.daos.AttachmentDAO;
 import org.tkit.document.management.domain.daos.DocumentDAO;
-import org.tkit.document.management.domain.daos.DocumentSpecificationDAO;
 import org.tkit.document.management.domain.daos.DocumentTypeDAO;
 import org.tkit.document.management.domain.daos.StorageUploadAuditDAO;
 import org.tkit.document.management.domain.daos.SupportedMimeTypeDAO;
@@ -344,7 +343,7 @@ public class DocumentService {
      * Finds the type {@link DocumentType} by id and sets the type in the document
      * entity {@link Document}.
      *
-     * @param dto      a {@link DocumentCreateUpdateDTO}
+     * @param dto a {@link DocumentCreateUpdateDTO}
      * @param document a {@link Document}
      */
     private void setType(@Valid DocumentCreateUpdateDTO dto, Document document) {
@@ -365,7 +364,7 @@ public class DocumentService {
      * specification
      * in the document entity {@link Document}.
      *
-     * @param dto      a {@link DocumentCreateUpdateDTO}
+     * @param dto a {@link DocumentCreateUpdateDTO}
      * @param document a {@link Document}
      */
     private void setSpecification(@Valid DocumentCreateUpdateDTO dto, Document document) {
@@ -405,7 +404,7 @@ public class DocumentService {
      * {@link Attachment}
      * in document entity {@link Document}.
      *
-     * @param dto      a {@link DocumentCreateUpdateDTO}
+     * @param dto a {@link DocumentCreateUpdateDTO}
      * @param document a {@link Document}
      */
     private void setAttachments(@Valid DocumentCreateUpdateDTO dto, Document document) {
@@ -430,7 +429,7 @@ public class DocumentService {
      * Updates {@link Channel} in {@link Document} or creates new {@link Channel}
      * and sets in {@link Document}.
      *
-     * @param document  a {@link Document}
+     * @param document a {@link Document}
      * @param updateDTO a {@link DocumentCreateUpdateDTO}
      */
     private void updateChannelInDocument(Document document, DocumentCreateUpdateDTO updateDTO) {
@@ -448,7 +447,7 @@ public class DocumentService {
      * Updates {@link RelatedObjectRef} in {@link Document} or creates new
      * {@link RelatedObjectRef} and sets in {@link Document}.
      *
-     * @param document  a {@link Document}
+     * @param document a {@link Document}
      * @param updateDTO a {@link DocumentCreateUpdateDTO}
      */
     private void updateRelatedObjectRefInDocument(Document document, DocumentCreateUpdateDTO updateDTO) {
@@ -473,7 +472,7 @@ public class DocumentService {
      * {@link Attachment}
      * and add to collection or remove {@link Attachment} from collection.
      *
-     * @param document  a {@link Document}
+     * @param document a {@link Document}
      * @param updateDTO a {@link DocumentCreateUpdateDTO}
      */
     private void updateAttachmentsInDocument(Document document, DocumentCreateUpdateDTO updateDTO) {

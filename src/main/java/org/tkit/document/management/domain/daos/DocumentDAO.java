@@ -41,7 +41,7 @@ public class DocumentDAO extends AbstractDAO<Document> {
     /**
      * Finds a {@link PageResult} of {@link Document} matching the given
      * {@link DocumentSearchCriteria}.
-     * 
+     *
      * @param criteria the {@link DocumentSearchCriteria}
      * @return the {@link PageResult} of {@link Document}
      */
