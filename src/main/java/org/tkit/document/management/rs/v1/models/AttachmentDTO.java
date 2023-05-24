@@ -31,4 +31,6 @@ public class AttachmentDTO extends TraceableDTO {
     private SupportedMimeTypeDTO mimeType;
 
     private String fileName;
+
+    private Boolean storageUploadStatus;
 }
