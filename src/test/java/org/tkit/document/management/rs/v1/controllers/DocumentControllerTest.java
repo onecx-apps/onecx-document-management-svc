@@ -1,7 +1,10 @@
 package org.tkit.document.management.rs.v1.controllers;
 
 import static io.restassured.RestAssured.given;
-import static javax.ws.rs.core.Response.Status.*;
+import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static javax.ws.rs.core.Response.Status.NOT_FOUND;
+import static javax.ws.rs.core.Response.Status.NO_CONTENT;
+import static javax.ws.rs.core.Response.Status.OK;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.OffsetDateTime;
@@ -16,7 +19,24 @@ import javax.ws.rs.core.MediaType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.tkit.document.management.domain.models.enums.LifeCycleState;
-import org.tkit.document.management.rs.v1.models.*;
+import org.tkit.document.management.rs.v1.models.AttachmentCreateUpdateDTO;
+import org.tkit.document.management.rs.v1.models.AttachmentDTO;
+import org.tkit.document.management.rs.v1.models.CategoryCreateUpdateDTO;
+import org.tkit.document.management.rs.v1.models.CategoryDTO;
+import org.tkit.document.management.rs.v1.models.ChannelCreateUpdateDTO;
+import org.tkit.document.management.rs.v1.models.ChannelDTO;
+import org.tkit.document.management.rs.v1.models.DocumentCharacteristicCreateUpdateDTO;
+import org.tkit.document.management.rs.v1.models.DocumentCharacteristicDTO;
+import org.tkit.document.management.rs.v1.models.DocumentCreateUpdateDTO;
+import org.tkit.document.management.rs.v1.models.DocumentDetailDTO;
+import org.tkit.document.management.rs.v1.models.DocumentRelationshipCreateUpdateDTO;
+import org.tkit.document.management.rs.v1.models.DocumentRelationshipDTO;
+import org.tkit.document.management.rs.v1.models.DocumentSpecificationCreateUpdateDTO;
+import org.tkit.document.management.rs.v1.models.RFCProblemDTO;
+import org.tkit.document.management.rs.v1.models.RelatedObjectRefCreateUpdateDTO;
+import org.tkit.document.management.rs.v1.models.RelatedPartyRefCreateUpdateDTO;
+import org.tkit.document.management.rs.v1.models.RelatedPartyRefDTO;
+import org.tkit.document.management.rs.v1.models.TimePeriodDTO;
 import org.tkit.document.management.test.AbstractTest;
 import org.tkit.quarkus.rs.models.PageResultDTO;
 import org.tkit.quarkus.rs.models.TraceableDTO;
@@ -701,7 +721,7 @@ public class DocumentControllerTest extends AbstractTest {
         postResponse.then().statusCode(NOT_FOUND.getStatusCode());
         RFCProblemDTO rfcProblemDTO = postResponse.as(RFCProblemDTO.class);
         assertThat(rfcProblemDTO.getStatus().toString()).isEqualTo("404");
-        assertThat(rfcProblemDTO.getDetail()).isEqualTo("Document type of id " + documentTypeId + " does not exist.");
+        assertThat(rfcProblemDTO.getDetail()).isEqualTo("The document with ID " + documentTypeId + " was not found.");
         assertThat(rfcProblemDTO.getInstance()).isNull();
         assertThat(rfcProblemDTO.getTitle()).isEqualTo("TECHNICAL ERROR");
         assertThat(rfcProblemDTO.getType()).isEqualTo("REST_EXCEPTION");
@@ -788,7 +808,7 @@ public class DocumentControllerTest extends AbstractTest {
         RFCProblemDTO rfcProblemDTO = postResponse.as(RFCProblemDTO.class);
         assertThat(rfcProblemDTO.getStatus().toString()).isEqualTo("404");
         assertThat(rfcProblemDTO.getDetail())
-                .isEqualTo("Supported mime type of id " + attachmentMimeTypeId + " does not exist.");
+                .isEqualTo("The supported mime type with ID " + attachmentMimeTypeId + " was not found.");
         assertThat(rfcProblemDTO.getInstance()).isNull();
         assertThat(rfcProblemDTO.getTitle()).isEqualTo("TECHNICAL ERROR");
         assertThat(rfcProblemDTO.getType()).isEqualTo("REST_EXCEPTION");

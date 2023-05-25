@@ -43,7 +43,7 @@ public class AttachmentDAO extends AbstractDAO<Attachment> {
         Root<Attachment> root = deleteQuery.from(Attachment.class);
         deleteQuery.where(
                 criteriaBuilder.equal(root.get(Attachment_.STORAGE_UPLOAD_STATUS), false));
-        int count = em.createQuery(deleteQuery).executeUpdate();
+        em.createQuery(deleteQuery).executeUpdate();
     }
 
 }

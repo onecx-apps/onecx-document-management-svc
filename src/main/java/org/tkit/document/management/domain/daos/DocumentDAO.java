@@ -55,7 +55,7 @@ public class DocumentDAO extends AbstractDAO<Document> {
             CriteriaQuery<Document> cq = cb.createQuery(Document.class);
             Root<Document> root = cq.from(Document.class);
             List<Predicate> predicates = new ArrayList<>();
-            cq.orderBy(cb.desc(root.get(Document_.MODIFICATION_DATE)));
+            cq.orderBy(cb.desc(root.get(AbstractTraceableEntity_.MODIFICATION_DATE)));
             if (Objects.nonNull(criteria.getId())) {
                 predicates.add(cb.equal(root.get(TraceableEntity_.ID), criteria.getId()));
             }
@@ -135,7 +135,8 @@ public class DocumentDAO extends AbstractDAO<Document> {
     /**
      *
      * @param id the String
-     * @return a {@link List<Document>} contains given {@link DocumentSpecification} id
+     * @return a {@link List<Document>} contains given {@link DocumentSpecification}
+     *         id
      */
     public List<Document> findDocumentsWithDocumentSpecificationId(String id) {
         CriteriaBuilder criteriaBuilder = this.getEntityManager().getCriteriaBuilder();
@@ -175,7 +176,7 @@ public class DocumentDAO extends AbstractDAO<Document> {
             CriteriaQuery<Document> cq = cb.createQuery(Document.class);
             Root<Document> root = cq.from(Document.class);
             List<Predicate> predicates = new ArrayList<>();
-            cq.orderBy(cb.desc(root.get(Document_.MODIFICATION_DATE)));
+            cq.orderBy(cb.desc(root.get(AbstractTraceableEntity_.MODIFICATION_DATE)));
             if (Objects.nonNull(criteria.getId())) {
                 predicates.add(cb.equal(root.get(TraceableEntity_.ID), criteria.getId()));
             }
