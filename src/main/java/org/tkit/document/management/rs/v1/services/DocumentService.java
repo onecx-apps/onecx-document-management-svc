@@ -101,20 +101,20 @@ public class DocumentService {
     @Inject
     MinioClient minioClient;
 
-    @ConfigProperty(name = "minio.bucket")
-    String bucket;
+    @ConfigProperty(name = "minio.bucket.name")
+    String bucketName;
 
-    @ConfigProperty(name = "bucketNamePrefix")
-    String prefix;
+    @ConfigProperty(name = "minio.bucket.prefix")
+    String bucketNamePrefix;
 
     @ConfigProperty(name = "quarkus.minio.url")
-    String url;
+    String minioUrl;
 
     private static final Pattern FILENAME_PATTERN = Pattern.compile("filename=\\\"(.*)\\\"");
 
     private static final String SLASH = "/";
 
-    private static final String COMPLATE_MEDIA_TYPE = "text/plain;charset=us-ascii";
+    private static final String ATTACHMENT_ID_LIST_MEDIA_TYPE = "text/plain;charset=us-ascii";
 
     private static final String FORM_DATA_MAP_KEY = "file";
 
@@ -157,7 +157,7 @@ public class DocumentService {
         }
         Map<String, List<InputPart>> uploadForm = input.getFormDataMap();
         List<InputPart> inputParts = uploadForm.get(FORM_DATA_MAP_KEY);
-        if (String.valueOf(inputParts.get(0).getMediaType()).equals(COMPLATE_MEDIA_TYPE)) {
+        if (String.valueOf(inputParts.get(0).getMediaType()).equals(ATTACHMENT_ID_LIST_MEDIA_TYPE)) {
             List<String> attachmentIdList = new ArrayList<>();
             StringTokenizer stringTokenizer = new StringTokenizer(String.valueOf(inputParts.get(0).getBodyAsString()),
                     STRING_TOKEN_DELIMITER);
@@ -278,7 +278,7 @@ public class DocumentService {
             NoSuchAlgorithmException, ServerException, InternalException, XmlParserException, ErrorResponseException {
         Log.info("DocumentService", "Entered getObjectFromObjectStore method", null);
         GetObjectArgs getObjectArgs = GetObjectArgs.builder()
-                .bucket(prefix + bucket)
+                .bucket(bucketNamePrefix + bucketName)
                 .object(objectId)
                 .build();
         Log.info("DocumentService", "Exited getObjectFromObjectStore method", null);
@@ -292,7 +292,7 @@ public class DocumentService {
         Log.info("DocumentService", "Entered deleteFileInAttachment method", null);
         minioClient.removeObject(
                 RemoveObjectArgs.builder()
-                        .bucket(prefix + bucket)
+                        .bucket(bucketNamePrefix + bucketName)
                         .object(attachment.getId())
                         .build());
         attachment.setSize(null);
@@ -500,7 +500,7 @@ public class DocumentService {
             NoSuchAlgorithmException, ServerException, InternalException, XmlParserException, ErrorResponseException {
         Log.info("DocumentService", "Entered uploadFileToObjectStorage method", null);
         minioClient.putObject(PutObjectArgs.builder()
-                .bucket(prefix + bucket)
+                .bucket(bucketNamePrefix + bucketName)
                 .object(id)
                 .stream(new ByteArrayInputStream(fileBytes), fileBytes.length, -1)
                 .build());
@@ -514,7 +514,7 @@ public class DocumentService {
         attachment.setSizeUnit(AttachmentUnit.BYTES);
         attachment.setStorage("MinIO");
         attachment.setType(contentType);
-        attachment.setExternalStorageURL(url);
+        attachment.setExternalStorageURL(minioUrl);
         attachment.setStorageUploadStatus(true);
         Log.info("DocumentService", "Exited updateAttachmentAfterUpload method", null);
     }

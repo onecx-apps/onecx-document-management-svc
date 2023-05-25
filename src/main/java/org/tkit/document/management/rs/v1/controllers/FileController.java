@@ -42,8 +42,8 @@ public class FileController {
     @Inject
     FileService fileService;
 
-    @ConfigProperty(name = "bucketNamePrefix", defaultValue = "def-")
-    String prefix;
+    @ConfigProperty(name = "minio.bucket.prefix", defaultValue = "def-")
+    String bucketNamePrefix;
 
     @POST
     @Path("/bucket/{name}")
@@ -84,7 +84,7 @@ public class FileController {
         }
         FileInfoDTO fileInfoDTO;
         try {
-            fileInfoDTO = fileService.uploadFile(path, data.file, prefix + bucket);
+            fileInfoDTO = fileService.uploadFile(path, data.file, bucketNamePrefix + bucket);
         } catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
@@ -103,7 +103,7 @@ public class FileController {
     public Response downloadFileBytes(@PathParam("bucket") String bucket, @PathParam("path") String path) {
         Log.info("FileController", "Entered downloadFileBytes method", null);
         try {
-            final GetObjectResponse object = fileService.downloadFile(path, prefix + bucket);
+            final GetObjectResponse object = fileService.downloadFile(path, bucketNamePrefix + bucket);
             String contentType = object.headers().get("Content-Type");
 
             final byte[] data = object.readAllBytes();
@@ -130,7 +130,7 @@ public class FileController {
     public Response deleteFile(@PathParam("bucket") String bucket, @PathParam("path") String path) {
         Log.info("FileController", "Entered deleteFile method", null);
         try {
-            fileService.deleteFile(path, prefix + bucket);
+            fileService.deleteFile(path, bucketNamePrefix + bucket);
             Log.info("FileController", "Exited deleteFile method", null);
             return Response.status(Response.Status.CREATED).build();
         } catch (FileNotFoundException e) {

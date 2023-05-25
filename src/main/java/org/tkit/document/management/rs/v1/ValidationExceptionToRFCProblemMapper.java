@@ -83,7 +83,8 @@ public class ValidationExceptionToRFCProblemMapper implements ExceptionMapper<Va
     private RFCProblemDetailDTO mapStackTraceElement(StackTraceElement stackTraceElement) {
         RFCProblemDetailDTO problemDetail = new RFCProblemDetailDTO();
         problemDetail.setMessage(
-                "An error occured in " + stackTraceElement.getMethodName() + " in line " + stackTraceElement.getLineNumber());
+                "An error occured in " + stackTraceElement.getMethodName() + " at line "
+                        + stackTraceElement.getLineNumber());
         problemDetail.setMessageId(stackTraceElement.getClassName());
 
         return problemDetail;

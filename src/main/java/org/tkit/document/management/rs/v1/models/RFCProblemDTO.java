@@ -8,7 +8,12 @@ import javax.validation.Valid;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -54,7 +59,8 @@ public class RFCProblemDTO {
 
     /**
      * A URI reference that identifies the specific
-     * occurrence of the problem. It may or may not yield further information if dereferenced.
+     * occurrence of the problem. It may or may not yield further information if
+     * dereferenced.
      */
     @JsonProperty(value = "instance")
     private @Valid String instance = null;
