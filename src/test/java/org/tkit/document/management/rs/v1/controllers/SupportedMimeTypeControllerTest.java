@@ -32,6 +32,9 @@ public class SupportedMimeTypeControllerTest extends AbstractTest {
     private static final String NOT_EXISTING_SUPPORTED_MIME_TYPE_ID = "10000";
     private static final String NAME_OF_SUPPORTED_MIME_TYPE_1 = "application/msexcel";
     private static final String DESCRIPTION_OF_SUPPORTED_MIME_TYPE_1 = "Microsoft Excel";
+    private static final Object[] EXISTING_SUPPORTED_MIME_TYPE_IDS = { "151", "152", "153" };
+    private static final Object[] EXISTING_SUPPORTED_MIME_TYPE_NAMES = { "application/msexcel", "application/pdf",
+            "nonassigned" };
 
     @Test
     @DisplayName("Saves supported mime-type with the required fields with validated data.")
@@ -212,6 +215,10 @@ public class SupportedMimeTypeControllerTest extends AbstractTest {
         assertThat(typesOfDocuments.get(0).getId()).isEqualTo(EXISTING_SUPPORTED_MIME_TYPE_ID);
         assertThat(typesOfDocuments.get(0).getName()).isEqualTo(NAME_OF_SUPPORTED_MIME_TYPE_1);
         assertThat(typesOfDocuments.get(0).getDescription()).isEqualTo(DESCRIPTION_OF_SUPPORTED_MIME_TYPE_1);
+        assertThat(typesOfDocuments.get(1).getId()).isIn(EXISTING_SUPPORTED_MIME_TYPE_IDS);
+        assertThat(typesOfDocuments.get(1).getName()).isIn(EXISTING_SUPPORTED_MIME_TYPE_NAMES);
+        assertThat(typesOfDocuments.get(2).getId()).isIn(EXISTING_SUPPORTED_MIME_TYPE_IDS);
+        assertThat(typesOfDocuments.get(2).getName()).isIn(EXISTING_SUPPORTED_MIME_TYPE_NAMES);
     }
 
     @Test
