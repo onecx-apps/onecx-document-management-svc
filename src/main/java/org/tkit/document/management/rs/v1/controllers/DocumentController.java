@@ -344,7 +344,7 @@ public class DocumentController {
                 return Response.status(Response.Status.BAD_REQUEST).build();
 
             /* Retrieve the attachment details of this document */
-            Set<Attachment> documentAttachmentSet = document.getAttachments();
+            Set<Attachment> documentAttachmentSet = document.getAttachments().stream().filter(Attachment::getStorageUploadStatus).collect(Collectors.toSet());
 
             /*
              * If the document has no attachments return a 204 error because there is no
