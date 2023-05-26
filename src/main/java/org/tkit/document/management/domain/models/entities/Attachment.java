@@ -27,6 +27,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "DM_ATTACHMENT")
+@java.lang.SuppressWarnings("java:S2160")
 public class Attachment extends TraceableEntity {
     /**
      * Name of the attachment.
@@ -87,91 +88,4 @@ public class Attachment extends TraceableEntity {
     @Column(name = "STORAGE_UPLOAD_STATUS")
     private Boolean storageUploadStatus;
 
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result + ((name == null) ? 0 : name.hashCode());
-        result = prime * result + ((description == null) ? 0 : description.hashCode());
-        result = prime * result + ((type == null) ? 0 : type.hashCode());
-        result = prime * result + ((size == null) ? 0 : size.hashCode());
-        result = prime * result + ((sizeUnit == null) ? 0 : sizeUnit.hashCode());
-        result = prime * result + ((validFor == null) ? 0 : validFor.hashCode());
-        result = prime * result + ((storage == null) ? 0 : storage.hashCode());
-        result = prime * result + ((externalStorageURL == null) ? 0 : externalStorageURL.hashCode());
-        result = prime * result + ((mimeType == null) ? 0 : mimeType.hashCode());
-        result = prime * result + ((file == null) ? 0 : file.hashCode());
-        result = prime * result + ((fileName == null) ? 0 : fileName.hashCode());
-        result = prime * result + ((storageUploadStatus == null) ? 0 : storageUploadStatus.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (!super.equals(obj))
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        Attachment other = (Attachment) obj;
-        if (name == null) {
-            if (other.name != null)
-                return false;
-        } else if (!name.equals(other.name))
-            return false;
-        if (description == null) {
-            if (other.description != null)
-                return false;
-        } else if (!description.equals(other.description))
-            return false;
-        if (type == null) {
-            if (other.type != null)
-                return false;
-        } else if (!type.equals(other.type))
-            return false;
-        if (size == null) {
-            if (other.size != null)
-                return false;
-        } else if (!size.equals(other.size))
-            return false;
-        if (sizeUnit != other.sizeUnit)
-            return false;
-        if (validFor == null) {
-            if (other.validFor != null)
-                return false;
-        } else if (!validFor.equals(other.validFor))
-            return false;
-        if (storage == null) {
-            if (other.storage != null)
-                return false;
-        } else if (!storage.equals(other.storage))
-            return false;
-        if (externalStorageURL == null) {
-            if (other.externalStorageURL != null)
-                return false;
-        } else if (!externalStorageURL.equals(other.externalStorageURL))
-            return false;
-        if (mimeType == null) {
-            if (other.mimeType != null)
-                return false;
-        } else if (!mimeType.equals(other.mimeType))
-            return false;
-        if (file == null) {
-            if (other.file != null)
-                return false;
-        } else if (!file.equals(other.file))
-            return false;
-        if (fileName == null) {
-            if (other.fileName != null)
-                return false;
-        } else if (!fileName.equals(other.fileName))
-            return false;
-        if (storageUploadStatus == null) {
-            if (other.storageUploadStatus != null)
-                return false;
-        } else if (!storageUploadStatus.equals(other.storageUploadStatus))
-            return false;
-        return true;
-    }
 }
