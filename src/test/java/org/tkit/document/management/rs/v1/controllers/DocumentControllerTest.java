@@ -112,7 +112,7 @@ public class DocumentControllerTest extends AbstractTest {
 
         response.then().statusCode(200);
         PageResultDTO documents = response.as(PageResultDTO.class);
-        assertThat(documents.getStream().size()).isEqualTo(2);
+        assertThat(documents.getStream().size()).isEqualTo(4);
     }
 
     @Test
@@ -343,7 +343,7 @@ public class DocumentControllerTest extends AbstractTest {
 
         response.then().statusCode(200);
         PageResultDTO<DocumentDetailDTO> documents = response.as(getDocumentDetailDTOTypeRef());
-        assertThat(documents.getStream().size()).isEqualTo(2);
+        assertThat(documents.getStream().size()).isEqualTo(4);
         assertThat(documents.getStream().stream()).allMatch(el -> el.getName().startsWith("docu"));
     }
 
@@ -794,7 +794,7 @@ public class DocumentControllerTest extends AbstractTest {
                 .get(BASE_PATH);
         getResponse.then().statusCode(200);
         PageResultDTO<DocumentDetailDTO> documents = getResponse.as(getDocumentDetailDTOTypeRef());
-        assertThat(documents.getStream().size()).isEqualTo(1);
+        assertThat(documents.getStream().size()).isEqualTo(3);
     }
 
     @Test
