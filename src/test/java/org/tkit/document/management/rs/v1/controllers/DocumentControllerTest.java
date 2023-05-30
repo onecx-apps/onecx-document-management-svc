@@ -1801,6 +1801,12 @@ public class DocumentControllerTest extends AbstractTest {
     @Test
     @DisplayName("Bulk Delete of existing document's attachments")
     void testSuccessfulDeleteAttachmentFilesInBulk() {
+        given()
+                .accept(MediaType.APPLICATION_JSON)
+                .when()
+                .post(FILE_BASE_PATH + "bucket/" + BUCKET_NAME)
+                .then().log().all().statusCode(201);
+
         File sampleFile1 = new File(SAMPLE_FILE_PATH_1);
         File sampleFile2 = new File(SAMPLE_FILE_PATH_2);
         Response putResponse1 = given()

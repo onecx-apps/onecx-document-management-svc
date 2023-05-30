@@ -1,6 +1,6 @@
 package org.tkit.document.management.rs.v1.models;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import org.tkit.quarkus.rs.models.TraceableDTO;
 
@@ -12,5 +12,5 @@ import lombok.Setter;
 @java.lang.SuppressWarnings("java:S2160")
 public class DocumentResponseDTO extends TraceableDTO {
 
-    private HashMap<String, Integer> attachmentResponse;
+    private Map<String, Integer> attachmentResponse;
 }

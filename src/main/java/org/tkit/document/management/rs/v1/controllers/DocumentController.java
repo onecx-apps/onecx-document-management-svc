@@ -12,10 +12,10 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -222,7 +222,7 @@ public class DocumentController {
     public Response multipleFileUploads(@PathParam("documentId") String documentId,
             @MultipartForm MultipartFormDataInput input) throws IOException {
         Log.info(CLASS_NAME, "Entered multipleFileUploads method", null);
-        HashMap<String, Integer> map = documentService.uploadAttachment(documentId, input);
+        Map<String, Integer> map = documentService.uploadAttachment(documentId, input);
         DocumentResponseDTO responseDTO = new DocumentResponseDTO();
         responseDTO.setAttachmentResponse(map);
         Log.info(CLASS_NAME, "Exited multipleFileUploads method", null);

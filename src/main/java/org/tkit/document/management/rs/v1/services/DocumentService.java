@@ -147,7 +147,7 @@ public class DocumentService {
     }
 
     @Transactional
-    public HashMap<String, Integer> uploadAttachment(String documentId, MultipartFormDataInput input)
+    public Map<String, Integer> uploadAttachment(String documentId, MultipartFormDataInput input)
             throws IOException {
         Log.info(CLASS_NAME, "Entered uploadAttachment method", null);
         HashMap<String, Integer> map = new HashMap<>();
