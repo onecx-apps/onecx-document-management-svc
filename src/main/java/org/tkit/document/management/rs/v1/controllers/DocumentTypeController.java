@@ -50,6 +50,8 @@ public class DocumentTypeController {
     @Inject
     DocumentDAO documentDAO;
 
+    private static final String CLASS_NAME = "DocumentTypeController";
+
     @POST
     @Transactional
     @Operation(operationId = "createDocumentType", description = "Creates type of document")
@@ -58,9 +60,9 @@ public class DocumentTypeController {
     @APIResponse(responseCode = "500", description = "Internal Server Error, please check Problem Details", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RFCProblemDTO.class)))
 
     public Response createDocumentType(@Valid DocumentTypeCreateUpdateDTO dto) {
-        Log.info("DocumentTypeController", "Entered createDocumentType method", null);
+        Log.info(CLASS_NAME, "Entered createDocumentType method", null);
         DocumentType documentType = documentTypeDAO.create(documentTypeMapper.map(dto));
-        Log.info("DocumentTypeController", "Exited createDocumentType method", null);
+        Log.info(CLASS_NAME, "Exited createDocumentType method", null);
         return Response.status(Response.Status.CREATED)
                 .entity(documentTypeMapper.mapDocumentType(documentType))
                 .build();
@@ -74,13 +76,13 @@ public class DocumentTypeController {
     @APIResponse(responseCode = "500", description = "Internal Server Error, please check Problem Details", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RFCProblemDTO.class)))
 
     public Response getDocumentTypeById(@PathParam("id") String id) {
-        Log.info("DocumentTypeController", "Entered getDocumentTypeById method", null);
+        Log.info(CLASS_NAME, "Entered getDocumentTypeById method", null);
         DocumentType documentType = documentTypeDAO.findById(id);
         if (Objects.isNull(documentType)) {
             throw new RestException(Response.Status.NOT_FOUND, Response.Status.NOT_FOUND,
                     getTypeNotFoundMsg(id));
         }
-        Log.info("DocumentTypeController", "Exited getDocumentTypeById method", null);
+        Log.info(CLASS_NAME, "Exited getDocumentTypeById method", null);
         return Response.status(Response.Status.OK)
                 .entity(documentTypeMapper.mapDocumentType(documentType))
                 .build();
@@ -93,8 +95,8 @@ public class DocumentTypeController {
     @APIResponse(responseCode = "500", description = "Internal Server Error, please check Problem Details", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RFCProblemDTO.class)))
 
     public Response getAllTypesOfDocument() {
-        Log.info("DocumentTypeController", "Entered getAllTypesOfDocument method", null);
-        Log.info("DocumentTypeController", "Exited getAllTypesOfDocument method", null);
+        Log.info(CLASS_NAME, "Entered getAllTypesOfDocument method", null);
+        Log.info(CLASS_NAME, "Exited getAllTypesOfDocument method", null);
         return Response.status(Response.Status.OK)
                 .entity(documentTypeMapper.findAllDocumentType(
                         documentTypeDAO.findAll().collect(Collectors.toList())))
@@ -111,7 +113,7 @@ public class DocumentTypeController {
     @APIResponse(responseCode = "500", description = "Internal Server Error, please check Problem Details", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RFCProblemDTO.class)))
 
     public Response deleteDocumentTypeById(@PathParam("id") String id) {
-        Log.info("DocumentTypeController", "Entered deleteDocumentTypeById method", null);
+        Log.info(CLASS_NAME, "Entered deleteDocumentTypeById method", null);
         DocumentType documentType = documentTypeDAO.findById(id);
         if (Objects.nonNull(documentType)) {
             if (!documentDAO.findDocumentsWithDocumentTypeId(id).isEmpty()) {
@@ -120,7 +122,7 @@ public class DocumentTypeController {
                                 + ". It is assigned to the document.");
             }
             documentTypeDAO.delete(documentType);
-            Log.info("DocumentTypeController", "Exited deleteDocumentTypeById method", null);
+            Log.info(CLASS_NAME, "Exited deleteDocumentTypeById method", null);
             return Response.status(Response.Status.NO_CONTENT).build();
         }
         throw new RestException(Response.Status.NOT_FOUND, Response.Status.NOT_FOUND, getTypeNotFoundMsg(id));
@@ -135,22 +137,22 @@ public class DocumentTypeController {
     @APIResponse(responseCode = "500", description = "Internal Server Error, please check Problem Details", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RFCProblemDTO.class)))
 
     public Response updateDocumentTypeById(@PathParam("id") String id, @Valid DocumentTypeCreateUpdateDTO dto) {
-        Log.info("DocumentTypeController", "Entered updateDocumentTypeById method", null);
+        Log.info(CLASS_NAME, "Entered updateDocumentTypeById method", null);
         DocumentType documentType = documentTypeDAO.findById(id);
         if (Objects.isNull(documentType)) {
             throw new RestException(Response.Status.NOT_FOUND, Response.Status.NOT_FOUND,
                     getTypeNotFoundMsg(id));
         }
         documentTypeMapper.update(dto, documentType);
-        Log.info("DocumentTypeController", "Exited updateDocumentTypeById method", null);
+        Log.info(CLASS_NAME, "Exited updateDocumentTypeById method", null);
         return Response.status(Response.Status.CREATED)
                 .entity(documentTypeMapper.mapDocumentType(documentTypeDAO.update(documentType)))
                 .build();
     }
 
     private String getTypeNotFoundMsg(String id) {
-        Log.info("DocumentTypeController", "Entered getTypeNotFoundMsg method", null);
-        Log.info("DocumentTypeController", "Exited getTypeNotFoundMsg method", null);
+        Log.info(CLASS_NAME, "Entered getTypeNotFoundMsg method", null);
+        Log.info(CLASS_NAME, "Exited getTypeNotFoundMsg method", null);
         return "The document type with id " + id + " was not found.";
     }
 }

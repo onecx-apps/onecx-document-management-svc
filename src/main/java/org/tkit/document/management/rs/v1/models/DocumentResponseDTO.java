@@ -9,6 +9,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
+@java.lang.SuppressWarnings("java:S2160")
 public class DocumentResponseDTO extends TraceableDTO {
 
     private HashMap<String, Integer> attachmentResponse;

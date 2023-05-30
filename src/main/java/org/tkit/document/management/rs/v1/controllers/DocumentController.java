@@ -115,6 +115,8 @@ public class DocumentController {
     // Content-Disposition header value.
     public static final String ATTACHMENT_ZIP_CONTENT_DISPOSITION_HEADER = "attachment; filename=\"attachments.zip\"";
 
+    private static final String CLASS_NAME = "DocumentController";
+
     @Transactional
     @Scheduled(cron = "0 0 23 * * ?", concurrentExecution = PROCEED)
     public void clearFailedFilesFromDBPeriodically() {
@@ -130,12 +132,12 @@ public class DocumentController {
     @APIResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RFCProblemDTO.class)))
     @APIResponse(responseCode = "500", description = "Internal Server Error, please check Problem Details", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RFCProblemDTO.class)))
     public Response getDocumentById(@PathParam("id") String id) {
-        Log.info("DocumentController", "Entered getDocumentById method", null);
+        Log.info(CLASS_NAME, "Entered getDocumentById method", null);
         Document document = documentDAO.findDocumentById(id);
         if (Objects.isNull(document)) {
             throw new RestException(Response.Status.NOT_FOUND, Response.Status.NOT_FOUND, getDocumentNotFoundMsg(id));
         }
-        Log.info("DocumentController", "Exited getDocumentById method", null);
+        Log.info(CLASS_NAME, "Exited getDocumentById method", null);
         return Response.status(Response.Status.OK)
                 .entity(documentMapper.mapDetail(document))
                 .build();
@@ -150,7 +152,7 @@ public class DocumentController {
     @APIResponse(responseCode = "403", description = "Not Authorized")
     @APIResponse(responseCode = "500", description = "Internal Server Error, please check Problem Details", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RFCProblemDTO.class)))
     public Response getDocumentByCriteria(@BeanParam DocumentSearchCriteriaDTO criteriaDTO) {
-        Log.info("DocumentController", "Entered getDocumentByCriteria method", null);
+        Log.info(CLASS_NAME, "Entered getDocumentByCriteria method", null);
         DocumentSearchCriteria criteria = documentMapper.map(criteriaDTO);
         if (Objects.nonNull(criteriaDTO.getStartDate()) && !criteriaDTO.getStartDate().isEmpty()) { // added this for
                                                                                                     // date search
@@ -162,7 +164,7 @@ public class DocumentController {
             criteria.setEndDate(LocalDateTime.parse(criteriaDTO.getEndDate(), CUSTOM_DATE_TIME_FORMATTER));
         }
         PageResult<Document> documents = documentDAO.findBySearchCriteria(criteria);
-        Log.info("DocumentController", "Exited getDocumentByCriteria method", null);
+        Log.info(CLASS_NAME, "Exited getDocumentByCriteria method", null);
         return Response.ok(documentMapper.mapToPageResultDTO(documents))
                 .build();
     }
@@ -177,14 +179,14 @@ public class DocumentController {
     @APIResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RFCProblemDTO.class)))
     @APIResponse(responseCode = "500", description = "Internal Server Error, please check Problem Details", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RFCProblemDTO.class)))
     public Response deleteDocumentById(@PathParam("id") String id) {
-        Log.info("DocumentController", "Entered deleteDocumentById method", null);
+        Log.info(CLASS_NAME, "Entered deleteDocumentById method", null);
         Document document = documentDAO.findById(id);
         if (Objects.isNull(document)) {
             throw new RestException(Response.Status.NOT_FOUND, Response.Status.NOT_FOUND, getDocumentNotFoundMsg(id));
         }
         documentService.deleteFilesInDocument(document);
         documentDAO.delete(document);
-        Log.info("DocumentController", "Exited deleteDocumentById method", null);
+        Log.info(CLASS_NAME, "Exited deleteDocumentById method", null);
         return Response.status(Response.Status.NO_CONTENT).build();
     }
 
@@ -198,9 +200,9 @@ public class DocumentController {
     @APIResponse(responseCode = "403", description = "Not Authorized")
     @APIResponse(responseCode = "500", description = "Internal Server Error, please check Problem Details", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RFCProblemDTO.class)))
     public Response createDocument(@Valid DocumentCreateUpdateDTO documentDTO) {
-        Log.info("DocumentController", "Entered createDocument method", null);
+        Log.info(CLASS_NAME, "Entered createDocument method", null);
         Document document = documentService.createDocument(documentDTO);
-        Log.info("DocumentController", "Exited createDocument method", null);
+        Log.info(CLASS_NAME, "Exited createDocument method", null);
         return Response.status(Response.Status.CREATED)
                 .entity(documentMapper.mapDetail(document))
                 .build();
@@ -219,11 +221,11 @@ public class DocumentController {
     @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RestException.class)))
     public Response multipleFileUploads(@PathParam("documentId") String documentId,
             @MultipartForm MultipartFormDataInput input) throws IOException {
-        Log.info("DocumentController", "Entered multipleFileUploads method", null);
+        Log.info(CLASS_NAME, "Entered multipleFileUploads method", null);
         HashMap<String, Integer> map = documentService.uploadAttachment(documentId, input);
         DocumentResponseDTO responseDTO = new DocumentResponseDTO();
         responseDTO.setAttachmentResponse(map);
-        Log.info("DocumentController", "Exited multipleFileUploads method", null);
+        Log.info(CLASS_NAME, "Exited multipleFileUploads method", null);
         return Response.status(Response.Status.CREATED)
                 .entity(responseDTO)
                 .build();
@@ -239,10 +241,10 @@ public class DocumentController {
     @APIResponse(responseCode = "403", description = "Not Authorized")
     @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RFCProblemDTO.class)))
     public Response getFailedAttachmentById(@PathParam("id") String documentId) {
-        Log.info("DocumentController", "Entered getFailedAttachmentById method", null);
+        Log.info(CLASS_NAME, "Entered getFailedAttachmentById method", null);
         List<StorageUploadAudit> failedAttachmentList = storageUploadAuditDAO
                 .findFailedAttachmentsByDocumentId(documentId);
-        Log.info("DocumentController", "Exited getFailedAttachmentById method", null);
+        Log.info(CLASS_NAME, "Exited getFailedAttachmentById method", null);
         return Response.status(Response.Status.OK).entity(failedAttachmentList).build();
     }
 
@@ -255,16 +257,14 @@ public class DocumentController {
     @APIResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RFCProblemDTO.class)))
     @APIResponse(responseCode = "403", description = "Not Authorized")
     @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RFCProblemDTO.class)))
-    public Response updateDocument(@PathParam("id") String id, @Valid DocumentCreateUpdateDTO dto)
-            throws IOException, InvalidResponseException, InvalidKeyException, NoSuchAlgorithmException,
-            ServerException, ErrorResponseException, XmlParserException, InsufficientDataException, InternalException {
-        Log.info("DocumentController", "Entered updateDocument method", null);
+    public Response updateDocument(@PathParam("id") String id, @Valid DocumentCreateUpdateDTO dto) {
+        Log.info(CLASS_NAME, "Entered updateDocument method", null);
         Document document = documentDAO.findDocumentById(id);
         if (Objects.isNull(document)) {
             throw new RestException(Response.Status.NOT_FOUND, Response.Status.NOT_FOUND, getDocumentNotFoundMsg(id));
         }
         document = documentService.updateDocument(document, dto);
-        Log.info("DocumentController", "Exited updateDocument method", null);
+        Log.info(CLASS_NAME, "Exited updateDocument method", null);
         return Response.status(Response.Status.CREATED)
                 .entity(documentMapper.mapDetail(documentDAO.update(document)))
                 .build();
@@ -277,21 +277,21 @@ public class DocumentController {
     @APIResponse(responseCode = "500", description = "Internal Server Error, please check Problem Details", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RFCProblemDTO.class)))
     public Response getAllChannels() {
 
-        Log.info("DocumentController", "Entered getAllChannels method", null);
+        Log.info(CLASS_NAME, "Entered getAllChannels method", null);
         // List of unique alphabetically sorted channel names ignoring cases
         List<Channel> uniqueSortedChannelNames = channelDAO.findAllSortedByNameAsc()
                 .filter(distinctByKey(c -> c.getName().toLowerCase(Locale.ROOT)))
                 .collect(Collectors.toList());
-        Log.info("DocumentController", "Exited getAllChannels method", null);
+        Log.info(CLASS_NAME, "Exited getAllChannels method", null);
         return Response.status(Response.Status.OK)
                 .entity(documentMapper.mapChannels(uniqueSortedChannelNames))
                 .build();
     }
 
     private static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
-        Log.info("DocumentController", "Entered distinctByKey method", null);
+        Log.info(CLASS_NAME, "Entered distinctByKey method", null);
         Set<Object> seen = Collections.newSetFromMap(new ConcurrentHashMap<>());
-        Log.info("DocumentController", "Exited distinctByKey method", null);
+        Log.info(CLASS_NAME, "Exited distinctByKey method", null);
         return t -> seen.add(keyExtractor.apply(t));
     }
 
@@ -305,13 +305,13 @@ public class DocumentController {
     public Response getFile(@PathParam("attachmentId") String attachmentId)
             throws IOException, InvalidKeyException, InvalidResponseException, InsufficientDataException,
             NoSuchAlgorithmException, ServerException, InternalException, XmlParserException, ErrorResponseException {
-        Log.info("DocumentController", "Entered getFile method", null);
+        Log.info(CLASS_NAME, "Entered getFile method", null);
         Attachment attachment = attachmentDAO.findById(attachmentId);
         if (Objects.isNull(attachment)) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
         InputStream object = documentService.getObjectFromObjectStore(attachmentId);
-        Log.info("DocumentController", "Exited getFile method", null);
+        Log.info(CLASS_NAME, "Exited getFile method", null);
         return Response.ok(object)
                 .header("Content-Disposition", String.format("attachment;filename=%s", attachment.getFileName()))
                 .build();
@@ -327,11 +327,8 @@ public class DocumentController {
     @APIResponse(responseCode = "204", description = "No content")
     @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RestException.class)))
     public Response getAllDocumentAttachmentsAsZip(@PathParam("documentId") String documentId,
-            @HeaderParam("client-timezone") String clientTimezone)
-            throws IOException, InvalidKeyException,
-            InvalidResponseException, InsufficientDataException, NoSuchAlgorithmException, ServerException,
-            InternalException, XmlParserException, ErrorResponseException {
-        Log.info("DocumentController", "Entered getAllDocumentAttachmentsAsZip method", null);
+            @HeaderParam("client-timezone") String clientTimezone) {
+        Log.info(CLASS_NAME, "Entered getAllDocumentAttachmentsAsZip method", null);
         try {
             /* Retrieve the document by its ID */
             Document document = documentDAO.findById(documentId);
@@ -411,7 +408,7 @@ public class DocumentController {
                     zip.finish();
                 }
             };
-            Log.info("DocumentController", "Exited getAllDocumentAttachmentsAsZip method", null);
+            Log.info(CLASS_NAME, "Exited getAllDocumentAttachmentsAsZip method", null);
             return Response.ok(stream)
                     .header("Content-Disposition", ATTACHMENT_ZIP_CONTENT_DISPOSITION_HEADER)
                     .type("application/zip")
@@ -436,9 +433,9 @@ public class DocumentController {
     @APIResponse(responseCode = "404", description = "Not found")
     @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RestException.class)))
     public Response deleteFilesInBulk(List<String> attachmentIds) {
-        Log.info("DocumentController", "Entered deleteFilesInBulk method", null);
+        Log.info(CLASS_NAME, "Entered deleteFilesInBulk method", null);
         documentService.deleteAttachmentInBulk(attachmentIds);
-        Log.info("DocumentController", "Exited deleteFilesInBulk method", null);
+        Log.info(CLASS_NAME, "Exited deleteFilesInBulk method", null);
         return Response.noContent().build();
     }
 
@@ -451,10 +448,8 @@ public class DocumentController {
     @APIResponse(responseCode = "403", description = "Not Authorized")
     @APIResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RFCProblemDTO.class)))
     @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RFCProblemDTO.class)))
-    public Response bulkUpdateDocument(List<DocumentCreateUpdateDTO> dto)
-            throws IOException, InvalidResponseException, InvalidKeyException, NoSuchAlgorithmException,
-            ServerException, ErrorResponseException, XmlParserException, InsufficientDataException, InternalException {
-        Log.info("DocumentController", "Entered bulkUpdateDocument method", null);
+    public Response bulkUpdateDocument(List<DocumentCreateUpdateDTO> dto) {
+        Log.info(CLASS_NAME, "Entered bulkUpdateDocument method", null);
         Iterator<DocumentCreateUpdateDTO> it = dto.listIterator();
         List<Document> document1 = new ArrayList<>();
         while (it.hasNext()) {
@@ -471,7 +466,7 @@ public class DocumentController {
             }
             document1.add(document);
         }
-        Log.info("DocumentController", "Exited bulkUpdateDocument method", null);
+        Log.info(CLASS_NAME, "Exited bulkUpdateDocument method", null);
         return Response.status(Response.Status.CREATED)
                 .entity(documentMapper.mapDetailBulk(documentDAO.update(document1.stream())))
                 .build();
@@ -487,7 +482,7 @@ public class DocumentController {
     @APIResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RFCProblemDTO.class)))
     @APIResponse(responseCode = "500", description = "Internal Server Error, please check Problem Details", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RFCProblemDTO.class)))
     public Response deleteBulkDocuments(List<String> ids) {
-        Log.info("DocumentController", "Entered deleteBulkDocuments method", null);
+        Log.info(CLASS_NAME, "Entered deleteBulkDocuments method", null);
         Iterator<String> itr = ids.iterator();
         while (itr.hasNext()) {
             String currentDocId = itr.next();
@@ -499,7 +494,7 @@ public class DocumentController {
             documentService.deleteFilesInDocument(document);
             documentDAO.delete(document);
         }
-        Log.info("DocumentController", "Exited deleteBulkDocuments method", null);
+        Log.info(CLASS_NAME, "Exited deleteBulkDocuments method", null);
         return Response.status(Response.Status.NO_CONTENT).build();
     }
 
@@ -513,7 +508,7 @@ public class DocumentController {
     @APIResponse(responseCode = "403", description = "Not Authorized")
     @APIResponse(responseCode = "500", description = "Internal Server Error, please check Problem Details", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RFCProblemDTO.class)))
     public Response showAllDocumentsByCriteria(@BeanParam DocumentSearchCriteriaDTO criteriaDTO) {
-        Log.info("DocumentController", "Entered showAllDocumentsByCriteria method", null);
+        Log.info(CLASS_NAME, "Entered showAllDocumentsByCriteria method", null);
         DocumentSearchCriteria criteria = documentMapper.map(criteriaDTO);
         if (Objects.nonNull(criteriaDTO.getStartDate()) && !criteriaDTO.getStartDate().isEmpty()) {
 
@@ -524,14 +519,14 @@ public class DocumentController {
             criteria.setEndDate(LocalDateTime.parse(criteriaDTO.getEndDate(), CUSTOM_DATE_TIME_FORMATTER));
         }
         List<Document> documents = documentDAO.findAllDocumentsBySearchCriteria(criteria);
-        Log.info("DocumentController", "Exited showAllDocumentsByCriteria method", null);
+        Log.info(CLASS_NAME, "Exited showAllDocumentsByCriteria method", null);
         return Response.ok(documentMapper.mapDocuments(documents))
                 .build();
     }
 
     private String getDocumentNotFoundMsg(String id) {
-        Log.info("DocumentController", "Entered getDocumentNotFoundMsg method", null);
-        Log.info("DocumentController", "Exited getDocumentNotFoundMsg method", null);
+        Log.info(CLASS_NAME, "Entered getDocumentNotFoundMsg method", null);
+        Log.info(CLASS_NAME, "Exited getDocumentNotFoundMsg method", null);
         return "Document with id " + id + " was not found.";
 
     }

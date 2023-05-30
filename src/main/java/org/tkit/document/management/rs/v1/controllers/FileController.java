@@ -45,6 +45,8 @@ public class FileController {
     @ConfigProperty(name = "minio.bucket.prefix", defaultValue = "def-")
     String bucketNamePrefix;
 
+    private static final String CLASS_NAME = "FileController";
+
     @POST
     @Path("/bucket/{name}")
     @Operation(operationId = "createBucket", description = "Create a bucket", summary = "Creates a bucket with the given name")
@@ -78,7 +80,7 @@ public class FileController {
 
     public Response uploadFile(@MultipartForm FileMultipartBody data, @PathParam("bucket") String bucket,
             @PathParam("path") String path) {
-        Log.info("FileController", "Entered uploadFile method", null);
+        Log.info(CLASS_NAME, "Entered uploadFile method", null);
         if (data.file.length() == 0) {
             return Response.status(Response.Status.BAD_REQUEST).entity("File has not been provided").build();
         }
@@ -88,7 +90,7 @@ public class FileController {
         } catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
-        Log.info("FileController", "Exited uploadFile method", null);
+        Log.info(CLASS_NAME, "Exited uploadFile method", null);
         return Response.status(201).entity(fileInfoDTO).build();
     }
 
@@ -101,7 +103,7 @@ public class FileController {
     @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RestException.class)))
 
     public Response downloadFileBytes(@PathParam("bucket") String bucket, @PathParam("path") String path) {
-        Log.info("FileController", "Entered downloadFileBytes method", null);
+        Log.info(CLASS_NAME, "Entered downloadFileBytes method", null);
         try {
             final GetObjectResponse object = fileService.downloadFile(path, bucketNamePrefix + bucket);
             String contentType = object.headers().get("Content-Type");
@@ -111,7 +113,7 @@ public class FileController {
                 output.write(data);
                 output.flush();
             };
-            Log.info("FileController", "Exited downloadFileBytes method", null);
+            Log.info(CLASS_NAME, "Exited downloadFileBytes method", null);
             return Response.ok(entity).header("Content-Type", contentType).build();
         } catch (Exception e) {
             throw new RestException(Response.Status.INTERNAL_SERVER_ERROR, Response.Status.INTERNAL_SERVER_ERROR,
@@ -128,10 +130,10 @@ public class FileController {
     @APIResponse(responseCode = "404", description = "Not Found")
     @APIResponse(responseCode = "500", description = "Internal Server Error")
     public Response deleteFile(@PathParam("bucket") String bucket, @PathParam("path") String path) {
-        Log.info("FileController", "Entered deleteFile method", null);
+        Log.info(CLASS_NAME, "Entered deleteFile method", null);
         try {
             fileService.deleteFile(path, bucketNamePrefix + bucket);
-            Log.info("FileController", "Exited deleteFile method", null);
+            Log.info(CLASS_NAME, "Exited deleteFile method", null);
             return Response.status(Response.Status.CREATED).build();
         } catch (FileNotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();

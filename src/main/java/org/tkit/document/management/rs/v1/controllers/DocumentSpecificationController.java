@@ -50,6 +50,8 @@ public class DocumentSpecificationController {
     @Inject
     DocumentDAO documentDAO;
 
+    private static final String CLASS_NAME = "DocumentSpecificationController";
+
     @POST
     @Transactional
     @Operation(operationId = "createDocumentSpecification", description = "Creates specification of document")
@@ -58,10 +60,10 @@ public class DocumentSpecificationController {
     @APIResponse(responseCode = "500", description = "Internal Server Error, please check Problem Details", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RFCProblemDTO.class)))
 
     public Response createDocumentSpecification(@Valid DocumentSpecificationCreateUpdateDTO dto) {
-        Log.info("DocumentSpecificationController", "Entered createDocumentSpecification method", null);
+        Log.info(CLASS_NAME, "Entered createDocumentSpecification method", null);
         DocumentSpecification documentSpecification = documentSpecificationDAO
                 .create(documentSpecificationMapper.map(dto));
-        Log.info("DocumentSpecificationController", "Exited createDocumentSpecification method", null);
+        Log.info(CLASS_NAME, "Exited createDocumentSpecification method", null);
         return Response.status(Response.Status.CREATED)
                 .entity(documentSpecificationMapper.mapToDTO(documentSpecification))
                 .build();
@@ -75,13 +77,13 @@ public class DocumentSpecificationController {
     @APIResponse(responseCode = "500", description = "Internal Server Error, please check Problem Details", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RFCProblemDTO.class)))
 
     public Response getDocumentSpecificationById(@PathParam("id") String id) {
-        Log.info("DocumentSpecificationController", "Entered getDocumentSpecificationById method", null);
+        Log.info(CLASS_NAME, "Entered getDocumentSpecificationById method", null);
         DocumentSpecification documentSpecification = documentSpecificationDAO.findById(id);
         if (Objects.isNull(documentSpecification)) {
             throw new RestException(Response.Status.NOT_FOUND, Response.Status.NOT_FOUND,
                     getSpecificationNotFoundMsg(id));
         }
-        Log.info("DocumentSpecificationController", "Exited getDocumentSpecificationById method", null);
+        Log.info(CLASS_NAME, "Exited getDocumentSpecificationById method", null);
         return Response.status(Response.Status.OK)
                 .entity(documentSpecificationMapper.mapToDTO(documentSpecification))
                 .build();
@@ -94,8 +96,8 @@ public class DocumentSpecificationController {
     @APIResponse(responseCode = "500", description = "Internal Server Error, please check Problem Details", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RFCProblemDTO.class)))
 
     public Response getAllDocumentSpecifications() {
-        Log.info("DocumentSpecificationController", "Entered getAllDocumentSpecifications method", null);
-        Log.info("DocumentSpecificationController", "Exited getAllDocumentSpecifications method", null);
+        Log.info(CLASS_NAME, "Entered getAllDocumentSpecifications method", null);
+        Log.info(CLASS_NAME, "Exited getAllDocumentSpecifications method", null);
         return Response.status(Response.Status.OK)
                 .entity(documentSpecificationMapper
                         .findAllDocumentSpecifications(documentSpecificationDAO.findAll()
@@ -114,7 +116,7 @@ public class DocumentSpecificationController {
     @APIResponse(responseCode = "500", description = "Internal Server Error, please check Problem Details", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RFCProblemDTO.class)))
 
     public Response deleteDocumentSpecificationById(@PathParam("id") String id) {
-        Log.info("DocumentSpecificationController", "Entered deleteDocumentSpecificationById method", null);
+        Log.info(CLASS_NAME, "Entered deleteDocumentSpecificationById method", null);
         DocumentSpecification documentSpecification = documentSpecificationDAO.findById(id);
         if (Objects.nonNull(documentSpecification)) {
             if (!documentDAO.findDocumentsWithDocumentSpecificationId(id).isEmpty()) {
@@ -123,7 +125,7 @@ public class DocumentSpecificationController {
                                 + ". It is assigned to the document.");
             }
             documentSpecificationDAO.delete(documentSpecification);
-            Log.info("DocumentSpecificationController", "Exited deleteDocumentSpecificationById method",
+            Log.info(CLASS_NAME, "Exited deleteDocumentSpecificationById method",
                     null);
             return Response.status(Response.Status.NO_CONTENT).build();
         }
@@ -141,14 +143,14 @@ public class DocumentSpecificationController {
 
     public Response updateDocumentSpecificationById(@PathParam("id") String id,
             @Valid DocumentSpecificationCreateUpdateDTO dto) {
-        Log.info("DocumentSpecificationController", "Entered updateDocumentSpecificationById method", null);
+        Log.info(CLASS_NAME, "Entered updateDocumentSpecificationById method", null);
         DocumentSpecification documentSpecification = documentSpecificationDAO.findById(id);
         if (Objects.isNull(documentSpecification)) {
             throw new RestException(Response.Status.NOT_FOUND, Response.Status.NOT_FOUND,
                     getSpecificationNotFoundMsg(id));
         }
         documentSpecificationMapper.update(dto, documentSpecification);
-        Log.info("DocumentSpecificationController", "Exited updateDocumentSpecificationById method", null);
+        Log.info(CLASS_NAME, "Exited updateDocumentSpecificationById method", null);
         return Response.status(Response.Status.OK)
                 .entity(documentSpecificationMapper
                         .mapToDTO(documentSpecificationDAO.update(documentSpecification)))
@@ -156,8 +158,8 @@ public class DocumentSpecificationController {
     }
 
     private String getSpecificationNotFoundMsg(String id) {
-        Log.info("DocumentSpecificationController", "Entered getSpecificationNotFoundMsg method", null);
-        Log.info("DocumentSpecificationController", "Exited getSpecificationNotFoundMsg method", null);
+        Log.info(CLASS_NAME, "Entered getSpecificationNotFoundMsg method", null);
+        Log.info(CLASS_NAME, "Exited getSpecificationNotFoundMsg method", null);
         return "The document specification with id " + id + " was not found.";
     }
 

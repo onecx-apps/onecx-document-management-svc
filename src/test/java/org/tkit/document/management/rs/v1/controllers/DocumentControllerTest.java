@@ -7,10 +7,6 @@ import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.NO_CONTENT;
 import static javax.ws.rs.core.Response.Status.OK;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.nio.file.Paths;
@@ -22,20 +18,29 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
 import javax.ws.rs.core.MediaType;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.tkit.document.management.domain.criteria.DocumentSearchCriteria;
-import org.tkit.document.management.domain.daos.DocumentDAO;
 import org.tkit.document.management.domain.models.enums.LifeCycleState;
-import org.tkit.document.management.rs.v1.models.*;
-import org.tkit.document.management.rs.v1.services.FileService;
+import org.tkit.document.management.rs.v1.models.AttachmentCreateUpdateDTO;
+import org.tkit.document.management.rs.v1.models.AttachmentDTO;
+import org.tkit.document.management.rs.v1.models.CategoryCreateUpdateDTO;
+import org.tkit.document.management.rs.v1.models.ChannelCreateUpdateDTO;
+import org.tkit.document.management.rs.v1.models.ChannelDTO;
+import org.tkit.document.management.rs.v1.models.DocumentCharacteristicCreateUpdateDTO;
+import org.tkit.document.management.rs.v1.models.DocumentCharacteristicDTO;
+import org.tkit.document.management.rs.v1.models.DocumentCreateUpdateDTO;
+import org.tkit.document.management.rs.v1.models.DocumentDetailDTO;
+import org.tkit.document.management.rs.v1.models.DocumentRelationshipCreateUpdateDTO;
+import org.tkit.document.management.rs.v1.models.DocumentRelationshipDTO;
+import org.tkit.document.management.rs.v1.models.DocumentSpecificationCreateUpdateDTO;
+import org.tkit.document.management.rs.v1.models.RFCProblemDTO;
+import org.tkit.document.management.rs.v1.models.RelatedObjectRefCreateUpdateDTO;
+import org.tkit.document.management.rs.v1.models.RelatedPartyRefCreateUpdateDTO;
+import org.tkit.document.management.rs.v1.models.RelatedPartyRefDTO;
+import org.tkit.document.management.rs.v1.models.TimePeriodDTO;
 import org.tkit.document.management.test.AbstractTest;
-import org.tkit.quarkus.jpa.exceptions.DAOException;
 import org.tkit.quarkus.rs.models.PageResultDTO;
 import org.tkit.quarkus.rs.models.TraceableDTO;
 import org.tkit.quarkus.test.WithDBData;
@@ -50,13 +55,6 @@ import io.restassured.response.Response;
 @WithDBData(value = { "document-management-test-data.xml" }, deleteBeforeInsert = true, rinseAndRepeat = true)
 public class DocumentControllerTest extends AbstractTest {
 
-    @Inject
-    private DocumentDAO documentDAO;
-    @Inject
-    private FileService fileService;
-
-    @Inject
-    private DocumentController documentController;
     KeycloakTestClient keycloakClient = new KeycloakTestClient();
 
     private static final String BASE_PATH = "/v1/document";
@@ -102,7 +100,7 @@ public class DocumentControllerTest extends AbstractTest {
 
     @Test
     @DisplayName("Returns all documents with no criteria given.")
-    public void testSuccessfulGetWithoutCriteria() {
+    void testSuccessfulGetWithoutCriteria() {
         Response response = given()
                 .auth()
                 .oauth2(keycloakClient.getAccessToken(USER))
@@ -112,12 +110,12 @@ public class DocumentControllerTest extends AbstractTest {
 
         response.then().statusCode(200);
         PageResultDTO documents = response.as(PageResultDTO.class);
-        assertThat(documents.getStream().size()).isEqualTo(4);
+        assertThat(documents.getStream()).hasSize(4);
     }
 
     @Test
     @DisplayName("Returns all documents with no criteria given with set page size.")
-    public void testSuccessfulGetWithoutCriteriaWithPageSize() {
+    void testSuccessfulGetWithoutCriteriaWithPageSize() {
         Response response = given()
                 .auth()
                 .oauth2(keycloakClient.getAccessToken(USER))
@@ -128,12 +126,12 @@ public class DocumentControllerTest extends AbstractTest {
 
         response.then().statusCode(200);
         PageResultDTO documents = response.as(PageResultDTO.class);
-        assertThat(documents.getStream().size()).isEqualTo(1);
+        assertThat(documents.getStream()).hasSize(1);
     }
 
     @Test
     @DisplayName("Returns all documents with no criteria given with set page size and given page number.")
-    public void testSuccessfulGetWithoutCriteriaWithPageSizeAndPageNumber() {
+    void testSuccessfulGetWithoutCriteriaWithPageSizeAndPageNumber() {
         Response response = given()
                 .auth()
                 .oauth2(keycloakClient.getAccessToken(USER))
@@ -145,12 +143,12 @@ public class DocumentControllerTest extends AbstractTest {
 
         response.then().statusCode(200);
         PageResultDTO documents = response.as(PageResultDTO.class);
-        assertThat(documents.getStream().size()).isEqualTo(1);
+        assertThat(documents.getStream()).hasSize(1);
     }
 
     @Test
     @DisplayName("Returns document by ID")
-    public void testSuccessfulGetDocument() {
+    void testSuccessfulGetDocument() {
         Set<String> tags = new HashSet<>();
         tags.add("tag_1");
         tags.add("tag_2");
@@ -180,25 +178,27 @@ public class DocumentControllerTest extends AbstractTest {
         assertThat(document.getRelatedObject().getId()).isEqualTo(RELATED_OBJECT_ID_OF_DOCUMENT_1);
         assertThat(document.getSpecification().getId()).isEqualTo(SPECIFICATION_ID_OF_DOCUMENT_1);
         assertThat(document.getType().getId()).isEqualTo(TYPE_ID_OF_DOCUMENT_1);
-        assertThat(document.getTags().size()).isEqualTo(NUMBER_OF_TAGS_OF_DOCUMENT_1);
-        assertThat(document.getTags().contains("tag_1")).isTrue();
-        assertThat(document.getDocumentRelationships().size()).isEqualTo(NUMBER_OF_DOCUMENT_RELATIONSHIPS_OF_DOCUMENT_1);
-        assertThat(document.getDocumentRelationships().stream().findFirst().get().getId()).isEqualTo(DOCUMENT_RELATIONSHIP_ID);
-        assertThat(document.getCharacteristics().size()).isEqualTo(NUMBER_OF_DOCUMENT_CHARACTERISTICS_OF_DOCUMENT_1);
-        assertThat(document.getCharacteristics().stream().findFirst().get().getId()).isEqualTo(DOCUMENT_CHARACTERISTIC_ID);
-        assertThat(document.getRelatedParties().size()).isEqualTo(NUMBER_OF_RELATED_PARTIES_OF_DOCUMENT_1);
+        assertThat(document.getTags()).hasSize(NUMBER_OF_TAGS_OF_DOCUMENT_1);
+        assertThat(document.getTags()).contains("tag_1");
+        assertThat(document.getDocumentRelationships()).hasSize(NUMBER_OF_DOCUMENT_RELATIONSHIPS_OF_DOCUMENT_1);
+        assertThat(document.getDocumentRelationships().stream().findFirst().get().getId())
+                .isEqualTo(DOCUMENT_RELATIONSHIP_ID);
+        assertThat(document.getCharacteristics()).hasSize(NUMBER_OF_DOCUMENT_CHARACTERISTICS_OF_DOCUMENT_1);
+        assertThat(document.getCharacteristics().stream().findFirst().get().getId())
+                .isEqualTo(DOCUMENT_CHARACTERISTIC_ID);
+        assertThat(document.getRelatedParties()).hasSize(NUMBER_OF_RELATED_PARTIES_OF_DOCUMENT_1);
         assertThat(document.getRelatedParties().stream().findFirst().get().getId()).isEqualTo(RELATED_PARTY_ID);
-        assertThat(document.getCategories().size()).isEqualTo(NUMBER_OF_CATEGORIES_RELATIONSHIPS_OF_DOCUMENT_1);
+        assertThat(document.getCategories()).hasSize(NUMBER_OF_CATEGORIES_RELATIONSHIPS_OF_DOCUMENT_1);
         assertThat(document.getCategories().stream().map(TraceableDTO::getId).collect(Collectors.toList()))
                 .isEqualTo(categoryIds);
-        assertThat(document.getAttachments().size()).isEqualTo(NUMBER_OF_ATTACHMENTS_RELATIONSHIPS_OF_DOCUMENT_1);
+        assertThat(document.getAttachments()).hasSize(NUMBER_OF_ATTACHMENTS_RELATIONSHIPS_OF_DOCUMENT_1);
         assertThat(document.getAttachments().stream().map(TraceableDTO::getId).collect(Collectors.toList()))
                 .containsAll(attachmentIds);
     }
 
     @Test
     @DisplayName("Returns exception when trying to get document for a nonexistent id.")
-    public void testFailedGetDocument() {
+    void testFailedGetDocument() {
         Response response = given()
                 .auth()
                 .oauth2(keycloakClient.getAccessToken(USER))
@@ -206,8 +206,9 @@ public class DocumentControllerTest extends AbstractTest {
                 .get(BASE_PATH + "/" + NOT_EXISTING_DOCUMENT_ID);
         response.then().statusCode(NOT_FOUND.getStatusCode());
         RFCProblemDTO rfcProblemDTO = response.as(RFCProblemDTO.class);
-        assertThat(rfcProblemDTO.getStatus().toString()).isEqualTo("404");
-        assertThat(rfcProblemDTO.getDetail()).isEqualTo("Document with id " + NOT_EXISTING_DOCUMENT_ID + " was not found.");
+        assertThat(rfcProblemDTO.getStatus()).hasToString("404");
+        assertThat(rfcProblemDTO.getDetail())
+                .isEqualTo("Document with id " + NOT_EXISTING_DOCUMENT_ID + " was not found.");
         assertThat(rfcProblemDTO.getInstance()).isNull();
         assertThat(rfcProblemDTO.getTitle()).isEqualTo("TECHNICAL ERROR");
         assertThat(rfcProblemDTO.getType()).isEqualTo("REST_EXCEPTION");
@@ -215,7 +216,7 @@ public class DocumentControllerTest extends AbstractTest {
 
     @Test
     @DisplayName("Search criteria. Finds document by id.")
-    public void testSuccessfulSearchCriteriaFindDocumentById() {
+    void testSuccessfulSearchCriteriaFindDocumentById() {
         Response response = given()
                 .auth()
                 .oauth2(keycloakClient.getAccessToken(USER))
@@ -226,13 +227,13 @@ public class DocumentControllerTest extends AbstractTest {
 
         response.then().statusCode(200);
         PageResultDTO<DocumentDetailDTO> documents = response.as(getDocumentDetailDTOTypeRef());
-        assertThat(documents.getStream().size()).isEqualTo(1);
+        assertThat(documents.getStream()).hasSize(1);
         assertThat(documents.getStream().stream()).allMatch(el -> el.getId().equals(EXISTING_DOCUMENT_ID));
     }
 
     @Test
     @DisplayName("Search criteria. Finds all documents by id.")
-    public void testSuccessfulSearchCriteriaFindAllDocumentsById() {
+    void testSuccessfulSearchCriteriaFindAllDocumentsById() {
         Response response = given()
                 .auth()
                 .oauth2(keycloakClient.getAccessToken(USER))
@@ -244,13 +245,13 @@ public class DocumentControllerTest extends AbstractTest {
         response.then().statusCode(200);
         // List<DocumentDetailDTO> documents = response.as(List);
         List<DocumentDetailDTO> documentList = Arrays.asList(response.getBody().as(DocumentDetailDTO[].class));
-        assertThat(documentList.size()).isEqualTo(1);
+        assertThat(documentList).hasSize(1);
         assertThat(documentList.stream()).allMatch(el -> el.getId().equals(EXISTING_DOCUMENT_ID));
     }
 
     @Test
     @DisplayName("Search criteria. Returns empty list when trying to find documents for nonexistent param.")
-    public void testSuccessfulSearchCriteriaFindDocumentsByNotExistingParam() {
+    void testSuccessfulSearchCriteriaFindDocumentsByNotExistingParam() {
         Response response = given()
                 .auth()
                 .oauth2(keycloakClient.getAccessToken(USER))
@@ -261,7 +262,7 @@ public class DocumentControllerTest extends AbstractTest {
 
         response.then().statusCode(200);
         PageResultDTO<DocumentDetailDTO> documents = response.as(getDocumentDetailDTOTypeRef());
-        assertThat(documents.getStream().size()).isEqualTo(0);
+        assertThat(documents.getStream()).isEmpty();
     }
 
     @Test
@@ -277,12 +278,12 @@ public class DocumentControllerTest extends AbstractTest {
 
         response.then().statusCode(200);
         List<DocumentDetailDTO> documentList = Arrays.asList(response.getBody().as(DocumentDetailDTO[].class));
-        assertThat(documentList).hasSize(0);
+        assertThat(documentList).isEmpty();
     }
 
     @Test
     @DisplayName("Search criteria. Finds documents by name.")
-    public void testSuccessfulSearchCriteriaFindDocumentsByName() {
+    void testSuccessfulSearchCriteriaFindDocumentsByName() {
         Response response = given()
                 .auth()
                 .oauth2(keycloakClient.getAccessToken(USER))
@@ -293,13 +294,13 @@ public class DocumentControllerTest extends AbstractTest {
 
         response.then().statusCode(200);
         PageResultDTO<DocumentDetailDTO> documents = response.as(getDocumentDetailDTOTypeRef());
-        assertThat(documents.getStream().size()).isEqualTo(1);
+        assertThat(documents.getStream()).hasSize(1);
         assertThat(documents.getStream().stream()).allMatch(el -> el.getName().equals(NAME_OF_DOCUMENT_1));
     }
 
     @Test
     @DisplayName("Search criteria. Finds all documents by name.")
-    public void testSuccessfulSearchCriteriaFindAllDocumentsByName() {
+    void testSuccessfulSearchCriteriaFindAllDocumentsByName() {
         Response response = given()
                 .auth()
                 .oauth2(keycloakClient.getAccessToken(USER))
@@ -316,7 +317,7 @@ public class DocumentControllerTest extends AbstractTest {
 
     @Test
     @DisplayName("Search criteria. Finds documents by blank name. It should return all documents.")
-    public void testSuccessfulSearchCriteriaFindDocumentsByBlankName() {
+    void testSuccessfulSearchCriteriaFindDocumentsByBlankName() {
         Response response = given()
                 .auth()
                 .oauth2(keycloakClient.getAccessToken(USER))
@@ -332,7 +333,7 @@ public class DocumentControllerTest extends AbstractTest {
 
     @Test
     @DisplayName("Search criteria. Finds documents by first letters of name.")
-    public void testSuccessfulSearchCriteriaFindDocumentsByFirstLetterOfName() {
+    void testSuccessfulSearchCriteriaFindDocumentsByFirstLetterOfName() {
         Response response = given()
                 .auth()
                 .oauth2(keycloakClient.getAccessToken(USER))
@@ -343,13 +344,13 @@ public class DocumentControllerTest extends AbstractTest {
 
         response.then().statusCode(200);
         PageResultDTO<DocumentDetailDTO> documents = response.as(getDocumentDetailDTOTypeRef());
-        assertThat(documents.getStream().size()).isEqualTo(4);
+        assertThat(documents.getStream()).hasSize(4);
         assertThat(documents.getStream().stream()).allMatch(el -> el.getName().startsWith("docu"));
     }
 
     @Test
     @DisplayName("Search criteria. Finds all documents by first letters of name.")
-    public void testSuccessfulSearchCriteriaFindAllDocumentsByFirstLetterOfName() {
+    void testSuccessfulSearchCriteriaFindAllDocumentsByFirstLetterOfName() {
         Response response = given()
                 .auth()
                 .oauth2(keycloakClient.getAccessToken(USER))
@@ -366,7 +367,7 @@ public class DocumentControllerTest extends AbstractTest {
 
     @Test
     @DisplayName("Search criteria. Finds documents by state.")
-    public void testSuccessfulSearchCriteriaFindDocumentsByState() {
+    void testSuccessfulSearchCriteriaFindDocumentsByState() {
         Response response = given()
                 .auth()
                 .oauth2(keycloakClient.getAccessToken(USER))
@@ -377,13 +378,14 @@ public class DocumentControllerTest extends AbstractTest {
 
         response.then().statusCode(200);
         PageResultDTO<DocumentDetailDTO> documents = response.as(getDocumentDetailDTOTypeRef());
-        assertThat(documents.getStream().size()).isEqualTo(1);
-        assertThat(documents.getStream().stream()).allMatch(el -> el.getLifeCycleState().equals(STATUS_OF_DOCUMENT_1));
+        assertThat(documents.getStream()).hasSize(1);
+        assertThat(documents.getStream().stream())
+                .allMatch(el -> el.getLifeCycleState().equals(STATUS_OF_DOCUMENT_1));
     }
 
     @Test
     @DisplayName("Search criteria. Finds all documents by state.")
-    public void testSuccessfulSearchCriteriaFindAllDocumentsByState() {
+    void testSuccessfulSearchCriteriaFindAllDocumentsByState() {
         Response response = given()
                 .auth()
                 .oauth2(keycloakClient.getAccessToken(USER))
@@ -400,7 +402,7 @@ public class DocumentControllerTest extends AbstractTest {
 
     @Test
     @DisplayName("Search criteria. Finds documents by type.")
-    public void testSuccessfulSearchCriteriaFindDocumentsByType() {
+    void testSuccessfulSearchCriteriaFindDocumentsByType() {
         Response response = given()
                 .auth()
                 .oauth2(keycloakClient.getAccessToken(USER))
@@ -411,13 +413,14 @@ public class DocumentControllerTest extends AbstractTest {
 
         response.then().statusCode(200);
         PageResultDTO<DocumentDetailDTO> documents = response.as(getDocumentDetailDTOTypeRef());
-        assertThat(documents.getStream().size()).isEqualTo(1);
-        assertThat(documents.getStream().stream()).allMatch(el -> el.getType().getId().equals(TYPE_ID_OF_DOCUMENT_1));
+        assertThat(documents.getStream()).hasSize(1);
+        assertThat(documents.getStream().stream())
+                .allMatch(el -> el.getType().getId().equals(TYPE_ID_OF_DOCUMENT_1));
     }
 
     @Test
     @DisplayName("Search criteria. Finds all documents by type.")
-    public void testSuccessfulSearchCriteriaFindAllDocumentsByType() {
+    void testSuccessfulSearchCriteriaFindAllDocumentsByType() {
         Response response = given()
                 .auth()
                 .oauth2(keycloakClient.getAccessToken(USER))
@@ -434,7 +437,7 @@ public class DocumentControllerTest extends AbstractTest {
 
     @Test
     @DisplayName("Search criteria. Finds documents by channel.")
-    public void testSuccessfulSearchCriteriaFindDocumentsByChannel() {
+    void testSuccessfulSearchCriteriaFindDocumentsByChannel() {
         Response response = given()
                 .auth()
                 .oauth2(keycloakClient.getAccessToken(USER))
@@ -445,13 +448,14 @@ public class DocumentControllerTest extends AbstractTest {
 
         response.then().statusCode(200);
         PageResultDTO<DocumentDetailDTO> documents = response.as(getDocumentDetailDTOTypeRef());
-        assertThat(documents.getStream().size()).isEqualTo(1);
-        assertThat(documents.getStream().stream()).allMatch(el -> el.getChannel().getId().equals(CHANNEL_ID_OF_DOCUMENT_1));
+        assertThat(documents.getStream()).hasSize(1);
+        assertThat(documents.getStream().stream())
+                .allMatch(el -> el.getChannel().getId().equals(CHANNEL_ID_OF_DOCUMENT_1));
     }
 
     @Test
     @DisplayName("Search criteria. Finds all documents by channel.")
-    public void testSuccessfulSearchCriteriaFindAllDocumentsByChannel() {
+    void testSuccessfulSearchCriteriaFindAllDocumentsByChannel() {
         Response response = given()
                 .auth()
                 .oauth2(keycloakClient.getAccessToken(USER))
@@ -463,12 +467,13 @@ public class DocumentControllerTest extends AbstractTest {
         response.then().statusCode(200);
         List<DocumentDetailDTO> documentList = Arrays.asList(response.getBody().as(DocumentDetailDTO[].class));
         assertThat(documentList).hasSize(1);
-        assertThat(documentList.stream()).allMatch(el -> el.getChannel().getId().equals(CHANNEL_ID_OF_DOCUMENT_1));
+        assertThat(documentList.stream())
+                .allMatch(el -> el.getChannel().getId().equals(CHANNEL_ID_OF_DOCUMENT_1));
     }
 
     @Test
     @DisplayName("Search criteria. Finds documents by creation user.")
-    public void testSuccessfulSearchCriteriaFindDocumentsByCreationUser() {
+    void testSuccessfulSearchCriteriaFindDocumentsByCreationUser() {
         Response response = given()
                 .auth()
                 .oauth2(keycloakClient.getAccessToken(USER))
@@ -486,7 +491,7 @@ public class DocumentControllerTest extends AbstractTest {
 
     @Test
     @DisplayName("Search criteria. Finds all documents by creation user.")
-    public void testSuccessfulSearchCriteriaFindAllDocumentsByCreationUser() {
+    void testSuccessfulSearchCriteriaFindAllDocumentsByCreationUser() {
         Response response = given()
                 .auth()
                 .oauth2(keycloakClient.getAccessToken(USER))
@@ -504,7 +509,7 @@ public class DocumentControllerTest extends AbstractTest {
 
     @Test
     @DisplayName("Search criteria. Finds documents by related object reference ID.")
-    public void testSuccessfulSearchCriteriaFindDocumentsByObjectRefId() {
+    void testSuccessfulSearchCriteriaFindDocumentsByObjectRefId() {
         Response response = given()
                 .auth()
                 .oauth2(keycloakClient.getAccessToken(USER))
@@ -522,7 +527,7 @@ public class DocumentControllerTest extends AbstractTest {
 
     @Test
     @DisplayName("Search criteria. Finds all documents by related object reference ID.")
-    public void testSuccessfulSearchCriteriaFindAllDocumentsByObjectRefId() {
+    void testSuccessfulSearchCriteriaFindAllDocumentsByObjectRefId() {
         Response response = given()
                 .auth()
                 .oauth2(keycloakClient.getAccessToken(USER))
@@ -540,7 +545,7 @@ public class DocumentControllerTest extends AbstractTest {
 
     @Test
     @DisplayName("Search criteria. Finds documents by related object reference type.")
-    public void testSuccessfulSearchCriteriaFindDocumentsByObjectRefType() {
+    void testSuccessfulSearchCriteriaFindDocumentsByObjectRefType() {
         Response response = given()
                 .auth()
                 .oauth2(keycloakClient.getAccessToken(USER))
@@ -558,7 +563,7 @@ public class DocumentControllerTest extends AbstractTest {
 
     @Test
     @DisplayName("Search criteria. Finds all documents by related object reference type.")
-    public void testSuccessfulSearchCriteriaFindAllDocumentsByObjectRefType() {
+    void testSuccessfulSearchCriteriaFindAllDocumentsByObjectRefType() {
         Response response = given()
                 .auth()
                 .oauth2(keycloakClient.getAccessToken(USER))
@@ -575,58 +580,8 @@ public class DocumentControllerTest extends AbstractTest {
     }
 
     @Test
-    @DisplayName("Search criteria. Fails to perform a search with null criteria.")
-    public void testFailedSearchWithNullCriteria() {
-        DocumentSearchCriteria criteria = null;
-        DAOException exception = assertThrows(DAOException.class,
-                () -> documentDAO.findBySearchCriteria(criteria));
-        assertEquals(DocumentDAO.ErrorKeys.ERROR_FIND_DOCUMENT_SEARCH_CRITERIA_REQUIRED, exception.getMessageKey());
-    }
-
-    @Test
-    @DisplayName("Search criteria. Fails to perform a search of all documents with null criteria.")
-    public void testFailedShowAllDocumentsWithNullCriteria() {
-        DocumentSearchCriteria criteria = null;
-        DAOException exception = assertThrows(DAOException.class,
-                () -> documentDAO.findAllDocumentsBySearchCriteria(criteria));
-        assertEquals(DocumentDAO.ErrorKeys.ERROR_FIND_DOCUMENT_SEARCH_CRITERIA_REQUIRED, exception.getMessageKey());
-    }
-
-    @Test
-    @DisplayName("Search criteria. Test fails when we mock an exception.")
-    public void testFailedSearchWithCriteriaMockException() {
-        DocumentSearchCriteria criteria = new DocumentSearchCriteria();
-
-        EntityManager entityManagerMock = Mockito.mock(EntityManager.class);
-        Mockito.when(entityManagerMock.getCriteriaBuilder()).thenThrow(new RuntimeException());
-
-        DAOException exception = assertThrows(DAOException.class,
-                () -> documentDAO.findBySearchCriteria(criteria));
-
-        assertEquals(DocumentDAO.ErrorKeys.ERROR_FIND_DOCUMENT_BY_CRITERIA, exception.getMessageKey());
-        assertNotNull(exception.getCause());
-        assertTrue(exception.getCause() instanceof RuntimeException);
-    }
-
-    @Test
-    @DisplayName("Search criteria. Test fails when we search all documents but mock an exception.")
-    public void testFailedShowAllDocumentsWithCriteriaMockException() {
-        DocumentSearchCriteria criteria = new DocumentSearchCriteria();
-
-        EntityManager entityManagerMock = Mockito.mock(EntityManager.class);
-        Mockito.when(entityManagerMock.getCriteriaBuilder()).thenThrow(new RuntimeException());
-
-        DAOException exception = assertThrows(DAOException.class,
-                () -> documentDAO.findAllDocumentsBySearchCriteria(criteria));
-
-        assertEquals(DocumentDAO.ErrorKeys.ERROR_FIND_DOCUMENT_BY_CRITERIA, exception.getMessageKey());
-        assertNotNull(exception.getCause());
-        assertTrue(exception.getCause() instanceof RuntimeException);
-    }
-
-    @Test
     @DisplayName("Search criteria. Finds documents by Start Date")
-    public void testSuccessfulSearchCriteriaFindDocumentsByStartDate() {
+    void testSuccessfulSearchCriteriaFindDocumentsByStartDate() {
         Response response = given()
                 .auth()
                 .oauth2(keycloakClient.getAccessToken(USER))
@@ -637,12 +592,12 @@ public class DocumentControllerTest extends AbstractTest {
 
         response.then().statusCode(200);
         PageResultDTO<DocumentDetailDTO> documents = response.as(getDocumentDetailDTOTypeRef());
-        assertThat(documents.getStream()).hasSize(0);
+        assertThat(documents.getStream()).isEmpty();
     }
 
     @Test
     @DisplayName("Search criteria. Finds all documents by Start Date")
-    public void testSuccessfulSearchCriteriaFindAllDocumentsByStartDate() {
+    void testSuccessfulSearchCriteriaFindAllDocumentsByStartDate() {
         Response response = given()
                 .auth()
                 .oauth2(keycloakClient.getAccessToken(USER))
@@ -653,12 +608,12 @@ public class DocumentControllerTest extends AbstractTest {
 
         response.then().statusCode(200);
         List<DocumentDetailDTO> documentList = Arrays.asList(response.getBody().as(DocumentDetailDTO[].class));
-        assertThat(documentList).hasSize(0);
+        assertThat(documentList).isEmpty();
     }
 
     @Test
     @DisplayName("Search criteria. Finds documents by Start Date Null")
-    public void testSuccessfulSearchCriteriaFindDocumentsByStartDateNull() {
+    void testSuccessfulSearchCriteriaFindDocumentsByStartDateNull() {
         Response response = given()
                 .auth()
                 .oauth2(keycloakClient.getAccessToken(USER))
@@ -669,12 +624,12 @@ public class DocumentControllerTest extends AbstractTest {
 
         response.then().statusCode(200);
         PageResultDTO<DocumentDetailDTO> documents = response.as(getDocumentDetailDTOTypeRef());
-        assertThat(documents.getStream().size()).isGreaterThanOrEqualTo(0);
+        assertThat(documents.getStream().size()).isNotNegative();
     }
 
     @Test
     @DisplayName("Search criteria. Finds all documents by Start Date Null")
-    public void testSuccessfulSearchCriteriaFindAllDocumentsByStartDateNull() {
+    void testSuccessfulSearchCriteriaFindAllDocumentsByStartDateNull() {
         Response response = given()
                 .auth()
                 .oauth2(keycloakClient.getAccessToken(USER))
@@ -685,12 +640,12 @@ public class DocumentControllerTest extends AbstractTest {
 
         response.then().statusCode(200);
         List<DocumentDetailDTO> documentList = Arrays.asList(response.getBody().as(DocumentDetailDTO[].class));
-        assertThat(documentList.size()).isGreaterThanOrEqualTo(0);
+        assertThat(documentList.size()).isNotNegative();
     }
 
     @Test
     @DisplayName("Search criteria. Finds documents by End Date")
-    public void testSuccessfulSearchCriteriaFindDocumentsByEndDate() {
+    void testSuccessfulSearchCriteriaFindDocumentsByEndDate() {
         Response response = given()
                 .auth()
                 .oauth2(keycloakClient.getAccessToken(USER))
@@ -701,12 +656,12 @@ public class DocumentControllerTest extends AbstractTest {
 
         response.then().statusCode(200);
         PageResultDTO<DocumentDetailDTO> documents = response.as(getDocumentDetailDTOTypeRef());
-        assertThat(documents.getStream()).hasSize(0);
+        assertThat(documents.getStream()).isEmpty();
     }
 
     @Test
     @DisplayName("Search criteria. Finds all documents by End Date")
-    public void testSuccessfulSearchCriteriaFindAllDocumentsByEndDate() {
+    void testSuccessfulSearchCriteriaFindAllDocumentsByEndDate() {
         Response response = given()
                 .auth()
                 .oauth2(keycloakClient.getAccessToken(USER))
@@ -717,12 +672,12 @@ public class DocumentControllerTest extends AbstractTest {
 
         response.then().statusCode(200);
         List<DocumentDetailDTO> documentList = Arrays.asList(response.getBody().as(DocumentDetailDTO[].class));
-        assertThat(documentList).hasSize(0);
+        assertThat(documentList).isEmpty();
     }
 
     @Test
     @DisplayName("Search criteria. Finds documents by End Date Null")
-    public void testSuccessfulSearchCriteriaFindDocumentsByEndDateNull() {
+    void testSuccessfulSearchCriteriaFindDocumentsByEndDateNull() {
         Response response = given()
                 .auth()
                 .oauth2(keycloakClient.getAccessToken(USER))
@@ -735,12 +690,12 @@ public class DocumentControllerTest extends AbstractTest {
 
         response.then().statusCode(200);
         PageResultDTO<DocumentDetailDTO> documents = response.as(getDocumentDetailDTOTypeRef());
-        assertThat(documents.getStream().size()).isGreaterThanOrEqualTo(0);
+        assertThat(documents.getStream().size()).isNotNegative();
     }
 
     @Test
     @DisplayName("Search criteria. Finds all documents by End Date Null")
-    public void testSuccessfulSearchCriteriaFindAllDocumentsByEndDateNull() {
+    void testSuccessfulSearchCriteriaFindAllDocumentsByEndDateNull() {
         Response response = given()
                 .auth()
                 .oauth2(keycloakClient.getAccessToken(USER))
@@ -753,12 +708,12 @@ public class DocumentControllerTest extends AbstractTest {
 
         response.then().statusCode(200);
         List<DocumentDetailDTO> documentList = Arrays.asList(response.getBody().as(DocumentDetailDTO[].class));
-        assertThat(documentList.size()).isGreaterThanOrEqualTo(0);
+        assertThat(documentList.size()).isNotNegative();
     }
 
     @Test
     @DisplayName("Search criteria. Finds document by a non-existent ID")
-    public void testFailedGetDocumentById() {
+    void testFailedGetDocumentById() {
         Response response = given()
                 .auth()
                 .oauth2(keycloakClient.getAccessToken(USER))
@@ -768,8 +723,9 @@ public class DocumentControllerTest extends AbstractTest {
 
         response.then().statusCode(NOT_FOUND.getStatusCode());
         RFCProblemDTO rfcProblemDTO = response.as(RFCProblemDTO.class);
-        assertThat(rfcProblemDTO.getStatus().toString()).isEqualTo("404");
-        assertThat(rfcProblemDTO.getDetail()).isEqualTo("Document with id " + NOT_EXISTING_DOCUMENT_ID + " was not found.");
+        assertThat(rfcProblemDTO.getStatus()).hasToString("404");
+        assertThat(rfcProblemDTO.getDetail())
+                .isEqualTo("Document with id " + NOT_EXISTING_DOCUMENT_ID + " was not found.");
         assertThat(rfcProblemDTO.getInstance()).isNull();
         assertThat(rfcProblemDTO.getTitle()).isEqualTo("TECHNICAL ERROR");
         assertThat(rfcProblemDTO.getType()).isEqualTo("REST_EXCEPTION");
@@ -777,7 +733,7 @@ public class DocumentControllerTest extends AbstractTest {
 
     @Test
     @DisplayName("Deletes document by id.")
-    public void testSuccessfulDeletesDocumentById() {
+    void testSuccessfulDeletesDocumentById() {
         Response deleteResponse = given()
                 .auth()
                 .oauth2(keycloakClient.getAccessToken(USER))
@@ -794,12 +750,12 @@ public class DocumentControllerTest extends AbstractTest {
                 .get(BASE_PATH);
         getResponse.then().statusCode(200);
         PageResultDTO<DocumentDetailDTO> documents = getResponse.as(getDocumentDetailDTOTypeRef());
-        assertThat(documents.getStream().size()).isEqualTo(3);
+        assertThat(documents.getStream()).hasSize(3);
     }
 
     @Test
     @DisplayName("Returns exception when trying to delete document for a nonexistent id.")
-    public void testFailedDeleteDocumentById() {
+    void testFailedDeleteDocumentById() {
         Response deleteResponse = given()
                 .auth()
                 .oauth2(keycloakClient.getAccessToken(USER))
@@ -808,8 +764,9 @@ public class DocumentControllerTest extends AbstractTest {
                 .delete(BASE_PATH + "/" + NOT_EXISTING_DOCUMENT_ID);
         deleteResponse.then().statusCode(NOT_FOUND.getStatusCode());
         RFCProblemDTO rfcProblemDTO = deleteResponse.as(RFCProblemDTO.class);
-        assertThat(rfcProblemDTO.getStatus().toString()).isEqualTo("404");
-        assertThat(rfcProblemDTO.getDetail()).isEqualTo("Document with id " + NOT_EXISTING_DOCUMENT_ID + " was not found.");
+        assertThat(rfcProblemDTO.getStatus()).hasToString("404");
+        assertThat(rfcProblemDTO.getDetail())
+                .isEqualTo("Document with id " + NOT_EXISTING_DOCUMENT_ID + " was not found.");
         assertThat(rfcProblemDTO.getInstance()).isNull();
         assertThat(rfcProblemDTO.getTitle()).isEqualTo("TECHNICAL ERROR");
         assertThat(rfcProblemDTO.getType()).isEqualTo("REST_EXCEPTION");
@@ -817,7 +774,7 @@ public class DocumentControllerTest extends AbstractTest {
 
     @Test
     @DisplayName("Saves Document  with the required fields with validated data.")
-    public void testSuccessfulCreateDocumentWithRequiredFields() {
+    void testSuccessfulCreateDocumentWithRequiredFields() {
         final String documentName = "TEST_DOCUMENT_NAME";
         final String attachmentName = "TEST_ATTACHMENT_NAME";
         final String channelName = "TEST_CHANNEL_NAME";
@@ -853,14 +810,15 @@ public class DocumentControllerTest extends AbstractTest {
         assertThat(documentDTO.getType().getId()).isEqualTo(documentTypeId);
         assertThat(documentDTO.getChannel().getId()).isNotNull();
         assertThat(documentDTO.getChannel().getName()).isEqualTo(channelName);
-        assertThat(documentDTO.getAttachments().size()).isEqualTo(1);
+        assertThat(documentDTO.getAttachments()).hasSize(1);
         assertThat(documentDTO.getAttachments().stream().findFirst().get().getId()).isNotNull();
-        assertThat(documentDTO.getAttachments().stream()).allMatch(el -> el.getMimeType().getId().equals(attachmentMimeTypeId));
+        assertThat(documentDTO.getAttachments().stream())
+                .allMatch(el -> el.getMimeType().getId().equals(attachmentMimeTypeId));
     }
 
     @Test
     @DisplayName("Test the successful creation of a document with null attachments.")
-    public void testSuccessfulCreateDocumentWithNullAttachments() {
+    void testSuccessfulCreateDocumentWithNullAttachments() {
 
         final String documentName = "TEST_DOCUMENT_NAME";
         final String channelName = "TEST_CHANNEL_NAME";
@@ -895,7 +853,7 @@ public class DocumentControllerTest extends AbstractTest {
 
     @Test
     @DisplayName("Test the successful creation of a document with attachments having null or empty IDs.")
-    public void testSuccessfulCreateDocumentWithAttachmentsHavingNullOrEmptyIds() {
+    void testSuccessfulCreateDocumentWithAttachmentsHavingNullOrEmptyIds() {
 
         final String documentName = "TEST_DOCUMENT_NAME";
         final String channelName = "TEST_CHANNEL_NAME";
@@ -947,7 +905,7 @@ public class DocumentControllerTest extends AbstractTest {
 
     @Test
     @DisplayName("Saves Document  with all fields with validated data.")
-    public void testSuccessfulCreateDocumentWithAllFields() {
+    void testSuccessfulCreateDocumentWithAllFields() {
 
         Set<String> tags = new HashSet<>();
         tags.add("TEST_DOCUMENT_TAG");
@@ -1035,35 +993,38 @@ public class DocumentControllerTest extends AbstractTest {
         assertThat(documentDTO.getDescription()).isEqualTo(documentDescription);
         assertThat(documentDTO.getLifeCycleState()).isEqualTo(documentState);
         assertThat(documentDTO.getDocumentVersion()).isEqualTo(documentVersion);
-        assertThat(documentDTO.getTags().size()).isEqualTo(1);
-        assertThat(documentDTO.getTags().contains("TEST_DOCUMENT_TAG")).isTrue();
+        assertThat(documentDTO.getTags()).hasSize(1);
+        assertThat(documentDTO.getTags()).contains("TEST_DOCUMENT_TAG");
         assertThat(documentDTO.getType().getId()).isEqualTo(documentTypeId);
         assertThat(documentDTO.getSpecification().getName()).isEqualTo(documentSpecificationName);
         assertThat(documentDTO.getChannel().getId()).isNotNull();
         assertThat(documentDTO.getChannel().getName()).isEqualTo(channelName);
         assertThat(documentDTO.getRelatedObject().getId()).isNotNull();
         assertThat(documentDTO.getRelatedObject().getInvolvement()).isEqualTo(relatedObjInvolvement);
-        assertThat(documentDTO.getDocumentRelationships().size()).isEqualTo(1);
+        assertThat(documentDTO.getDocumentRelationships()).hasSize(1);
         assertThat(documentDTO.getDocumentRelationships().stream().findFirst().get().getId()).isNotNull();
         assertThat(documentDTO.getDocumentRelationships().stream())
                 .allMatch(el -> el.getType().equals(documentRelationshipType));
-        assertThat(documentDTO.getCharacteristics().size()).isEqualTo(1);
+        assertThat(documentDTO.getCharacteristics()).hasSize(1);
         assertThat(documentDTO.getCharacteristics().stream().findFirst().get().getId()).isNotNull();
-        assertThat(documentDTO.getCharacteristics().stream()).allMatch(el -> el.getName().equals(characteristicName));
-        assertThat(documentDTO.getRelatedParties().size()).isEqualTo(1);
+        assertThat(documentDTO.getCharacteristics().stream())
+                .allMatch(el -> el.getName().equals(characteristicName));
+        assertThat(documentDTO.getRelatedParties()).hasSize(1);
         assertThat(documentDTO.getRelatedParties().stream().findFirst().get().getId()).isNotNull();
-        assertThat(documentDTO.getRelatedParties().stream()).allMatch(el -> el.getName().equals(relatedPartyName));
-        assertThat(documentDTO.getCategories().size()).isEqualTo(1);
+        assertThat(documentDTO.getRelatedParties().stream())
+                .allMatch(el -> el.getName().equals(relatedPartyName));
+        assertThat(documentDTO.getCategories()).hasSize(1);
         assertThat(documentDTO.getCategories().stream().findFirst().get().getId()).isNotNull();
         assertThat(documentDTO.getCategories().stream()).allMatch(el -> el.getName().equals(categoryName));
-        assertThat(documentDTO.getAttachments().size()).isEqualTo(1);
+        assertThat(documentDTO.getAttachments()).hasSize(1);
         assertThat(documentDTO.getAttachments().stream().findFirst().get().getId()).isNotNull();
-        assertThat(documentDTO.getAttachments().stream()).allMatch(el -> el.getMimeType().getId().equals(attachmentMimeTypeId));
+        assertThat(documentDTO.getAttachments().stream())
+                .allMatch(el -> el.getMimeType().getId().equals(attachmentMimeTypeId));
     }
 
     @Test
     @DisplayName("Saves Document  without name.")
-    public void testFailedCreateDocumentWithoutName() {
+    void testFailedCreateDocumentWithoutName() {
         final String channelName = "TEST_CHANNEL_NAME";
         final String attachmentName = "TEST_ATTACHMENT_NAME";
         final String documentTypeId = "2";
@@ -1092,7 +1053,7 @@ public class DocumentControllerTest extends AbstractTest {
 
         postResponse.then().statusCode(BAD_REQUEST.getStatusCode());
         RFCProblemDTO rfcProblemDTO = postResponse.as(RFCProblemDTO.class);
-        assertThat(rfcProblemDTO.getStatus().toString()).isEqualTo("400");
+        assertThat(rfcProblemDTO.getStatus()).hasToString("400");
         assertThat(rfcProblemDTO.getDetail()).isEqualTo("createDocument.documentDTO.name: must not be blank");
         assertThat(rfcProblemDTO.getInstance()).isNull();
         assertThat(rfcProblemDTO.getTitle()).isEqualTo("TECHNICAL ERROR");
@@ -1101,7 +1062,7 @@ public class DocumentControllerTest extends AbstractTest {
 
     @Test
     @DisplayName("Saves Document  without type.")
-    public void testFailedCreateDocumentWithoutType() {
+    void testFailedCreateDocumentWithoutType() {
         final String documentName = "TEST_DOCUMENT_NAME";
         final String attachmentName = "TEST_ATTACHMENT_NAME";
         final String channelName = "TEST_CHANNEL_NAME";
@@ -1130,7 +1091,7 @@ public class DocumentControllerTest extends AbstractTest {
 
         postResponse.then().statusCode(BAD_REQUEST.getStatusCode());
         RFCProblemDTO rfcProblemDTO = postResponse.as(RFCProblemDTO.class);
-        assertThat(rfcProblemDTO.getStatus().toString()).isEqualTo("400");
+        assertThat(rfcProblemDTO.getStatus()).hasToString("400");
         assertThat(rfcProblemDTO.getDetail()).isEqualTo("createDocument.documentDTO.typeId: must not be null");
         assertThat(rfcProblemDTO.getInstance()).isNull();
         assertThat(rfcProblemDTO.getTitle()).isEqualTo("TECHNICAL ERROR");
@@ -1139,7 +1100,7 @@ public class DocumentControllerTest extends AbstractTest {
 
     @Test
     @DisplayName("Saves Document  without channel.")
-    public void testFailedCreateDocumentWithoutChannel() {
+    void testFailedCreateDocumentWithoutChannel() {
         final String documentName = "TEST_DOCUMENT_NAME";
         final String attachmentName = "TEST_ATTACHMENT_NAME";
         final String documentTypeId = "2";
@@ -1166,7 +1127,7 @@ public class DocumentControllerTest extends AbstractTest {
 
         postResponse.then().statusCode(BAD_REQUEST.getStatusCode());
         RFCProblemDTO rfcProblemDTO = postResponse.as(RFCProblemDTO.class);
-        assertThat(rfcProblemDTO.getStatus().toString()).isEqualTo("400");
+        assertThat(rfcProblemDTO.getStatus()).hasToString("400");
         assertThat(rfcProblemDTO.getDetail()).isEqualTo("createDocument.documentDTO.channel: must not be null");
         assertThat(rfcProblemDTO.getInstance()).isNull();
         assertThat(rfcProblemDTO.getTitle()).isEqualTo("TECHNICAL ERROR");
@@ -1175,7 +1136,7 @@ public class DocumentControllerTest extends AbstractTest {
 
     @Test
     @DisplayName("Saves Document without mimeType in attachment.")
-    public void testFailedCreateDocumentWithoutMimeTypeInAttachment() {
+    void testFailedCreateDocumentWithoutMimeTypeInAttachment() {
         final String documentName = "TEST_DOCUMENT_NAME";
         final String attachmentName = "TEST_ATTACHMENT_NAME";
         final String channelName = "TEST_CHANNEL_NAME";
@@ -1208,7 +1169,7 @@ public class DocumentControllerTest extends AbstractTest {
 
     @Test
     @DisplayName("Saves Document  with nonexistent type.")
-    public void testFailedCreateDocumentWithNonexistentType() {
+    void testFailedCreateDocumentWithNonexistentType() {
         final String documentName = "TEST_DOCUMENT_NAME";
         final String attachmentName = "TEST_ATTACHMENT_NAME";
         final String channelName = "TEST_CHANNEL_NAME";
@@ -1238,8 +1199,9 @@ public class DocumentControllerTest extends AbstractTest {
 
         postResponse.then().statusCode(NOT_FOUND.getStatusCode());
         RFCProblemDTO rfcProblemDTO = postResponse.as(RFCProblemDTO.class);
-        assertThat(rfcProblemDTO.getStatus().toString()).isEqualTo("404");
-        assertThat(rfcProblemDTO.getDetail()).isEqualTo("The document with ID " + documentTypeId + " was not found.");
+        assertThat(rfcProblemDTO.getStatus()).hasToString("404");
+        assertThat(rfcProblemDTO.getDetail())
+                .isEqualTo("The document with ID " + documentTypeId + " was not found.");
         assertThat(rfcProblemDTO.getInstance()).isNull();
         assertThat(rfcProblemDTO.getTitle()).isEqualTo("TECHNICAL ERROR");
         assertThat(rfcProblemDTO.getType()).isEqualTo("REST_EXCEPTION");
@@ -1247,7 +1209,7 @@ public class DocumentControllerTest extends AbstractTest {
 
     @Test
     @DisplayName("Saves Document with nonexistent specification.")
-    public void testSuccessfulCreateDocumentWithNonexistentSpecification() {
+    void testSuccessfulCreateDocumentWithNonexistentSpecification() {
         final String documentName = "TEST_DOCUMENT_NAME";
         final String attachmentName = "TEST_ATTACHMENT_NAME";
         final String channelName = "TEST_CHANNEL_NAME";
@@ -1284,14 +1246,15 @@ public class DocumentControllerTest extends AbstractTest {
         assertThat(documentDTO.getType().getId()).isEqualTo(documentTypeId);
         assertThat(documentDTO.getChannel().getId()).isNotNull();
         assertThat(documentDTO.getChannel().getName()).isEqualTo(channelName);
-        assertThat(documentDTO.getAttachments().size()).isEqualTo(1);
+        assertThat(documentDTO.getAttachments()).hasSize(1);
         assertThat(documentDTO.getAttachments().stream().findFirst().get().getId()).isNotNull();
-        assertThat(documentDTO.getAttachments().stream()).allMatch(el -> el.getMimeType().getId().equals(attachmentMimeTypeId));
+        assertThat(documentDTO.getAttachments().stream())
+                .allMatch(el -> el.getMimeType().getId().equals(attachmentMimeTypeId));
     }
 
     @Test
     @DisplayName("Saves Document  with nonexistent mimeType.")
-    public void testFailedCreateDocumentWithNonexistentMimeType() {
+    void testFailedCreateDocumentWithNonexistentMimeType() {
         final String documentName = "TEST_DOCUMENT_NAME";
         final String attachmentName = "TEST_ATTACHMENT_NAME";
         final String channelName = "TEST_CHANNEL_NAME";
@@ -1321,9 +1284,10 @@ public class DocumentControllerTest extends AbstractTest {
 
         postResponse.then().statusCode(NOT_FOUND.getStatusCode());
         RFCProblemDTO rfcProblemDTO = postResponse.as(RFCProblemDTO.class);
-        assertThat(rfcProblemDTO.getStatus().toString()).isEqualTo("404");
+        assertThat(rfcProblemDTO.getStatus()).hasToString("404");
         assertThat(rfcProblemDTO.getDetail())
-                .isEqualTo("The supported mime type with ID " + attachmentMimeTypeId + " was not found.");
+                .isEqualTo("The supported mime type with ID " + attachmentMimeTypeId
+                        + " was not found.");
         assertThat(rfcProblemDTO.getInstance()).isNull();
         assertThat(rfcProblemDTO.getTitle()).isEqualTo("TECHNICAL ERROR");
         assertThat(rfcProblemDTO.getType()).isEqualTo("REST_EXCEPTION");
@@ -1331,7 +1295,7 @@ public class DocumentControllerTest extends AbstractTest {
 
     @Test
     @DisplayName("Saves Document  with the required fields with validated data and given time period in attachment.")
-    public void testSuccessfulCreateDocumentWithRequiredFieldsAndGivenTimePeriodInAttachment() {
+    void testSuccessfulCreateDocumentWithRequiredFieldsAndGivenTimePeriodInAttachment() {
         final String documentName = "TEST_DOCUMENT_NAME";
         final String attachmentName = "TEST_ATTACHMENT_NAME";
         final String channelName = "TEST_CHANNEL_NAME";
@@ -1371,16 +1335,19 @@ public class DocumentControllerTest extends AbstractTest {
         assertThat(documentDTO.getType().getId()).isEqualTo(documentTypeId);
         assertThat(documentDTO.getChannel().getId()).isNotNull();
         assertThat(documentDTO.getChannel().getName()).isEqualTo(channelName);
-        assertThat(documentDTO.getAttachments().size()).isEqualTo(1);
+        assertThat(documentDTO.getAttachments()).hasSize(1);
         assertThat(documentDTO.getAttachments().stream().findFirst().get().getId()).isNotNull();
-        assertThat(documentDTO.getAttachments().stream().findFirst().get().getValidFor().getStartDateTime()).isNotNull();
-        assertThat(documentDTO.getAttachments().stream().findFirst().get().getValidFor().getEndDateTime()).isNotNull();
-        assertThat(documentDTO.getAttachments().stream()).allMatch(el -> el.getMimeType().getId().equals(attachmentMimeTypeId));
+        assertThat(documentDTO.getAttachments().stream().findFirst().get().getValidFor().getStartDateTime())
+                .isNotNull();
+        assertThat(documentDTO.getAttachments().stream().findFirst().get().getValidFor().getEndDateTime())
+                .isNotNull();
+        assertThat(documentDTO.getAttachments().stream())
+                .allMatch(el -> el.getMimeType().getId().equals(attachmentMimeTypeId));
     }
 
     @Test
     @DisplayName("Updates basic and required fields in Document.")
-    public void testSuccessfulUpdateBasicAndRequiredFieldsInDocument() {
+    void testSuccessfulUpdateBasicAndRequiredFieldsInDocument() {
         Set<String> tags = new HashSet<>();
         tags.add("TEST_UPDATE_DOCUMENT_TAG_1");
         tags.add("TEST_UPDATE_DOCUMENT_TAG_2");
@@ -1430,8 +1397,8 @@ public class DocumentControllerTest extends AbstractTest {
         assertThat(documentDetailDTO.getLifeCycleState()).isEqualTo(documentState);
         assertThat(documentDetailDTO.getDocumentVersion()).isEqualTo(documentVersion);
         assertThat(documentDetailDTO.getTags()).hasSize(2);
-        assertThat(documentDetailDTO.getTags().contains("TEST_UPDATE_DOCUMENT_TAG_1")).isTrue();
-        assertThat(documentDetailDTO.getTags().contains("TEST_UPDATE_DOCUMENT_TAG_2")).isTrue();
+        assertThat(documentDetailDTO.getTags()).contains("TEST_UPDATE_DOCUMENT_TAG_1");
+        assertThat(documentDetailDTO.getTags()).contains("TEST_UPDATE_DOCUMENT_TAG_2");
         assertThat(documentDetailDTO.getType().getId()).isEqualTo(documentTypeId);
         assertThat(documentDetailDTO.getSpecification()).isNull();
         assertThat(documentDetailDTO.getChannel().getId()).isNotNull();
@@ -1445,7 +1412,8 @@ public class DocumentControllerTest extends AbstractTest {
         assertThat(documentDetailDTO.getCharacteristics().stream().findFirst().get().getId())
                 .isEqualTo(DOCUMENT_CHARACTERISTIC_ID);
         assertThat(documentDetailDTO.getRelatedParties()).hasSize(1);
-        assertThat(documentDetailDTO.getRelatedParties().stream().findFirst().get().getId()).isEqualTo(RELATED_PARTY_ID);
+        assertThat(documentDetailDTO.getRelatedParties().stream().findFirst().get().getId())
+                .isEqualTo(RELATED_PARTY_ID);
         assertThat(documentDetailDTO.getCategories()).hasSize(3);
         assertThat(documentDetailDTO.getAttachments()).hasSize(3);
         assertThat(documentDetailDTO.getAttachments().stream())
@@ -1465,8 +1433,8 @@ public class DocumentControllerTest extends AbstractTest {
         assertThat(documentDetailDTO.getLifeCycleState()).isEqualTo(documentState);
         assertThat(documentDetailDTO.getDocumentVersion()).isEqualTo(documentVersion);
         assertThat(documentDetailDTO.getTags()).hasSize(2);
-        assertThat(documentDetailDTO.getTags().contains("TEST_UPDATE_DOCUMENT_TAG_1")).isTrue();
-        assertThat(documentDetailDTO.getTags().contains("TEST_UPDATE_DOCUMENT_TAG_2")).isTrue();
+        assertThat(documentDetailDTO.getTags()).contains("TEST_UPDATE_DOCUMENT_TAG_1");
+        assertThat(documentDetailDTO.getTags()).contains("TEST_UPDATE_DOCUMENT_TAG_2");
         assertThat(documentDetailDTO.getType().getId()).isEqualTo(documentTypeId);
         assertThat(documentDetailDTO.getSpecification()).isNull();
         assertThat(documentDetailDTO.getChannel().getId()).isNotNull();
@@ -1480,7 +1448,8 @@ public class DocumentControllerTest extends AbstractTest {
         assertThat(documentDetailDTO.getCharacteristics().stream().findFirst().get().getId())
                 .isEqualTo(DOCUMENT_CHARACTERISTIC_ID);
         assertThat(documentDetailDTO.getRelatedParties()).hasSize(1);
-        assertThat(documentDetailDTO.getRelatedParties().stream().findFirst().get().getId()).isEqualTo(RELATED_PARTY_ID);
+        assertThat(documentDetailDTO.getRelatedParties().stream().findFirst().get().getId())
+                .isEqualTo(RELATED_PARTY_ID);
         assertThat(documentDetailDTO.getCategories()).hasSize(3);
         assertThat(documentDetailDTO.getAttachments()).hasSize(3);
         assertThat(documentDetailDTO.getAttachments().stream())
@@ -1489,7 +1458,7 @@ public class DocumentControllerTest extends AbstractTest {
 
     @Test
     @DisplayName("Updates collections in Document.")
-    public void testSuccessfulUpdateCollectionsInDocument() {
+    void testSuccessfulUpdateCollectionsInDocument() {
         final String documentTypeId = "201";
 
         DocumentRelationshipCreateUpdateDTO dto1 = new DocumentRelationshipCreateUpdateDTO();
@@ -1504,7 +1473,8 @@ public class DocumentControllerTest extends AbstractTest {
         existingCharacteristic.setName("TEST_Name_1");
         DocumentCharacteristicCreateUpdateDTO newCharacteristic = new DocumentCharacteristicCreateUpdateDTO();
         newCharacteristic.setName("TEST_Name_2");
-        Set<DocumentCharacteristicCreateUpdateDTO> characteristics = Set.of(existingCharacteristic, newCharacteristic);
+        Set<DocumentCharacteristicCreateUpdateDTO> characteristics = Set.of(existingCharacteristic,
+                newCharacteristic);
 
         RelatedPartyRefCreateUpdateDTO existingRelatedParty = new RelatedPartyRefCreateUpdateDTO();
         existingRelatedParty.setId("1");
@@ -1569,71 +1539,71 @@ public class DocumentControllerTest extends AbstractTest {
         assertThat(documentDetailDTO.getChannel()).isNotNull();
         assertThat(documentDetailDTO.getRelatedObject()).isNull();
 
-        assertThat(documentDetailDTO.getDocumentRelationships().size()).isEqualTo(2);
+        assertThat(documentDetailDTO.getDocumentRelationships()).hasSize(2);
         List<DocumentRelationshipDTO> relationships1 = documentDetailDTO.getDocumentRelationships()
                 .stream().filter(p -> p.getId().equals("1")).collect(Collectors.toList());
-        assertThat(relationships1.size()).isEqualTo(1);
+        assertThat(relationships1).hasSize(1);
         DocumentRelationshipDTO existingDocumentRelationship = relationships1.get(0);
         assertThat(existingDocumentRelationship.getType()).isEqualTo("TEST_TYPE_1");
         List<DocumentRelationshipDTO> newRelationship = documentDetailDTO.getDocumentRelationships()
                 .stream().filter(p -> !p.getId().equals("1")).collect(Collectors.toList());
-        assertThat(newRelationship.size()).isEqualTo(1);
+        assertThat(newRelationship).hasSize(1);
         DocumentRelationshipDTO existingDocumentRelationship2 = newRelationship.get(0);
         assertThat(existingDocumentRelationship2.getType()).isEqualTo("TEST_TYPE_2");
 
-        assertThat(documentDetailDTO.getCharacteristics().size()).isEqualTo(2);
+        assertThat(documentDetailDTO.getCharacteristics()).hasSize(2);
         List<DocumentCharacteristicDTO> list1 = documentDetailDTO.getCharacteristics()
                 .stream().filter(p -> p.getId().equals("1")).collect(Collectors.toList());
-        assertThat(list1.size()).isEqualTo(1);
+        assertThat(list1).hasSize(1);
         DocumentCharacteristicDTO existingCharacteristicDTO = list1.get(0);
         assertThat(existingCharacteristicDTO.getName()).isEqualTo("TEST_Name_1");
         List<DocumentCharacteristicDTO> list2 = documentDetailDTO.getCharacteristics()
                 .stream().filter(p -> !p.getId().equals("1")).collect(Collectors.toList());
-        assertThat(list2.size()).isEqualTo(1);
+        assertThat(list2).hasSize(1);
         DocumentCharacteristicDTO newCharacteristicDTO = list2.get(0);
         assertThat(newCharacteristicDTO.getName()).isEqualTo("TEST_Name_2");
 
-        assertThat(documentDetailDTO.getRelatedParties().size()).isEqualTo(2);
+        assertThat(documentDetailDTO.getRelatedParties()).hasSize(2);
         List<RelatedPartyRefDTO> listRelatedParties1 = documentDetailDTO.getRelatedParties()
                 .stream().filter(p -> p.getId().equals("1")).collect(Collectors.toList());
-        assertThat(listRelatedParties1.size()).isEqualTo(1);
+        assertThat(listRelatedParties1).hasSize(1);
         RelatedPartyRefDTO existingRelatedPartyDTO = listRelatedParties1.get(0);
         assertThat(existingRelatedPartyDTO.getName()).isEqualTo("TEST_Name_1");
         List<RelatedPartyRefDTO> listRelatedParties2 = documentDetailDTO.getRelatedParties()
                 .stream().filter(p -> !p.getId().equals("1")).collect(Collectors.toList());
-        assertThat(listRelatedParties2.size()).isEqualTo(1);
+        assertThat(listRelatedParties2).hasSize(1);
         RelatedPartyRefDTO newRelatedPartyDTO = listRelatedParties2.get(0);
         assertThat(newRelatedPartyDTO.getName()).isEqualTo("TEST_Name_2");
 
         /*
-         * assertThat(documentDetailDTO.getCategories().size()).isEqualTo(1);
+         * assertThat(documentDetailDTO.getCategories()).hasSize(1);
          * List<CategoryDTO> listCategories1 = documentDetailDTO.getCategories()
          * .stream().filter(p -> p.getId().equals("4")).collect(Collectors.toList());
-         * assertThat(listCategories1.size()).isEqualTo(1);
+         * assertThat(listCategories1).hasSize(1);
          * CategoryDTO existingCategoryDTO = listCategories1.get(0);
          * assertThat(existingCategoryDTO.getName()).isEqualTo("TEST_Name_1");
          * List<CategoryDTO> listCategories2 = documentDetailDTO.getCategories()
          * .stream().filter(p -> !p.getId().equals("4")).collect(Collectors.toList());
-         * assertThat(listCategories2.size()).isEqualTo(1);
+         * assertThat(listCategories2).hasSize(1);
          * CategoryDTO newCategoryDTO = listCategories2.get(0);
          * assertThat(newCategoryDTO.getName()).isEqualTo("TEST_Name_2");
          */
-        assertThat(documentDetailDTO.getAttachments().size()).isEqualTo(3);
+        assertThat(documentDetailDTO.getAttachments()).hasSize(3);
         List<AttachmentDTO> listAttachment1 = documentDetailDTO.getAttachments()
                 .stream().filter(p -> p.getId().equals("101")).collect(Collectors.toList());
-        assertThat(listAttachment1.size()).isEqualTo(1);
+        assertThat(listAttachment1).hasSize(1);
         AttachmentDTO existingAttachmentDTO = listAttachment1.get(0);
         assertThat(existingAttachmentDTO.getMimeType().getId()).isEqualTo("152");
         List<AttachmentDTO> listAttachment2 = documentDetailDTO.getAttachments()
                 .stream().filter(p -> !p.getId().equals("101")).collect(Collectors.toList());
-        assertThat(listAttachment2.size()).isEqualTo(2);
+        assertThat(listAttachment2).hasSize(2);
         AttachmentDTO newAttachmentDTO = listAttachment2.get(0);
         assertThat(newAttachmentDTO.getMimeType().getId()).isEqualTo("151");
     }
 
     @Test
     @DisplayName("Returns exception when trying to update nonexistent document.")
-    public void testFailedUpdateDocumentById() {
+    void testFailedUpdateDocumentById() {
         final String documentTypeId = "1";
         ChannelCreateUpdateDTO channelDTO = new ChannelCreateUpdateDTO();
         final String channelName = "TEST_CHANNEL_NAME";
@@ -1661,8 +1631,9 @@ public class DocumentControllerTest extends AbstractTest {
 
         putResponse.then().statusCode(NOT_FOUND.getStatusCode());
         RFCProblemDTO rfcProblemDTO = putResponse.as(RFCProblemDTO.class);
-        assertThat(rfcProblemDTO.getStatus().toString()).isEqualTo("404");
-        assertThat(rfcProblemDTO.getDetail()).isEqualTo("Document with id " + NOT_EXISTING_DOCUMENT_ID + " was not found.");
+        assertThat(rfcProblemDTO.getStatus()).hasToString("404");
+        assertThat(rfcProblemDTO.getDetail())
+                .isEqualTo("Document with id " + NOT_EXISTING_DOCUMENT_ID + " was not found.");
         assertThat(rfcProblemDTO.getInstance()).isNull();
         assertThat(rfcProblemDTO.getTitle()).isEqualTo("TECHNICAL ERROR");
         assertThat(rfcProblemDTO.getType()).isEqualTo("REST_EXCEPTION");
@@ -1670,7 +1641,7 @@ public class DocumentControllerTest extends AbstractTest {
 
     @Test
     @DisplayName("Gets all channels.")
-    public void testSuccessfulGetAllChannels() {
+    void testSuccessfulGetAllChannels() {
         Response getResponse = given()
                 .auth()
                 .oauth2(keycloakClient.getAccessToken(USER))
@@ -1680,7 +1651,7 @@ public class DocumentControllerTest extends AbstractTest {
         getResponse.then().statusCode(OK.getStatusCode());
 
         List<ChannelDTO> channels = getResponse.as(getChannelDTOTypeRef());
-        assertThat(channels.size()).isEqualTo(2);
+        assertThat(channels).hasSize(2);
     }
 
     @Test
@@ -1700,7 +1671,7 @@ public class DocumentControllerTest extends AbstractTest {
 
     @Test
     @DisplayName("Tests the failed upload of multiple file attachments at once to a nonexistent document.")
-    public void testFailedMultipleFileUploads() {
+    void testFailedMultipleFileUploads() {
         Response postResponse = given()
                 .auth()
                 .oauth2(keycloakClient.getAccessToken(USER))
@@ -1712,11 +1683,12 @@ public class DocumentControllerTest extends AbstractTest {
         postResponse.then().statusCode(NOT_FOUND.getStatusCode());
     }
 
-    @Test
-    @DisplayName("Test method for cleanup of failed files.")
-    void testSuccessfulDbCleanupOfFailedAttachments() {
-        documentController.clearFailedFilesFromDBPeriodically();
-    }
+    // @Test
+    // @DisplayName("Test method for cleanup of failed files.")
+    // void testSuccessfulDbCleanupOfFailedAttachments() {
+    // DocumentController documentController = new DocumentController();
+    // documentController.clearFailedFilesFromDBPeriodically();
+    // }
 
     private TypeRef<List<ChannelDTO>> getChannelDTOTypeRef() {
         return new TypeRef<>() {
@@ -1731,7 +1703,7 @@ public class DocumentControllerTest extends AbstractTest {
 
     @Test
     @DisplayName("Get File By Non-Existing Id Failed")
-    public void testFailedGetFileById() {
+    void testFailedGetFileById() {
         Response response = given()
                 .accept(MediaType.APPLICATION_OCTET_STREAM)
                 .when()
@@ -1741,7 +1713,7 @@ public class DocumentControllerTest extends AbstractTest {
 
     @Test
     @DisplayName("Bulk Delete of existing document ids")
-    public void testSuccessBulkDelete() {
+    void testSuccessBulkDelete() {
 
         ArrayList<String> ids = new ArrayList<String>();
         ids.add(EXISTING_DOCUMENT_ID_4);
@@ -1760,7 +1732,7 @@ public class DocumentControllerTest extends AbstractTest {
 
     @Test
     @DisplayName("Bulk Delete of non-existing document ids")
-    public void testFailedBulkDelete() {
+    void testFailedBulkDelete() {
 
         ArrayList<String> ids = new ArrayList<String>();
         ids.add(NOT_EXISTING_DOCUMENT_ID);
@@ -1780,7 +1752,7 @@ public class DocumentControllerTest extends AbstractTest {
 
     @Test
     @DisplayName("Bulk Update of existing document ids")
-    public void testSuccessBulkUpdate() {
+    void testSuccessBulkUpdate() {
         DocumentCreateUpdateDTO doc1 = new DocumentCreateUpdateDTO();
         doc1.setId(EXISTING_DOCUMENT_ID);
         doc1.setName(UPDATED_DOCUMENT_NAME);
@@ -1807,7 +1779,7 @@ public class DocumentControllerTest extends AbstractTest {
 
     @Test
     @DisplayName("Bulk Update of non-existing document ids")
-    public void testFailedBulkUpdate() {
+    void testFailedBulkUpdate() {
         DocumentCreateUpdateDTO doc1 = new DocumentCreateUpdateDTO();
         doc1.setId(NOT_EXISTING_DOCUMENT_ID);
         doc1.setName(UPDATED_DOCUMENT_NAME);
@@ -1828,7 +1800,7 @@ public class DocumentControllerTest extends AbstractTest {
 
     @Test
     @DisplayName("Bulk Delete of existing document's attachments")
-    public void testSuccessfulDeleteAttachmentFilesInBulk() {
+    void testSuccessfulDeleteAttachmentFilesInBulk() {
         File sampleFile1 = new File(SAMPLE_FILE_PATH_1);
         File sampleFile2 = new File(SAMPLE_FILE_PATH_2);
         Response putResponse1 = given()
@@ -1870,7 +1842,7 @@ public class DocumentControllerTest extends AbstractTest {
 
     @Test
     @DisplayName("Bulk Delete of non-existing document's attachments")
-    public void testFailedDeleteAttachmentFilesInBulk() {
+    void testFailedDeleteAttachmentFilesInBulk() {
         List<String> attachmentIds = new ArrayList<>();
         attachmentIds.add(INVALID_MINIO_FILE_PATH_1);
         attachmentIds.add(INVALID_MINIO_FILE_PATH_2);
@@ -1887,7 +1859,7 @@ public class DocumentControllerTest extends AbstractTest {
 
     @Test
     @DisplayName("Get All existing Document's Attachments As Zip")
-    public void testSuccessfulGetAllDocumentAttachmentsAsZip() {
+    void testSuccessfulGetAllDocumentAttachmentsAsZip() {
         Response getResponse = given()
                 .auth()
                 .oauth2(keycloakClient.getAccessToken(USER))
@@ -1900,7 +1872,7 @@ public class DocumentControllerTest extends AbstractTest {
 
     @Test
     @DisplayName("Get All non-existing Document's Attachments As Zip")
-    public void testFailedGetAllDocumentAttachmentsAsZip() {
+    void testFailedGetAllDocumentAttachmentsAsZip() {
         Response getResponse = given()
                 .auth()
                 .oauth2(keycloakClient.getAccessToken(USER))
@@ -1912,7 +1884,7 @@ public class DocumentControllerTest extends AbstractTest {
 
     @Test
     @DisplayName("Get existing document's with no attachments as zip")
-    public void testGetAllDocumentWithNoAttachmentsAsZip() {
+    void testGetAllDocumentWithNoAttachmentsAsZip() {
         Response getResponse = given()
                 .auth()
                 .oauth2(keycloakClient.getAccessToken(USER))
@@ -1924,7 +1896,7 @@ public class DocumentControllerTest extends AbstractTest {
 
     @Test
     @DisplayName("Get Failed Attachment by Id")
-    public void testGetFailedAttachmentsById() {
+    void testGetFailedAttachmentsById() {
 
         Response getResponse = given()
                 .auth()

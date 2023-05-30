@@ -42,11 +42,13 @@ public class FileService {
     @Inject
     MinioClient minioClient;
 
+    private static final String CLASS_NAME = "FileService";
+
     @Transactional
     public FileInfoDTO uploadFile(String path, File file, String bucket)
             throws IOException, ServerException, InsufficientDataException, NoSuchAlgorithmException, InternalException,
             InvalidResponseException, XmlParserException, InvalidKeyException, ErrorResponseException {
-        Log.info("FileService", "Entered uploadFile method", null);
+        Log.info(CLASS_NAME, "Entered uploadFile method", null);
         InputStream is = new BufferedInputStream(new FileInputStream(file));
         String contentType = URLConnection.guessContentTypeFromStream(is);
 
@@ -56,31 +58,31 @@ public class FileService {
         byte[] fileBytes = is.readAllBytes();
         uploadFileToObjectStorage(fileBytes, path, bucket.toLowerCase(Locale.ROOT), contentType);
         is.close();
-        Log.info("FileService", "Exited uploadFile method", null);
+        Log.info(CLASS_NAME, "Exited uploadFile method", null);
         return new FileInfoDTO(contentType, path, bucket.toLowerCase(Locale.ROOT));
     }
 
     public GetObjectResponse downloadFile(String path, String bucket) throws ServerException, InsufficientDataException,
             ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException,
             InvalidResponseException, XmlParserException, InternalException {
-        Log.info("FileService", "Entered downloadFile method", null);
-        Log.info("FileService", "Exited downloadFile method", null);
+        Log.info(CLASS_NAME, "Entered downloadFile method", null);
+        Log.info(CLASS_NAME, "Exited downloadFile method", null);
         return downloadFileFromObjectStorage(path, bucket.toLowerCase(Locale.ROOT));
     }
 
     @Transactional
     public void deleteFile(String fileId, String bucketName) throws InvalidKeyException, ErrorResponseException,
             InsufficientDataException, InternalException, InvalidResponseException, NoSuchAlgorithmException,
-            ServerException, XmlParserException, IllegalArgumentException, IOException, FileNotFoundException {
-        Log.info("FileService", "Entered deleteFile method", null);
+            ServerException, XmlParserException, IllegalArgumentException, IOException {
+        Log.info(CLASS_NAME, "Entered deleteFile method", null);
         deleteFileFromObjectStorage(fileId, bucketName);
-        Log.info("FileService", "Exited deleteFile method", null);
+        Log.info(CLASS_NAME, "Exited deleteFile method", null);
     }
 
     public void checkAndCreateBucket(String bucket) throws ServerException, InsufficientDataException,
             ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException,
             InvalidResponseException, XmlParserException, InternalException {
-        Log.info("FileService", "Entered checkAndCreateBucket method", null);
+        Log.info(CLASS_NAME, "Entered checkAndCreateBucket method", null);
         boolean found = minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucket).build());
         if (!found) {
             minioClient.makeBucket(
@@ -88,13 +90,13 @@ public class FileService {
                             .bucket(bucket)
                             .build());
         }
-        Log.info("FileService", "Exited checkAndCreateBucket method", null);
+        Log.info(CLASS_NAME, "Exited checkAndCreateBucket method", null);
     }
 
     private void uploadFileToObjectStorage(byte[] fileBytes, String object, String bucket, String contentType)
             throws IOException, InvalidKeyException, InvalidResponseException, InsufficientDataException,
             NoSuchAlgorithmException, ServerException, InternalException, XmlParserException, ErrorResponseException {
-        Log.info("FileService", "Entered uploadFileToObjectStorage method", null);
+        Log.info(CLASS_NAME, "Entered uploadFileToObjectStorage method", null);
         checkAndCreateBucket(bucket);
         minioClient.putObject(PutObjectArgs.builder()
                 .bucket(bucket)
@@ -102,15 +104,15 @@ public class FileService {
                 .stream(new ByteArrayInputStream(fileBytes), fileBytes.length, -1)
                 .contentType(contentType)
                 .build());
-        Log.info("FileService", "Exited uploadFileToObjectStorage method", null);
+        Log.info(CLASS_NAME, "Exited uploadFileToObjectStorage method", null);
 
     }
 
     private GetObjectResponse downloadFileFromObjectStorage(String object, String bucket) throws ServerException,
             InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException,
             InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
-        Log.info("FileService", "Entered downloadFileFromObjectStorage method", null);
-        Log.info("FileService", "Exited downloadFileFromObjectStorage method", null);
+        Log.info(CLASS_NAME, "Entered downloadFileFromObjectStorage method", null);
+        Log.info(CLASS_NAME, "Exited downloadFileFromObjectStorage method", null);
         return minioClient.getObject(GetObjectArgs.builder()
                 .bucket(bucket)
                 .object(object)
@@ -119,9 +121,8 @@ public class FileService {
 
     private void deleteFileFromObjectStorage(String objectId, String bucketName) throws InvalidKeyException,
             ErrorResponseException, InsufficientDataException, InternalException, InvalidResponseException,
-            NoSuchAlgorithmException, ServerException, XmlParserException, IllegalArgumentException, IOException,
-            FileNotFoundException {
-        Log.info("FileService", "Entered deleteFileFromObjectStorage method", null);
+            NoSuchAlgorithmException, ServerException, XmlParserException, IllegalArgumentException, IOException {
+        Log.info(CLASS_NAME, "Entered deleteFileFromObjectStorage method", null);
         boolean objectExists = isObjectPresent(objectId, bucketName);
         if (objectExists) {
             minioClient.removeObject(RemoveObjectArgs.builder()
@@ -132,7 +133,7 @@ public class FileService {
             throw new FileNotFoundException(
                     String.format("The file '%s' is not present in the Minio bucket '%s'", objectId, bucketName));
         }
-        Log.info("FileService", "Exited deleteFileFromObjectStorage method", null);
+        Log.info(CLASS_NAME, "Exited deleteFileFromObjectStorage method", null);
 
     }
 

@@ -1,7 +1,11 @@
 package org.tkit.document.management.rs.v1.controllers;
 
 import static io.restassured.RestAssured.given;
-import static javax.ws.rs.core.Response.Status.*;
+import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static javax.ws.rs.core.Response.Status.CREATED;
+import static javax.ws.rs.core.Response.Status.NOT_FOUND;
+import static javax.ws.rs.core.Response.Status.NO_CONTENT;
+import static javax.ws.rs.core.Response.Status.OK;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
@@ -37,7 +41,7 @@ public class DocumentTypeControllerTest extends AbstractTest {
 
     @Test
     @DisplayName("Saves type of document with the required fields with validated data.")
-    public void testSuccessfulCreateDocumentType() {
+    void testSuccessfulCreateDocumentType() {
         final String testDocumentTypeName = "DOCUMENT_TYPE_1";
         DocumentTypeCreateUpdateDTO documentTypeCreateDTO = new DocumentTypeCreateUpdateDTO();
         documentTypeCreateDTO.setName(testDocumentTypeName);
@@ -77,7 +81,7 @@ public class DocumentTypeControllerTest extends AbstractTest {
 
     @Test
     @DisplayName("Deletes type of document by id")
-    public void testSuccessfulDeleteDocumentTypeById() {
+    void testSuccessfulDeleteDocumentTypeById() {
         Response deleteResponse = given()
                 .accept(MediaType.APPLICATION_JSON)
                 .when()
@@ -91,12 +95,12 @@ public class DocumentTypeControllerTest extends AbstractTest {
         getResponse.then().statusCode(OK.getStatusCode());
 
         List<DocumentTypeDTO> documentTypes = getResponse.as(getDocumentTypeDTOTypeRef());
-        assertThat(documentTypes.size()).isEqualTo(2);
+        assertThat(documentTypes).hasSize(2);
     }
 
     @Test
     @DisplayName("Returns exception when trying to delete type of document assigned to the document.")
-    public void testFailedDeleteDocumentTypeWithAssignedId() {
+    void testFailedDeleteDocumentTypeWithAssignedId() {
         Response deleteResponse = given()
                 .when()
                 .delete(BASE_PATH + "/" + EXISTING_DOCUMENT_TYPE_ID);
@@ -108,12 +112,13 @@ public class DocumentTypeControllerTest extends AbstractTest {
                 " with id " + EXISTING_DOCUMENT_TYPE_ID + ". It is assigned to the document.");
         assertThat(rfcProblemDTO.getInstance()).isNull();
         assertThat(rfcProblemDTO.getTitle()).isEqualTo(ExceptionToRFCProblemMapper.TECHNICAL_ERROR);
-        assertThat(rfcProblemDTO.getType()).isEqualTo(ExceptionToRFCProblemMapper.RFCProblemType.REST_EXCEPTION.toString());
+        assertThat(rfcProblemDTO.getType())
+                .isEqualTo(ExceptionToRFCProblemMapper.RFCProblemType.REST_EXCEPTION.toString());
     }
 
     @Test
     @DisplayName("Returns exception when trying to delete type of document for a nonexistent id.")
-    public void testFailedDeleteDocumentTypeById() {
+    void testFailedDeleteDocumentTypeById() {
         Response deleteResponse = given()
                 .accept(MediaType.APPLICATION_JSON)
                 .when()
@@ -122,16 +127,18 @@ public class DocumentTypeControllerTest extends AbstractTest {
 
         RFCProblemDTO rfcProblemDTO = deleteResponse.as(RFCProblemDTO.class);
         assertThat(rfcProblemDTO.getStatus()).isEqualTo(NOT_FOUND.getStatusCode());
-        assertThat(rfcProblemDTO.getDetail()).isEqualTo("The document type with id " + NOT_EXISTING_DOCUMENT_TYPE_ID
-                + " was not found.");
+        assertThat(rfcProblemDTO.getDetail())
+                .isEqualTo("The document type with id " + NOT_EXISTING_DOCUMENT_TYPE_ID
+                        + " was not found.");
         assertThat(rfcProblemDTO.getInstance()).isNull();
         assertThat(rfcProblemDTO.getTitle()).isEqualTo(ExceptionToRFCProblemMapper.TECHNICAL_ERROR);
-        assertThat(rfcProblemDTO.getType()).isEqualTo(ExceptionToRFCProblemMapper.RFCProblemType.REST_EXCEPTION.toString());
+        assertThat(rfcProblemDTO.getType())
+                .isEqualTo(ExceptionToRFCProblemMapper.RFCProblemType.REST_EXCEPTION.toString());
     }
 
     @Test
     @DisplayName("Updates name in type of document.")
-    public void testSuccessfulUpdateNameInDocumentType() {
+    void testSuccessfulUpdateNameInDocumentType() {
         final String documentTypeName = "TEST_UPDATE_DOCUMENT_TYPE_NAME";
         DocumentTypeCreateUpdateDTO documentTypeUpdateDTO = new DocumentTypeCreateUpdateDTO();
         documentTypeUpdateDTO.setName(documentTypeName);
@@ -174,7 +181,7 @@ public class DocumentTypeControllerTest extends AbstractTest {
 
     @Test
     @DisplayName("Gets all types of document.")
-    public void testSuccessfulGetAllTypesOfDocument() {
+    void testSuccessfulGetAllTypesOfDocument() {
         Response getResponse = given()
                 .accept(MediaType.APPLICATION_JSON)
                 .when()
@@ -216,7 +223,7 @@ public class DocumentTypeControllerTest extends AbstractTest {
         response.then().statusCode(NOT_FOUND.getStatusCode());
         RFCProblemDTO rfcProblemDTO = response.as(RFCProblemDTO.class);
 
-        assertThat(rfcProblemDTO.getStatus().toString()).isEqualTo("404");
+        assertThat(rfcProblemDTO.getStatus()).hasToString("404");
         assertThat(rfcProblemDTO.getDetail())
                 .isEqualTo("The document type with id " + NOT_EXISTING_DOCUMENT_TYPE_ID
                         + " was not found.");

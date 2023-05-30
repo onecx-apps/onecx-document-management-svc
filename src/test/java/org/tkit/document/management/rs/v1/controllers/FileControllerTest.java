@@ -4,7 +4,11 @@ import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 import javax.ws.rs.core.MediaType;
 
@@ -48,7 +52,7 @@ public class FileControllerTest extends AbstractTest {
 
     @Test
     @DisplayName("Uploads jpg file")
-    public void testSuccessfulUploadJPGFileTest() {
+    void testSuccessfulUploadJPGFileTest() {
 
         File sampleFile = new File(SAMPLE_FILE_PATH);
         Response putResponse = given()
@@ -81,23 +85,24 @@ public class FileControllerTest extends AbstractTest {
     @DisplayName("Downloads an already uploaded jpg file")
     void testSuccessfulDownloadJPGFile() throws IOException {
         File sampleFile = new File(SAMPLE_FILE_PATH);
-        InputStream is = new BufferedInputStream(new FileInputStream(sampleFile));
-        byte[] fileBytes = is.readAllBytes();
-        Response putResponse = given()
-                .multiPart(FORM_PARAM_FILE, sampleFile)
-                .when()
-                .put(BASE_PATH + BUCKET_NAME + "/" + MINIO_FILE_PATH);
-        putResponse.then().statusCode(201);
-        Response getResponse = given()
-                .when()
-                .get(BASE_PATH + BUCKET_NAME + "/" + MINIO_FILE_PATH).andReturn();
-        byte[] downloadedBytes = getResponse.asByteArray();
-        assertArrayEquals(fileBytes, downloadedBytes);
+        try (InputStream is = new BufferedInputStream(new FileInputStream(sampleFile))) {
+            byte[] fileBytes = is.readAllBytes();
+            Response putResponse = given()
+                    .multiPart(FORM_PARAM_FILE, sampleFile)
+                    .when()
+                    .put(BASE_PATH + BUCKET_NAME + "/" + MINIO_FILE_PATH);
+            putResponse.then().statusCode(201);
+            Response getResponse = given()
+                    .when()
+                    .get(BASE_PATH + BUCKET_NAME + "/" + MINIO_FILE_PATH).andReturn();
+            byte[] downloadedBytes = getResponse.asByteArray();
+            assertArrayEquals(fileBytes, downloadedBytes);
+        }
     }
 
     @Test
     @DisplayName("Returns internal server error when getting file that does not exist")
-    public void testFailedDownloadJPGFile() {
+    void testFailedDownloadJPGFile() {
         Response getResponse = given()
                 .when()
                 .get(BASE_PATH + BUCKET_NAME + "/" + NON_EXISTING_FILE_PATH).andReturn();
@@ -106,7 +111,7 @@ public class FileControllerTest extends AbstractTest {
 
     @Test
     @DisplayName("Returns bad request when bucket contains not allowed characters")
-    public void testFailedUploadJPGFile() {
+    void testFailedUploadJPGFile() {
         File sampleFile = new File(SAMPLE_FILE_PATH);
         Response putResponse = given()
                 .multiPart(FORM_PARAM_FILE, sampleFile)
