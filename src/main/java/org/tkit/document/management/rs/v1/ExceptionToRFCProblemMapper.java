@@ -49,14 +49,14 @@ public class ExceptionToRFCProblemMapper implements ExceptionMapper<Exception> {
         log.error("REST exception URL:{},ERROR:{}", uriInfo.getRequestUri(), exception.getMessage());
         log.error("REST exception error!", exception);
 
-        if (exception instanceof DAOException) {
-            return createResponse((DAOException) exception);
+        if (exception instanceof DAOException daoException) {
+            return createResponse(daoException);
         }
-        if (exception instanceof RestException) {
-            return createResponse((RestException) exception);
+        if (exception instanceof RestException restException) {
+            return createResponse(restException);
         }
-        if (exception instanceof WebApplicationException) {
-            return createResponse((WebApplicationException) exception);
+        if (exception instanceof WebApplicationException webApplicationException) {
+            return createResponse(webApplicationException);
         }
         return createResponse(exception);
     }

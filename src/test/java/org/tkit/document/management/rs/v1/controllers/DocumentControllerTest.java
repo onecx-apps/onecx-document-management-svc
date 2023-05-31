@@ -52,7 +52,7 @@ import io.restassured.response.Response;
 @QuarkusTest
 @SuppressWarnings("java:S5961")
 @WithDBData(value = { "document-management-test-data.xml" }, deleteBeforeInsert = true, rinseAndRepeat = true)
-public class DocumentControllerTest extends AbstractTest {
+class DocumentControllerTest extends AbstractTest {
 
     KeycloakTestClient keycloakClient = new KeycloakTestClient();
 

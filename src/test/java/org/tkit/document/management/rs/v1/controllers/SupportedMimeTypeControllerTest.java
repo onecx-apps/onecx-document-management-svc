@@ -28,7 +28,7 @@ import io.restassured.response.Response;
 
 @QuarkusTest
 @WithDBData(value = { "document-management-test-data.xml" }, deleteBeforeInsert = true, rinseAndRepeat = true)
-public class SupportedMimeTypeControllerTest extends AbstractTest {
+class SupportedMimeTypeControllerTest extends AbstractTest {
 
     private static final String BASE_PATH = "/v1/supported-mime-type";
     private static final String EXISTING_SUPPORTED_MIME_TYPE_ID = "151";

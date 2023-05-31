@@ -28,7 +28,7 @@ import io.restassured.response.Response;
 
 @QuarkusTest
 @WithDBData(value = { "document-management-test-data.xml" }, deleteBeforeInsert = true, rinseAndRepeat = true)
-public class DocumentSpecificationControllerTest extends AbstractTest {
+class DocumentSpecificationControllerTest extends AbstractTest {
 
     private static final String BASE_PATH = "/v1/document-specification";
     private static final String EXISTING_DOCUMENT_SPECIFICATION_ID = "251";
