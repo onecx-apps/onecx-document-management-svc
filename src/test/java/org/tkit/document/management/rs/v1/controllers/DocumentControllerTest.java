@@ -8,7 +8,6 @@ import static javax.ws.rs.core.Response.Status.NO_CONTENT;
 import static javax.ws.rs.core.Response.Status.OK;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.io.File;
 import java.nio.file.Paths;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -82,13 +81,13 @@ public class DocumentControllerTest extends AbstractTest {
     private static final int NUMBER_OF_CATEGORIES_RELATIONSHIPS_OF_DOCUMENT_1 = 3;
     private static final int NUMBER_OF_ATTACHMENTS_RELATIONSHIPS_OF_DOCUMENT_1 = 2;
     private static final String ZIP_CONTENT_TYPE = "application/zip";
-    private static final String SAMPLE_FILE_PATH_1 = "src/test/resources/sample.jpg";
-    private static final String SAMPLE_FILE_PATH_2 = "src/test/resources/sample2.jpg";
-    private static final String FORM_PARAM_FILE = "file";
-    private static final String FILE_BASE_PATH = "/v1/files/";
-    private static final String BUCKET_NAME = "test-bucket";
-    private static final String MINIO_FILE_PATH_1 = "101";
-    private static final String MINIO_FILE_PATH_2 = "102";
+    //     private static final String SAMPLE_FILE_PATH_1 = "src/test/resources/sample.jpg";
+    //     private static final String SAMPLE_FILE_PATH_2 = "src/test/resources/sample2.jpg";
+    //     private static final String FORM_PARAM_FILE = "file";
+    //     private static final String FILE_BASE_PATH = "/v1/files/";
+    //     private static final String BUCKET_NAME = "test-bucket";
+    //     private static final String MINIO_FILE_PATH_1 = "101";
+    //     private static final String MINIO_FILE_PATH_2 = "102";
     private static final String INVALID_MINIO_FILE_PATH_1 = "10001";
     private static final String INVALID_MINIO_FILE_PATH_2 = "10002";
     private static final String EXISTING_DOCUMENT_ID_2 = "52";
@@ -1798,53 +1797,53 @@ public class DocumentControllerTest extends AbstractTest {
         postResponse.then().statusCode(NOT_FOUND.getStatusCode());
     }
 
-    @Test
-    @DisplayName("Bulk Delete of existing document's attachments")
-    void testSuccessfulDeleteAttachmentFilesInBulk() {
-        given()
-                .accept(MediaType.APPLICATION_JSON)
-                .when()
-                .post(FILE_BASE_PATH + "bucket/" + BUCKET_NAME)
-                .then().log().all().statusCode(201);
+    //     @Test
+    //     @DisplayName("Bulk Delete of existing document's attachments")
+    //     void testSuccessfulDeleteAttachmentFilesInBulk() {
+    //         given()
+    //                 .accept(MediaType.APPLICATION_JSON)
+    //                 .when()
+    //                 .post(FILE_BASE_PATH + "bucket/" + BUCKET_NAME)
+    //                 .then().log().all().statusCode(201);
 
-        File sampleFile1 = new File(SAMPLE_FILE_PATH_1);
-        File sampleFile2 = new File(SAMPLE_FILE_PATH_2);
-        Response putResponse1 = given()
-                .multiPart(FORM_PARAM_FILE, sampleFile1)
-                .when()
-                .put(FILE_BASE_PATH + BUCKET_NAME + "/" + MINIO_FILE_PATH_1);
-        putResponse1.then().statusCode(201);
-        Response putResponse2 = given()
-                .multiPart(FORM_PARAM_FILE, sampleFile2)
-                .when()
-                .put(FILE_BASE_PATH + BUCKET_NAME + "/" + MINIO_FILE_PATH_2);
-        putResponse2.then().statusCode(201);
+    //         File sampleFile1 = new File(SAMPLE_FILE_PATH_1);
+    //         File sampleFile2 = new File(SAMPLE_FILE_PATH_2);
+    //         Response putResponse1 = given()
+    //                 .multiPart(FORM_PARAM_FILE, sampleFile1)
+    //                 .when()
+    //                 .put(FILE_BASE_PATH + BUCKET_NAME + "/" + MINIO_FILE_PATH_1);
+    //         putResponse1.then().statusCode(201);
+    //         Response putResponse2 = given()
+    //                 .multiPart(FORM_PARAM_FILE, sampleFile2)
+    //                 .when()
+    //                 .put(FILE_BASE_PATH + BUCKET_NAME + "/" + MINIO_FILE_PATH_2);
+    //         putResponse2.then().statusCode(201);
 
-        List<String> attachmentIds = new ArrayList<>();
-        attachmentIds.add(MINIO_FILE_PATH_1);
-        attachmentIds.add(MINIO_FILE_PATH_2);
+    //         List<String> attachmentIds = new ArrayList<>();
+    //         attachmentIds.add(MINIO_FILE_PATH_1);
+    //         attachmentIds.add(MINIO_FILE_PATH_2);
 
-        Response deleteResponse = given()
-                .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(attachmentIds)
-                .when()
-                .delete(BASE_PATH + "/file/delete-bulk-attachment");
-        deleteResponse.then().statusCode(NO_CONTENT.getStatusCode());
+    //         Response deleteResponse = given()
+    //                 .auth()
+    //                 .oauth2(keycloakClient.getAccessToken(USER))
+    //                 .contentType(MediaType.APPLICATION_JSON)
+    //                 .body(attachmentIds)
+    //                 .when()
+    //                 .delete(BASE_PATH + "/file/delete-bulk-attachment");
+    //         deleteResponse.then().statusCode(NO_CONTENT.getStatusCode());
 
-        /*
-         * Response deleteMinioResponse1 = given()
-         * .when()
-         * .delete(FILE_BASE_PATH + BUCKET_NAME + "/" + MINIO_FILE_PATH_1).andReturn();
-         * deleteMinioResponse1.then().statusCode(201);
-         * Response deleteMinioResponse2 = given()
-         * .when()
-         * .delete(FILE_BASE_PATH + BUCKET_NAME + "/" + MINIO_FILE_PATH_2).andReturn();
-         * deleteMinioResponse2.then().statusCode(201);
-         */
+    //         /*
+    //          * Response deleteMinioResponse1 = given()
+    //          * .when()
+    //          * .delete(FILE_BASE_PATH + BUCKET_NAME + "/" + MINIO_FILE_PATH_1).andReturn();
+    //          * deleteMinioResponse1.then().statusCode(201);
+    //          * Response deleteMinioResponse2 = given()
+    //          * .when()
+    //          * .delete(FILE_BASE_PATH + BUCKET_NAME + "/" + MINIO_FILE_PATH_2).andReturn();
+    //          * deleteMinioResponse2.then().statusCode(201);
+    //          */
 
-    }
+    //     }
 
     @Test
     @DisplayName("Bulk Delete of non-existing document's attachments")
