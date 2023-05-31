@@ -8,7 +8,7 @@
     <parent>
         <groupId>io.github.onecx</groupId>
         <artifactId>onecx-quarkus2-parent</artifactId>
-        <version>0.16.0</version>
+        <version>0.17.0</version>
     </parent>
 
     <groupId>io.github.onecx-apps</groupId>
@@ -81,6 +81,10 @@
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-oidc</artifactId>
         </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-scheduler</artifactId>
+        </dependency>
 
         <!-- QUARKIVERSE-->
         <dependency>
@@ -97,6 +101,11 @@
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <scope>test</scope>
         </dependency>
 
         <!-- TEST -->

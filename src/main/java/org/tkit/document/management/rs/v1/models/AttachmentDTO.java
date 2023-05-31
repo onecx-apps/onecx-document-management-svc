@@ -10,6 +10,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
+@java.lang.SuppressWarnings("java:S2160")
 public class AttachmentDTO extends TraceableDTO {
 
     private String name;
@@ -31,4 +32,6 @@ public class AttachmentDTO extends TraceableDTO {
     private SupportedMimeTypeDTO mimeType;
 
     private String fileName;
+
+    private Boolean storageUploadStatus;
 }

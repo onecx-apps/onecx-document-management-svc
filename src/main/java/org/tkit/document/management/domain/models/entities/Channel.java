@@ -23,4 +23,5 @@ public class Channel extends TraceableEntity {
      */
     @Column(name = "NAME")
     private String name;
+
 }

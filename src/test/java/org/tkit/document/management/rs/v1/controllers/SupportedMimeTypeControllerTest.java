@@ -1,7 +1,11 @@
 package org.tkit.document.management.rs.v1.controllers;
 
 import static io.restassured.RestAssured.given;
-import static javax.ws.rs.core.Response.Status.*;
+import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static javax.ws.rs.core.Response.Status.CREATED;
+import static javax.ws.rs.core.Response.Status.NOT_FOUND;
+import static javax.ws.rs.core.Response.Status.NO_CONTENT;
+import static javax.ws.rs.core.Response.Status.OK;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
@@ -32,10 +36,13 @@ public class SupportedMimeTypeControllerTest extends AbstractTest {
     private static final String NOT_EXISTING_SUPPORTED_MIME_TYPE_ID = "10000";
     private static final String NAME_OF_SUPPORTED_MIME_TYPE_1 = "application/msexcel";
     private static final String DESCRIPTION_OF_SUPPORTED_MIME_TYPE_1 = "Microsoft Excel";
+    private static final Object[] EXISTING_SUPPORTED_MIME_TYPE_IDS = { "151", "152", "153" };
+    private static final Object[] EXISTING_SUPPORTED_MIME_TYPE_NAMES = { "application/msexcel", "application/pdf",
+            "nonassigned" };
 
     @Test
     @DisplayName("Saves supported mime-type with the required fields with validated data.")
-    public void testSuccessfulCreateSupportedMimeType() {
+    void testSuccessfulCreateSupportedMimeType() {
         final String supportedMimeTypeName = "SUPPORTED_MIME_TYPE_NAME";
         final String supportedMimeTypeDescription = "SUPPORTED_MIME_TYPE_DESCRIPTION";
         SupportedMimeTypeCreateUpdateDTO supportedMimeTypeCreateDTO = new SupportedMimeTypeCreateUpdateDTO();
@@ -56,7 +63,7 @@ public class SupportedMimeTypeControllerTest extends AbstractTest {
 
     @Test
     @DisplayName("Saves supported mime-type without description.")
-    public void testSuccessfulCreateSupportedMimeTypeWithoutDescription() {
+    void testSuccessfulCreateSupportedMimeTypeWithoutDescription() {
         final String supportedMimeTypeName = "SUPPORTED_MIME_TYPE_NAME";
         SupportedMimeTypeCreateUpdateDTO supportedMimeTypeCreateDTO = new SupportedMimeTypeCreateUpdateDTO();
         supportedMimeTypeCreateDTO.setName(supportedMimeTypeName);
@@ -75,7 +82,7 @@ public class SupportedMimeTypeControllerTest extends AbstractTest {
 
     @Test
     @DisplayName("Saves supported mime-type without name.")
-    public void testFailedCreateSupportedMimeTypeWithoutName() {
+    void testFailedCreateSupportedMimeTypeWithoutName() {
         final String supportedMimeTypeDescription = "SUPPORTED_MIME_TYPE_DESCRIPTION";
         SupportedMimeTypeCreateUpdateDTO supportedMimeTypeCreateDTO = new SupportedMimeTypeCreateUpdateDTO();
         supportedMimeTypeCreateDTO.setName(null);
@@ -94,12 +101,13 @@ public class SupportedMimeTypeControllerTest extends AbstractTest {
         assertThat(rfcProblemDTO.getInstance()).isNull();
         assertThat(rfcProblemDTO.getTitle()).isEqualTo(ValidationExceptionToRFCProblemMapper.TECHNICAL_ERROR);
         assertThat(rfcProblemDTO.getType())
-                .isEqualTo(ValidationExceptionToRFCProblemMapper.RFCProblemType.VALIDATION_EXCEPTION.toString());
+                .isEqualTo(ValidationExceptionToRFCProblemMapper.RFCProblemType.VALIDATION_EXCEPTION
+                        .toString());
     }
 
     @Test
     @DisplayName("Deletes supported mime-type by id.")
-    public void testSuccessfulDeleteSupportedMimeTypeById() {
+    void testSuccessfulDeleteSupportedMimeTypeById() {
         Response deleteResponse = given()
                 .accept(MediaType.APPLICATION_JSON)
                 .when()
@@ -113,12 +121,12 @@ public class SupportedMimeTypeControllerTest extends AbstractTest {
         getResponse.then().statusCode(OK.getStatusCode());
 
         List<SupportedMimeTypeDTO> supportedMimeTypeDTOS = getResponse.as(getSupportedMimeTypeDTOTypeRef());
-        assertThat(supportedMimeTypeDTOS.size()).isEqualTo(2);
+        assertThat(supportedMimeTypeDTOS).hasSize(2);
     }
 
     @Test
     @DisplayName("Returns exception when trying to delete supported mime-type assigned to the attachment.")
-    public void testFailedDeleteSupportedMimeTypeWithAssignedId() {
+    void testFailedDeleteSupportedMimeTypeWithAssignedId() {
         Response deleteResponse = given()
                 .when()
                 .delete(BASE_PATH + "/" + EXISTING_SUPPORTED_MIME_TYPE_ID);
@@ -130,12 +138,13 @@ public class SupportedMimeTypeControllerTest extends AbstractTest {
                 " with id " + EXISTING_SUPPORTED_MIME_TYPE_ID + ". It is assigned to the attachment.");
         assertThat(rfcProblemDTO.getInstance()).isNull();
         assertThat(rfcProblemDTO.getTitle()).isEqualTo(ExceptionToRFCProblemMapper.TECHNICAL_ERROR);
-        assertThat(rfcProblemDTO.getType()).isEqualTo(ExceptionToRFCProblemMapper.RFCProblemType.REST_EXCEPTION.toString());
+        assertThat(rfcProblemDTO.getType())
+                .isEqualTo(ExceptionToRFCProblemMapper.RFCProblemType.REST_EXCEPTION.toString());
     }
 
     @Test
     @DisplayName("Returns exception when trying to delete supported mime-type for a nonexistent id.")
-    public void testFailedDeleteSupportedMimeTypeById() {
+    void testFailedDeleteSupportedMimeTypeById() {
         Response deleteResponse = given()
                 .accept(MediaType.APPLICATION_JSON)
                 .when()
@@ -148,12 +157,13 @@ public class SupportedMimeTypeControllerTest extends AbstractTest {
                 + NOT_EXISTING_SUPPORTED_MIME_TYPE_ID + " was not found.");
         assertThat(rfcProblemDTO.getInstance()).isNull();
         assertThat(rfcProblemDTO.getTitle()).isEqualTo(ExceptionToRFCProblemMapper.TECHNICAL_ERROR);
-        assertThat(rfcProblemDTO.getType()).isEqualTo(ExceptionToRFCProblemMapper.RFCProblemType.REST_EXCEPTION.toString());
+        assertThat(rfcProblemDTO.getType())
+                .isEqualTo(ExceptionToRFCProblemMapper.RFCProblemType.REST_EXCEPTION.toString());
     }
 
     @Test
     @DisplayName("Updates name and description in supported mime-type.")
-    public void testSuccessfulUpdateSupportedMimeType() {
+    void testSuccessfulUpdateSupportedMimeType() {
         final String supportedMimeTypeName = "TEST_UPDATE_SUPPORTED_MIME_TYPE_NAME";
         final String supportedMimeTypeDescription = "TEST_UPDATE_SUPPORTED_MIME_TYPE_DESCRIPTION";
         SupportedMimeTypeCreateUpdateDTO supportedMimeTypeUpdateDTO = new SupportedMimeTypeCreateUpdateDTO();
@@ -175,7 +185,7 @@ public class SupportedMimeTypeControllerTest extends AbstractTest {
 
     @Test
     @DisplayName("Returns exception when trying to update supported mime-type for a nonexistent id.")
-    public void testFailedUpdateSupportedMimeTypeById() {
+    void testFailedUpdateSupportedMimeTypeById() {
         final String supportedMimeTypeName = "TEST_UPDATE_SUPPORTED_MIME_TYPE_NAME";
         final String supportedMimeTypeDescription = "TEST_UPDATE_SUPPORTED_MIME_TYPE_DESCRIPTION";
         SupportedMimeTypeCreateUpdateDTO supportedMimeTypeUpdateDTO = new SupportedMimeTypeCreateUpdateDTO();
@@ -195,12 +205,13 @@ public class SupportedMimeTypeControllerTest extends AbstractTest {
                 + NOT_EXISTING_SUPPORTED_MIME_TYPE_ID + " was not found.");
         assertThat(rfcProblemDTO.getInstance()).isNull();
         assertThat(rfcProblemDTO.getTitle()).isEqualTo(ExceptionToRFCProblemMapper.TECHNICAL_ERROR);
-        assertThat(rfcProblemDTO.getType()).isEqualTo(ExceptionToRFCProblemMapper.RFCProblemType.REST_EXCEPTION.toString());
+        assertThat(rfcProblemDTO.getType())
+                .isEqualTo(ExceptionToRFCProblemMapper.RFCProblemType.REST_EXCEPTION.toString());
     }
 
     @Test
     @DisplayName("Gets all supported mime-types.")
-    public void testSuccessfulGetAllSupportedMimeTypes() {
+    void testSuccessfulGetAllSupportedMimeTypes() {
         Response getResponse = given()
                 .accept(MediaType.APPLICATION_JSON)
                 .when()
@@ -208,15 +219,19 @@ public class SupportedMimeTypeControllerTest extends AbstractTest {
         getResponse.then().statusCode(OK.getStatusCode());
 
         List<SupportedMimeTypeDTO> typesOfDocuments = getResponse.as(getSupportedMimeTypeDTOTypeRef());
-        assertThat(typesOfDocuments.size()).isEqualTo(3);
+        assertThat(typesOfDocuments).hasSize(3);
         assertThat(typesOfDocuments.get(0).getId()).isEqualTo(EXISTING_SUPPORTED_MIME_TYPE_ID);
         assertThat(typesOfDocuments.get(0).getName()).isEqualTo(NAME_OF_SUPPORTED_MIME_TYPE_1);
         assertThat(typesOfDocuments.get(0).getDescription()).isEqualTo(DESCRIPTION_OF_SUPPORTED_MIME_TYPE_1);
+        assertThat(typesOfDocuments.get(1).getId()).isIn(EXISTING_SUPPORTED_MIME_TYPE_IDS);
+        assertThat(typesOfDocuments.get(1).getName()).isIn(EXISTING_SUPPORTED_MIME_TYPE_NAMES);
+        assertThat(typesOfDocuments.get(2).getId()).isIn(EXISTING_SUPPORTED_MIME_TYPE_IDS);
+        assertThat(typesOfDocuments.get(2).getName()).isIn(EXISTING_SUPPORTED_MIME_TYPE_NAMES);
     }
 
     @Test
     @DisplayName("Returns supported mime type by id.")
-    public void testSuccessfulGetSupportedMimeType() {
+    void testSuccessfulGetSupportedMimeType() {
         Response response = given()
                 .accept(MediaType.APPLICATION_JSON)
                 .when()
@@ -232,7 +247,7 @@ public class SupportedMimeTypeControllerTest extends AbstractTest {
 
     @Test
     @DisplayName("Returns exception when trying to get supported mime type for a nonexistent id.")
-    public void testFailedGetSupportedMimeType() {
+    void testFailedGetSupportedMimeType() {
         Response response = given()
                 .when()
                 .get(BASE_PATH + "/" + NOT_EXISTING_SUPPORTED_MIME_TYPE_ID);
@@ -240,9 +255,10 @@ public class SupportedMimeTypeControllerTest extends AbstractTest {
         response.then().statusCode(NOT_FOUND.getStatusCode());
         RFCProblemDTO rfcProblemDTO = response.as(RFCProblemDTO.class);
 
-        assertThat(rfcProblemDTO.getStatus().toString()).isEqualTo("404");
+        assertThat(rfcProblemDTO.getStatus()).hasToString("404");
         assertThat(rfcProblemDTO.getDetail())
-                .isEqualTo("The supported mime-type with id " + NOT_EXISTING_SUPPORTED_MIME_TYPE_ID + " was not found.");
+                .isEqualTo("The supported mime-type with id " + NOT_EXISTING_SUPPORTED_MIME_TYPE_ID
+                        + " was not found.");
         assertThat(rfcProblemDTO.getInstance()).isNull();
         assertThat(rfcProblemDTO.getTitle()).isEqualTo("TECHNICAL ERROR");
         assertThat(rfcProblemDTO.getType()).isEqualTo("REST_EXCEPTION");

@@ -10,7 +10,7 @@ import org.tkit.document.management.rs.v1.models.DocumentTypeCreateUpdateDTO;
 import org.tkit.document.management.rs.v1.models.DocumentTypeDTO;
 import org.tkit.quarkus.rs.mappers.OffsetDateTimeMapper;
 
-@Mapper(uses = OffsetDateTimeMapper.class, injectionStrategy = InjectionStrategy.CONSTRUCTOR)
+@Mapper(componentModel = "cdi", uses = OffsetDateTimeMapper.class, injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface DocumentTypeMapper {
 
     DocumentType map(DocumentTypeCreateUpdateDTO createUpdateDTO);

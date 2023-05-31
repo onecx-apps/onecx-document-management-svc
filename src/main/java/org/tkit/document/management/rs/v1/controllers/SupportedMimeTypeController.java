@@ -1,12 +1,20 @@
 package org.tkit.document.management.rs.v1.controllers;
 
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -24,6 +32,8 @@ import org.tkit.document.management.rs.v1.models.SupportedMimeTypeCreateUpdateDT
 import org.tkit.document.management.rs.v1.models.SupportedMimeTypeDTO;
 import org.tkit.quarkus.rs.exceptions.RestException;
 
+import io.quarkus.logging.Log;
+
 @Path("/v1/supported-mime-type")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
@@ -40,6 +50,8 @@ public class SupportedMimeTypeController {
     @Inject
     AttachmentDAO attachmentDAO;
 
+    private static final String CLASS_NAME = "SupportedMimeTypeController";
+
     @POST
     @Transactional
     @Operation(operationId = "createSupportedMimeType", description = "Creates supported mime-type")
@@ -48,7 +60,9 @@ public class SupportedMimeTypeController {
     @APIResponse(responseCode = "500", description = "Internal Server Error, please check Problem Details", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RFCProblemDTO.class)))
 
     public Response createSupportedMimeType(@Valid SupportedMimeTypeCreateUpdateDTO dto) {
+        Log.info(CLASS_NAME, "Entered createSupportedMimeType method", null);
         SupportedMimeType supportedMimeType = supportedMimeTypeDAO.create(supportedMimeTypeMapper.map(dto));
+        Log.info(CLASS_NAME, "Exited createSupportedMimeType method", null);
         return Response.status(Response.Status.CREATED)
                 .entity(supportedMimeTypeMapper.mapToDTO(supportedMimeType))
                 .build();
@@ -62,11 +76,13 @@ public class SupportedMimeTypeController {
     @APIResponse(responseCode = "500", description = "Internal Server Error, please check Problem Details", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RFCProblemDTO.class)))
 
     public Response getSupportedMimeTypeById(@PathParam("id") String id) {
+        Log.info(CLASS_NAME, "Entered getSupportedMimeTypeById method", null);
         SupportedMimeType supportedMimeType = supportedMimeTypeDAO.findById(id);
         if (Objects.isNull(supportedMimeType)) {
             throw new RestException(Response.Status.NOT_FOUND, Response.Status.NOT_FOUND,
                     getMimeTypeNotFoundMsg(id));
         }
+        Log.info(CLASS_NAME, "Exited getSupportedMimeTypeById method", null);
         return Response.status(Response.Status.OK)
                 .entity(supportedMimeTypeMapper.mapToDTO(supportedMimeType))
                 .build();
@@ -79,9 +95,11 @@ public class SupportedMimeTypeController {
     @APIResponse(responseCode = "500", description = "Internal Server Error, please check Problem Details", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RFCProblemDTO.class)))
 
     public Response getAllSupportedMimeTypes() {
+        Log.info(CLASS_NAME, "Entered getAllSupportedMimeTypes method", null);
+        Log.info(CLASS_NAME, "Exited getAllSupportedMimeTypes method", null);
         return Response.status(Response.Status.OK)
                 .entity(supportedMimeTypeMapper.findAllSupportedMimeTypes(supportedMimeTypeDAO.findAll()
-                        .toList()))
+                        .collect(Collectors.toList())))
                 .build();
 
     }
@@ -96,16 +114,20 @@ public class SupportedMimeTypeController {
     @APIResponse(responseCode = "500", description = "Internal Server Error, please check Problem Details", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RFCProblemDTO.class)))
 
     public Response deleteSupportedMimeTypeById(@PathParam("id") String id) {
+        Log.info(CLASS_NAME, "Entered deleteSupportedMimeTypeById method", null);
         SupportedMimeType supportedMimeType = supportedMimeTypeDAO.findById(id);
         if (Objects.nonNull(supportedMimeType)) {
             if (!attachmentDAO.findAttachmentsWithSupportedMimeTypeId(id).isEmpty()) {
                 throw new RestException(Response.Status.BAD_REQUEST, Response.Status.BAD_REQUEST,
-                        "You cannot delete supported mime-type with id " + id + ". It is assigned to the attachment.");
+                        "You cannot delete supported mime-type with id " + id
+                                + ". It is assigned to the attachment.");
             }
             supportedMimeTypeDAO.delete(supportedMimeType);
+            Log.info(CLASS_NAME, "Exited deleteSupportedMimeTypeById method", null);
             return Response.status(Response.Status.NO_CONTENT).build();
         }
-        throw new RestException(Response.Status.NOT_FOUND, Response.Status.NOT_FOUND, getMimeTypeNotFoundMsg(id));
+        throw new RestException(Response.Status.NOT_FOUND, Response.Status.NOT_FOUND,
+                getMimeTypeNotFoundMsg(id));
     }
 
     @PUT
@@ -117,17 +139,23 @@ public class SupportedMimeTypeController {
     @APIResponse(responseCode = "500", description = "Internal Server Error, please check Problem Details", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RFCProblemDTO.class)))
 
     public Response updateSupportedMimeTypeById(@PathParam("id") String id, SupportedMimeTypeCreateUpdateDTO dto) {
+        Log.info(CLASS_NAME, "Entered updateSupportedMimeTypeById method", null);
         SupportedMimeType supportedMimeType = supportedMimeTypeDAO.findById(id);
         if (Objects.isNull(supportedMimeType)) {
-            throw new RestException(Response.Status.NOT_FOUND, Response.Status.NOT_FOUND, getMimeTypeNotFoundMsg(id));
+            throw new RestException(Response.Status.NOT_FOUND, Response.Status.NOT_FOUND,
+                    getMimeTypeNotFoundMsg(id));
         }
         supportedMimeTypeMapper.update(dto, supportedMimeType);
+        Log.info(CLASS_NAME, "Exited updateSupportedMimeTypeById method", null);
         return Response.status(Response.Status.OK)
-                .entity(supportedMimeTypeMapper.mapToDTO(supportedMimeTypeDAO.update(supportedMimeType)))
+                .entity(supportedMimeTypeMapper
+                        .mapToDTO(supportedMimeTypeDAO.update(supportedMimeType)))
                 .build();
     }
 
     private String getMimeTypeNotFoundMsg(String id) {
+        Log.info(CLASS_NAME, "Entered getMimeTypeNotFoundMsg method", null);
+        Log.info(CLASS_NAME, "Exited getMimeTypeNotFoundMsg method", null);
         return "The supported mime-type with id " + id + " was not found.";
     }
 

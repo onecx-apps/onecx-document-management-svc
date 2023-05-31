@@ -28,4 +28,5 @@ public class Category extends TraceableEntity {
      */
     @Column(name = "VERSION")
     private String categoryVersion;
+
 }

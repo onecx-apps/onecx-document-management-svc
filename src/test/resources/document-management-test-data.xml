@@ -25,8 +25,10 @@
     <dm_related_object guid="2" optlock="0" involvement="invol_2" ro_id="43" ro_type="customer bill"/>
 
     <!-- dm_document -->
-    <dm_document guid="51" optlock="0" description="description_1" version="v_1" status="DRAFT" name="document_1" channel_guid="1" related_object_guid="1" specification_guid="251" type_guid="201"/>
-    <dm_document guid="52" optlock="0" description="description_2" version="v_1" status="REVIEW" name="document_2" channel_guid="2" related_object_guid="2" specification_guid="252" type_guid="202"/>
+    <dm_document guid="51" optlock="0" description="description_1" version="v_1" status="DRAFT" name="document_1" channel_guid="1" related_object_guid="1" specification_guid="251" type_guid="201" creationUser="test"/>
+    <dm_document guid="52" optlock="0" description="description_2" version="v_1" status="REVIEW" name="document_2" channel_guid="2" related_object_guid="2" specification_guid="252" type_guid="202" creationUser="onecx"/>
+    <dm_document guid="53" optlock="0" description="description_3" version="v_1" status="RELEASED" name="document_3" channel_guid="2" related_object_guid="2" specification_guid="252" type_guid="202" creationUser="tester"/>
+    <dm_document guid="54" optlock="0" description="description_4" version="v_1" status="RELEASED" name="document_4"/>
 
     <!-- dm_document_characteristic -->
     <dm_document_characteristic guid="1" optlock="0" name="characteristic_1" value="value_1" document_guid="51"/>
@@ -62,5 +64,9 @@
     <document_category document_guid="51" category_guid="3"/>
     <document_category document_guid="52" category_guid="2"/>
     <document_category document_guid="52" category_guid="3"/>
+
+        <!-- dm_storage_upload_audit -->
+    <dm_storage_upload_audit guid="1001" document_guid="51" attachment_guid="101" optlock="0"/>
+    <dm_storage_upload_audit guid="1002" document_guid="51" attachment_guid="102" optlock="0"/>
 
 </dataset>

@@ -216,6 +216,41 @@
             <column name="name" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
+    <changeSet author="dev (generated)" id="20230427-1">
+        <createTable tableName="dm_storage_upload_audit">
+            <column name="guid" type="VARCHAR(255)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="dm_storage_upload_audit_pkey"/>
+            </column>
+            <column name="creationdate" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="creationuser" type="VARCHAR(255)"/>
+            <column name="modificationdate" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="modificationuser" type="VARCHAR(255)"/>
+            <column name="optlock" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="document_guid" type="VARCHAR(255)"/>
+            <column name="document_name" type="VARCHAR(255)"/>
+            <column name="document_description" type="VARCHAR(255)"/>
+            <column name="document_version" type="VARCHAR(255)"/>
+            <column name="document_status" type="VARCHAR(255)"/>
+            <column name="attachment_guid" type="VARCHAR(255)"/>
+            <column name="filename" type="VARCHAR(255)"/>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="attachment_description" type="VARCHAR(255)"/>
+            <column name="channel_guid" type="VARCHAR(255)"/>
+            <column name="channel_name" type="VARCHAR(255)"/>
+            <column name="document_type_guid" type="VARCHAR(255)"/>
+            <column name="document_type_name" type="VARCHAR(255)"/>
+            <column name="mimetype_guid" type="VARCHAR(255)"/>
+            <column name="mimetype_name" type="VARCHAR(255)"/>
+            <column name="specification_guid" type="VARCHAR(255)"/>
+            <column name="specification_name" type="VARCHAR(255)"/>
+            <column name="related_object_guid" type="VARCHAR(255)"/>
+            <column name="involvement" type="VARCHAR(255)"/>
+            <column name="object_reference_type" type="VARCHAR(255)"/>
+            <column name="object_reference_id" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
     <changeSet author="dev (generated)" id="1602773030235-14">
         <addForeignKeyConstraint baseColumnNames="category_guid" baseTableName="document_category" constraintName="fk71dqrfirtvrhjcve4555uwa8m" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="guid" referencedTableName="dm_category" validate="true"/>
     </changeSet>

@@ -1,7 +1,11 @@
 package org.tkit.document.management.rs.v1.controllers;
 
 import static io.restassured.RestAssured.given;
-import static javax.ws.rs.core.Response.Status.*;
+import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static javax.ws.rs.core.Response.Status.CREATED;
+import static javax.ws.rs.core.Response.Status.NOT_FOUND;
+import static javax.ws.rs.core.Response.Status.NO_CONTENT;
+import static javax.ws.rs.core.Response.Status.OK;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
@@ -35,7 +39,7 @@ public class DocumentSpecificationControllerTest extends AbstractTest {
 
     @Test
     @DisplayName("Saves specification of document with the required fields with validated data.")
-    public void testSuccessfulCreateDocumentSpecification() {
+    void testSuccessfulCreateDocumentSpecification() {
         final String documentSpecificationName = "DOCUMENT_SPECIFICATION_NAME";
         final String documentSpecificationVersion = "DOCUMENT_SPECIFICATION_VERSION";
         DocumentSpecificationCreateUpdateDTO documentSpecificationCreateDTO = new DocumentSpecificationCreateUpdateDTO();
@@ -51,12 +55,13 @@ public class DocumentSpecificationControllerTest extends AbstractTest {
 
         DocumentSpecificationDTO dto = postResponse.as(DocumentSpecificationDTO.class);
         assertThat(dto.getName()).isEqualTo(documentSpecificationCreateDTO.getName());
-        assertThat(dto.getSpecificationVersion()).isEqualTo(documentSpecificationCreateDTO.getSpecificationVersion());
+        assertThat(dto.getSpecificationVersion())
+                .isEqualTo(documentSpecificationCreateDTO.getSpecificationVersion());
     }
 
     @Test
     @DisplayName("Saves specification of document without version.")
-    public void testSuccessfulCreateDocumentSpecificationWithoutVersion() {
+    void testSuccessfulCreateDocumentSpecificationWithoutVersion() {
         final String documentSpecificationName = "DOCUMENT_SPECIFICATION_NAME";
         DocumentSpecificationCreateUpdateDTO documentSpecificationCreateDTO = new DocumentSpecificationCreateUpdateDTO();
         documentSpecificationCreateDTO.setName(documentSpecificationName);
@@ -75,7 +80,7 @@ public class DocumentSpecificationControllerTest extends AbstractTest {
 
     @Test
     @DisplayName("Saves specification of document without name.")
-    public void testFailedCreateDocumentSpecificationWithoutName() {
+    void testFailedCreateDocumentSpecificationWithoutName() {
         final String documentSpecificationVersion = "DOCUMENT_SPECIFICATION_VERSION";
         DocumentSpecificationCreateUpdateDTO documentSpecificationCreateDTO = new DocumentSpecificationCreateUpdateDTO();
         documentSpecificationCreateDTO.setName(null);
@@ -90,16 +95,18 @@ public class DocumentSpecificationControllerTest extends AbstractTest {
 
         RFCProblemDTO rfcProblemDTO = postResponse.as(RFCProblemDTO.class);
         assertThat(rfcProblemDTO.getStatus()).isEqualTo(BAD_REQUEST.getStatusCode());
-        assertThat(rfcProblemDTO.getDetail()).isEqualTo("createDocumentSpecification.dto.name: must not be blank");
+        assertThat(rfcProblemDTO.getDetail())
+                .isEqualTo("createDocumentSpecification.dto.name: must not be blank");
         assertThat(rfcProblemDTO.getInstance()).isNull();
         assertThat(rfcProblemDTO.getTitle()).isEqualTo(ValidationExceptionToRFCProblemMapper.TECHNICAL_ERROR);
         assertThat(rfcProblemDTO.getType())
-                .isEqualTo(ValidationExceptionToRFCProblemMapper.RFCProblemType.VALIDATION_EXCEPTION.toString());
+                .isEqualTo(ValidationExceptionToRFCProblemMapper.RFCProblemType.VALIDATION_EXCEPTION
+                        .toString());
     }
 
     @Test
     @DisplayName("Deletes specification of document by id.")
-    public void testSuccessfulDeleteSupportedMimeTypeById() {
+    void testSuccessfulDeleteSupportedMimeTypeById() {
         Response deleteResponse = given()
                 .accept(MediaType.APPLICATION_JSON)
                 .when()
@@ -112,13 +119,14 @@ public class DocumentSpecificationControllerTest extends AbstractTest {
                 .get(BASE_PATH);
         getResponse.then().statusCode(OK.getStatusCode());
 
-        List<DocumentSpecificationDTO> documentSpecificationDTOS = getResponse.as(getDocumentSpecificationDTOTypeRef());
-        assertThat(documentSpecificationDTOS.size()).isEqualTo(2);
+        List<DocumentSpecificationDTO> documentSpecificationDTOS = getResponse
+                .as(getDocumentSpecificationDTOTypeRef());
+        assertThat(documentSpecificationDTOS).hasSize(2);
     }
 
     @Test
     @DisplayName("Returns exception when trying to delete specification of document assigned to the document.")
-    public void testFailedDeleteDocumentSpecificationWithAssignedId() {
+    void testFailedDeleteDocumentSpecificationWithAssignedId() {
         Response deleteResponse = given()
                 .when()
                 .delete(BASE_PATH + "/" + EXISTING_DOCUMENT_SPECIFICATION_ID);
@@ -130,12 +138,13 @@ public class DocumentSpecificationControllerTest extends AbstractTest {
                 " with id " + EXISTING_DOCUMENT_SPECIFICATION_ID + ". It is assigned to the document.");
         assertThat(rfcProblemDTO.getInstance()).isNull();
         assertThat(rfcProblemDTO.getTitle()).isEqualTo(ExceptionToRFCProblemMapper.TECHNICAL_ERROR);
-        assertThat(rfcProblemDTO.getType()).isEqualTo(ExceptionToRFCProblemMapper.RFCProblemType.REST_EXCEPTION.toString());
+        assertThat(rfcProblemDTO.getType())
+                .isEqualTo(ExceptionToRFCProblemMapper.RFCProblemType.REST_EXCEPTION.toString());
     }
 
     @Test
     @DisplayName("Returns exception when trying to delete specification of document for a nonexistent id.")
-    public void testFailedDeleteDocumentSpecificationById() {
+    void testFailedDeleteDocumentSpecificationById() {
         Response deleteResponse = given()
                 .accept(MediaType.APPLICATION_JSON)
                 .when()
@@ -148,12 +157,13 @@ public class DocumentSpecificationControllerTest extends AbstractTest {
                 + NOT_EXISTING_DOCUMENT_SPECIFICATION_ID + " was not found.");
         assertThat(rfcProblemDTO.getInstance()).isNull();
         assertThat(rfcProblemDTO.getTitle()).isEqualTo(ExceptionToRFCProblemMapper.TECHNICAL_ERROR);
-        assertThat(rfcProblemDTO.getType()).isEqualTo(ExceptionToRFCProblemMapper.RFCProblemType.REST_EXCEPTION.toString());
+        assertThat(rfcProblemDTO.getType())
+                .isEqualTo(ExceptionToRFCProblemMapper.RFCProblemType.REST_EXCEPTION.toString());
     }
 
     @Test
     @DisplayName("Updates name and version in specification of document.")
-    public void testSuccessfulUpdateDocumentSpecification() {
+    void testSuccessfulUpdateDocumentSpecification() {
         final String documentSpecificationName = "TEST_UPDATE_SUPPORTED_MIME_TYPE_NAME";
         final String documentSpecificationVersion = "TEST_UPDATE_SUPPORTED_MIME_TYPE_DESCRIPTION";
         DocumentSpecificationCreateUpdateDTO documentSpecificationUpdateDTO = new DocumentSpecificationCreateUpdateDTO();
@@ -170,12 +180,13 @@ public class DocumentSpecificationControllerTest extends AbstractTest {
         DocumentSpecificationDTO dto = putResponse.as(DocumentSpecificationDTO.class);
         assertThat(dto.getId()).isEqualTo(EXISTING_DOCUMENT_SPECIFICATION_ID);
         assertThat(dto.getName()).isEqualTo(documentSpecificationUpdateDTO.getName());
-        assertThat(dto.getSpecificationVersion()).isEqualTo(documentSpecificationUpdateDTO.getSpecificationVersion());
+        assertThat(dto.getSpecificationVersion())
+                .isEqualTo(documentSpecificationUpdateDTO.getSpecificationVersion());
     }
 
     @Test
     @DisplayName("Returns exception when trying to update specification of document for a nonexistent id.")
-    public void testFailedUpdateDocumentSpecificationById() {
+    void testFailedUpdateDocumentSpecificationById() {
         final String documentSpecificationName = "TEST_UPDATE_SUPPORTED_MIME_TYPE_NAME";
         final String documentSpecificationVersion = "TEST_UPDATE_SUPPORTED_MIME_TYPE_DESCRIPTION";
         DocumentSpecificationCreateUpdateDTO documentSpecificationUpdateDTO = new DocumentSpecificationCreateUpdateDTO();
@@ -195,28 +206,31 @@ public class DocumentSpecificationControllerTest extends AbstractTest {
                 + NOT_EXISTING_DOCUMENT_SPECIFICATION_ID + " was not found.");
         assertThat(rfcProblemDTO.getInstance()).isNull();
         assertThat(rfcProblemDTO.getTitle()).isEqualTo(ExceptionToRFCProblemMapper.TECHNICAL_ERROR);
-        assertThat(rfcProblemDTO.getType()).isEqualTo(ExceptionToRFCProblemMapper.RFCProblemType.REST_EXCEPTION.toString());
+        assertThat(rfcProblemDTO.getType())
+                .isEqualTo(ExceptionToRFCProblemMapper.RFCProblemType.REST_EXCEPTION.toString());
     }
 
     @Test
     @DisplayName("Gets all specifications of document.")
-    public void testSuccessfulGetAllDocumentSpecifications() {
+    void testSuccessfulGetAllDocumentSpecifications() {
         Response getResponse = given()
                 .accept(MediaType.APPLICATION_JSON)
                 .when()
                 .get(BASE_PATH);
         getResponse.then().statusCode(OK.getStatusCode());
 
-        List<DocumentSpecificationDTO> documentSpecificationDTOS = getResponse.as(getDocumentSpecificationDTOTypeRef());
-        assertThat(documentSpecificationDTOS.size()).isEqualTo(3);
+        List<DocumentSpecificationDTO> documentSpecificationDTOS = getResponse
+                .as(getDocumentSpecificationDTOTypeRef());
+        assertThat(documentSpecificationDTOS).hasSize(3);
         assertThat(documentSpecificationDTOS.get(0).getId()).isEqualTo(EXISTING_DOCUMENT_SPECIFICATION_ID);
         assertThat(documentSpecificationDTOS.get(0).getName()).isEqualTo(NAME_OF_DOCUMENT_SPECIFICATION_1);
-        assertThat(documentSpecificationDTOS.get(0).getSpecificationVersion()).isEqualTo(VERSION_OF_DOCUMENT_SPECIFICATION_1);
+        assertThat(documentSpecificationDTOS.get(0).getSpecificationVersion())
+                .isEqualTo(VERSION_OF_DOCUMENT_SPECIFICATION_1);
     }
 
     @Test
     @DisplayName("Returns document specification by id.")
-    public void testSuccessfulGetDocumentSpecification() {
+    void testSuccessfulGetDocumentSpecification() {
         Response response = given()
                 .accept(MediaType.APPLICATION_JSON)
                 .when()
@@ -227,12 +241,13 @@ public class DocumentSpecificationControllerTest extends AbstractTest {
 
         assertThat(documentSpecificationDTO.getId()).isEqualTo(EXISTING_DOCUMENT_SPECIFICATION_ID);
         assertThat(documentSpecificationDTO.getName()).isEqualTo(NAME_OF_DOCUMENT_SPECIFICATION_1);
-        assertThat(documentSpecificationDTO.getSpecificationVersion()).isEqualTo(VERSION_OF_DOCUMENT_SPECIFICATION_1);
+        assertThat(documentSpecificationDTO.getSpecificationVersion())
+                .isEqualTo(VERSION_OF_DOCUMENT_SPECIFICATION_1);
     }
 
     @Test
     @DisplayName("Returns exception when trying to get document specification for a nonexistent id.")
-    public void testFailedGetDocumentSpecification() {
+    void testFailedGetDocumentSpecification() {
         Response response = given()
                 .when()
                 .get(BASE_PATH + "/" + NOT_EXISTING_DOCUMENT_SPECIFICATION_ID);
@@ -240,9 +255,10 @@ public class DocumentSpecificationControllerTest extends AbstractTest {
         response.then().statusCode(NOT_FOUND.getStatusCode());
         RFCProblemDTO rfcProblemDTO = response.as(RFCProblemDTO.class);
 
-        assertThat(rfcProblemDTO.getStatus().toString()).isEqualTo("404");
+        assertThat(rfcProblemDTO.getStatus()).hasToString("404");
         assertThat(rfcProblemDTO.getDetail())
-                .isEqualTo("The document specification with id " + NOT_EXISTING_DOCUMENT_SPECIFICATION_ID + " was not found.");
+                .isEqualTo("The document specification with id "
+                        + NOT_EXISTING_DOCUMENT_SPECIFICATION_ID + " was not found.");
         assertThat(rfcProblemDTO.getInstance()).isNull();
         assertThat(rfcProblemDTO.getTitle()).isEqualTo("TECHNICAL ERROR");
         assertThat(rfcProblemDTO.getType()).isEqualTo("REST_EXCEPTION");

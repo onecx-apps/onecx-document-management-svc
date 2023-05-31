@@ -3,7 +3,21 @@ package org.tkit.document.management.domain.models.entities;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedEntityGraph;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 import org.tkit.document.management.domain.models.enums.LifeCycleState;
 import org.tkit.quarkus.jpa.models.TraceableEntity;
@@ -18,8 +32,8 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "DM_DOCUMENT")
-@NamedEntityGraph(name = "Document.loadAll", includeAllAttributes = true)
 @java.lang.SuppressWarnings("java:S2160")
+@NamedEntityGraph(name = "Document.loadAll", includeAllAttributes = true)
 public class Document extends TraceableEntity {
     /**
      * Name of the document.
@@ -103,4 +117,5 @@ public class Document extends TraceableEntity {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "DOCUMENT_GUID")
     private Set<Attachment> attachments = new HashSet<>();
+
 }

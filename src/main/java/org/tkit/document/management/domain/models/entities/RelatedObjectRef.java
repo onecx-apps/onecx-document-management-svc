@@ -33,4 +33,5 @@ public class RelatedObjectRef extends TraceableEntity {
      */
     @Column(name = "RO_ID")
     private String objectReferenceId;
+
 }

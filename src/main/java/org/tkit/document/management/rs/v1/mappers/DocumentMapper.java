@@ -13,14 +13,33 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.tkit.document.management.domain.criteria.DocumentSearchCriteria;
-import org.tkit.document.management.domain.models.entities.*;
-import org.tkit.document.management.rs.v1.models.*;
+import org.tkit.document.management.domain.models.entities.Attachment;
+import org.tkit.document.management.domain.models.entities.Category;
+import org.tkit.document.management.domain.models.entities.Channel;
+import org.tkit.document.management.domain.models.entities.Document;
+import org.tkit.document.management.domain.models.entities.DocumentCharacteristic;
+import org.tkit.document.management.domain.models.entities.DocumentRelationship;
+import org.tkit.document.management.domain.models.entities.RelatedObjectRef;
+import org.tkit.document.management.domain.models.entities.RelatedPartyRef;
+import org.tkit.document.management.rs.v1.models.AttachmentCreateUpdateDTO;
+import org.tkit.document.management.rs.v1.models.AttachmentDTO;
+import org.tkit.document.management.rs.v1.models.CategoryCreateUpdateDTO;
+import org.tkit.document.management.rs.v1.models.ChannelCreateUpdateDTO;
+import org.tkit.document.management.rs.v1.models.ChannelDTO;
+import org.tkit.document.management.rs.v1.models.DocumentCharacteristicCreateUpdateDTO;
+import org.tkit.document.management.rs.v1.models.DocumentCreateUpdateDTO;
+import org.tkit.document.management.rs.v1.models.DocumentDetailDTO;
+import org.tkit.document.management.rs.v1.models.DocumentRelationshipCreateUpdateDTO;
+import org.tkit.document.management.rs.v1.models.DocumentSearchCriteriaDTO;
+import org.tkit.document.management.rs.v1.models.IdentifiableTraceableDTO;
+import org.tkit.document.management.rs.v1.models.RelatedObjectRefCreateUpdateDTO;
+import org.tkit.document.management.rs.v1.models.RelatedPartyRefCreateUpdateDTO;
 import org.tkit.quarkus.jpa.daos.PageResult;
 import org.tkit.quarkus.jpa.models.TraceableEntity;
 import org.tkit.quarkus.rs.mappers.OffsetDateTimeMapper;
 import org.tkit.quarkus.rs.models.PageResultDTO;
 
-@Mapper(uses = OffsetDateTimeMapper.class, injectionStrategy = InjectionStrategy.CONSTRUCTOR)
+@Mapper(componentModel = "cdi", uses = OffsetDateTimeMapper.class, injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface DocumentMapper {
 
     DocumentDetailDTO mapDetail(Document document);
@@ -131,7 +150,8 @@ public interface DocumentMapper {
     }
 
     /**
-     * Updates collection of objects extends {@link TraceableEntity} in {@link Document}
+     * Updates collection of objects extends {@link TraceableEntity} in
+     * {@link Document}
      * or creates new object extends {@link TraceableEntity} and add to collection
      * or remove object extends {@link TraceableEntity} from collection.
      *
@@ -142,7 +162,8 @@ public interface DocumentMapper {
      * @param <T> extends {@link TraceableEntity}
      * @param <S> extends {@link IdentifiableTraceableDTO}
      */
-    default <T extends TraceableEntity, S extends IdentifiableTraceableDTO> void updateTraceableCollection(Set<T> collection,
+    default <T extends TraceableEntity, S extends IdentifiableTraceableDTO> void updateTraceableCollection(
+            Set<T> collection,
             Set<S> collectionDTO,
             BiFunction<S, T, T> updateFunction,
             Function<S, T> mapFunction) {
@@ -168,7 +189,8 @@ public interface DocumentMapper {
         }
     }
 
-    default void updateBulkTraceableCollectionsInDocument(List<Document> document, List<DocumentCreateUpdateDTO> updateDTO) {
+    default void updateBulkTraceableCollectionsInDocument(List<Document> document,
+            List<DocumentCreateUpdateDTO> updateDTO) {
         for (Document documentbulk : document) {
             for (DocumentCreateUpdateDTO updatebulk : updateDTO) {
                 updateTraceableCollection(documentbulk.getDocumentRelationships(),
@@ -189,4 +211,6 @@ public interface DocumentMapper {
             }
         }
     }
+
+    List<DocumentDetailDTO> mapDocuments(List<Document> documents);
 }

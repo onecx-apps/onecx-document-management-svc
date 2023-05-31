@@ -52,8 +52,8 @@ public class DocumentSearchCriteriaDTO {
     private Integer pageNumber;
 
     @Min(1)
-    @Max(100)
+    @Max(200)
     @QueryParam("size")
-    @DefaultValue("100")
+    @DefaultValue("200")
     private Integer pageSize;
 }

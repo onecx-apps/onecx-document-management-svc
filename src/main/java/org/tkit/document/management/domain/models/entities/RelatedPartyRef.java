@@ -35,4 +35,5 @@ public class RelatedPartyRef extends TraceableEntity {
      */
     @Embedded
     private TimePeriod validFor;
+
 }

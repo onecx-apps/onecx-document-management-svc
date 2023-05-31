@@ -28,4 +28,5 @@ public class SupportedMimeType extends TraceableEntity {
      */
     @Column(name = "DESCRIPTION")
     private String description;
+
 }

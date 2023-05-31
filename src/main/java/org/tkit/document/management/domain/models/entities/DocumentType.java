@@ -23,4 +23,5 @@ public class DocumentType extends TraceableEntity {
      */
     @Column(name = "NAME")
     private String name;
+
 }

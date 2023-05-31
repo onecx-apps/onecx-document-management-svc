@@ -28,4 +28,5 @@ public class DocumentCharacteristic extends TraceableEntity {
      */
     @Column(name = "VALUE")
     private String value;
+
 }

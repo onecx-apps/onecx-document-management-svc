@@ -28,4 +28,5 @@ public class DocumentSpecification extends TraceableEntity {
      */
     @Column(name = "VERSION")
     private String specificationVersion;
+
 }

@@ -28,4 +28,5 @@ public class DocumentRelationship extends TraceableEntity {
      */
     @Column(name = "DOCUMENT_REF_ID")
     private String documentRefId;
+
 }

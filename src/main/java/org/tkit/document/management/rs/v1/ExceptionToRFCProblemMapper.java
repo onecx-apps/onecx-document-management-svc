@@ -122,7 +122,8 @@ public class ExceptionToRFCProblemMapper implements ExceptionMapper<Exception> {
     private RFCProblemDetailDTO mapStackTraceElement(StackTraceElement stackTraceElement) {
         RFCProblemDetailDTO problemDetail = new RFCProblemDetailDTO();
         problemDetail.setMessage(
-                "An error occured in " + stackTraceElement.getMethodName() + " in line " + stackTraceElement.getLineNumber());
+                "An error occured in " + stackTraceElement.getMethodName() + " at line "
+                        + stackTraceElement.getLineNumber());
         problemDetail.setMessageId(stackTraceElement.getClassName());
 
         return problemDetail;
@@ -188,7 +189,8 @@ public class ExceptionToRFCProblemMapper implements ExceptionMapper<Exception> {
         REST_EXCEPTION,
 
         /**
-         * The error code for the web application exception {@link WebApplicationException}
+         * The error code for the web application exception
+         * {@link WebApplicationException}
          */
         WEB_APPLICATION_EXCEPTION,
 

@@ -5,6 +5,7 @@ import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
@@ -23,7 +24,8 @@ public class AttachmentDAO extends AbstractDAO<Attachment> {
     /**
      *
      * @param id the String
-     * @return a {@link List<Attachment>} contains given {@link SupportedMimeType} id
+     * @return a {@link List<Attachment>} contains given {@link SupportedMimeType}
+     *         id
      */
     public List<Attachment> findAttachmentsWithSupportedMimeTypeId(String id) {
         CriteriaBuilder criteriaBuilder = this.getEntityManager().getCriteriaBuilder();
@@ -34,4 +36,14 @@ public class AttachmentDAO extends AbstractDAO<Attachment> {
         TypedQuery<Attachment> typedQuery = em.createQuery(criteriaQuery);
         return typedQuery.getResultList();
     }
+
+    public void deleteAttachmentsBasedOnFileUploadStatus() {
+        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+        CriteriaDelete<Attachment> deleteQuery = criteriaBuilder.createCriteriaDelete(Attachment.class);
+        Root<Attachment> root = deleteQuery.from(Attachment.class);
+        deleteQuery.where(
+                criteriaBuilder.equal(root.get(Attachment_.STORAGE_UPLOAD_STATUS), false));
+        em.createQuery(deleteQuery).executeUpdate();
+    }
+
 }
