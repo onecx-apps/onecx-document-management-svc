@@ -52,6 +52,7 @@ import org.tkit.document.management.domain.models.entities.RelatedPartyRef;
 import org.tkit.document.management.domain.models.entities.StorageUploadAudit;
 import org.tkit.document.management.domain.models.entities.SupportedMimeType;
 import org.tkit.document.management.domain.models.enums.AttachmentUnit;
+import org.tkit.document.management.rs.v1.CustomException;
 import org.tkit.document.management.rs.v1.mappers.DocumentMapper;
 import org.tkit.document.management.rs.v1.mappers.DocumentSpecificationMapper;
 import org.tkit.document.management.rs.v1.models.AttachmentCreateUpdateDTO;
@@ -324,7 +325,7 @@ public class DocumentService {
             MinioAuditLog minioAuditLog = new MinioAuditLog();
             minioAuditLog.setAttachmentId(attachmentId);
             minioAuditLogDAO.create(minioAuditLog);
-            throw new RuntimeException(e);
+            throw new CustomException("An error occurred while deleting the attachment file.", e);
         }
         Log.info(CLASS_NAME, "Exited deleteFileInAttachmentAsync method", null);
     }
