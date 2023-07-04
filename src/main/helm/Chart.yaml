@@ -1,12 +1,12 @@
 apiVersion: v2
-name: onecx-document-management
+name: onecx-document-management-svc
 version: 999-SNAPSHOT
 appVersion: 999-SNAPSHOT
 description: onecx document management
 keywords:
   - document management
 sources:
-  - https://github.com/onecx-apps/onecx-document-management
+  - https://github.com/onecx-apps/onecx-document-management-svc
 maintainers:
   - name: Tkit Developer
     email: tkit_dev@1000kit.org
