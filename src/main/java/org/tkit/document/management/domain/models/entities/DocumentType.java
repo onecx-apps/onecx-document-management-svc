@@ -24,4 +24,15 @@ public class DocumentType extends TraceableEntity {
     @Column(name = "NAME")
     private String name;
 
+    /**
+     * Description of the document type
+     */
+    @Column(name = "DESCRIPTION")
+    private String description;
+
+    /**
+     * Document type active status
+     */
+    @Column(name = "ACTIVE_STATUS")
+    private Boolean activeStatus;
 }

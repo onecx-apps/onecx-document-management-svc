@@ -57,10 +57,12 @@ import org.tkit.document.management.domain.criteria.DocumentSearchCriteria;
 import org.tkit.document.management.domain.daos.AttachmentDAO;
 import org.tkit.document.management.domain.daos.ChannelDAO;
 import org.tkit.document.management.domain.daos.DocumentDAO;
+import org.tkit.document.management.domain.daos.MinioAuditLogDAO;
 import org.tkit.document.management.domain.daos.StorageUploadAuditDAO;
 import org.tkit.document.management.domain.models.entities.Attachment;
 import org.tkit.document.management.domain.models.entities.Channel;
 import org.tkit.document.management.domain.models.entities.Document;
+import org.tkit.document.management.domain.models.entities.MinioAuditLog;
 import org.tkit.document.management.domain.models.entities.StorageUploadAudit;
 import org.tkit.document.management.rs.v1.mappers.DocumentMapper;
 import org.tkit.document.management.rs.v1.models.AttachmentDTO;
@@ -104,6 +106,9 @@ public class DocumentController {
     StorageUploadAuditDAO storageUploadAuditDAO;
 
     @Inject
+    MinioAuditLogDAO minioAuditLogDAO;
+
+    @Inject
     DocumentMapper documentMapper;
 
     @Inject
@@ -117,10 +122,36 @@ public class DocumentController {
 
     private static final String CLASS_NAME = "DocumentController";
 
+    /**
+     * This scheduler gets triggered at every Saturday at 23:00 hours
+     * This scheduler deletes all the records from the "dm_attachment" table
+     * when the value of "storage_upload_status" column is "false"
+     */
     @Transactional
-    @Scheduled(cron = "0 0 23 * * ?", concurrentExecution = PROCEED)
+    @Scheduled(cron = "0 0 23 ? * SAT", concurrentExecution = PROCEED)
     public void clearFailedFilesFromDBPeriodically() {
         attachmentDAO.deleteAttachmentsBasedOnFileUploadStatus();
+    }
+
+    /**
+     * This scheduler gets triggered at every Sunday at 23:00 hours
+     * It calls the getAllRecords method of MinioAuditLogDAO class
+     * If the returned list is not null then all objects are iterated over a loop
+     * and
+     * it calls the deleteFileInAttachmentAsync method to delete object from Minio
+     * storage
+     * it then deletes that specific record from the MinioAuditLog table
+     */
+    @Transactional
+    @Scheduled(cron = "0 0 23 ? * SUN", concurrentExecution = PROCEED)
+    public void deleteAllRecordsFromMinioAuditLog() {
+        List<MinioAuditLog> minioAuditLogAllRecords = minioAuditLogDAO.getAllRecords();
+        if (!Objects.isNull(minioAuditLogAllRecords)) {
+            minioAuditLogAllRecords.stream().forEach(auditRecord -> {
+                documentService.deleteFileInAttachmentAsync(auditRecord.getAttachmentId());
+                minioAuditLogDAO.delete(auditRecord);
+            });
+        }
     }
 
     @GET

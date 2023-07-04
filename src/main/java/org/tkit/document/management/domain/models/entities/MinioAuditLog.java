@@ -1,0 +1,34 @@
+package org.tkit.document.management.domain.models.entities;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
+import org.tkit.quarkus.jpa.models.TraceableEntity;
+
+import lombok.Getter;
+import lombok.Setter;
+
+/**
+ * MinioAuditLog Entity Class
+ * The table which got created for this entity class stores the attachmentIds of
+ * all those attachments
+ * which got deleted from "dm_attachment" table
+ * but the file object of that attachment got failed to get deleted from the
+ * Minio Storage.
+ */
+@Getter
+@Setter
+@Entity
+@Table(name = "DM_MINIO_AUDIT_LOG")
+@java.lang.SuppressWarnings("java:S2160")
+public class MinioAuditLog extends TraceableEntity {
+
+    /**
+     * attachmentId of the attachment whose file object could not be deleted from
+     * Minio bucket
+     */
+    @Column(name = "ATTACHMENT_GUID")
+    private String attachmentId;
+
+}

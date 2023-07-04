@@ -19,6 +19,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -34,6 +35,7 @@ import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 import org.tkit.document.management.domain.daos.AttachmentDAO;
 import org.tkit.document.management.domain.daos.DocumentDAO;
 import org.tkit.document.management.domain.daos.DocumentTypeDAO;
+import org.tkit.document.management.domain.daos.MinioAuditLogDAO;
 import org.tkit.document.management.domain.daos.StorageUploadAuditDAO;
 import org.tkit.document.management.domain.daos.SupportedMimeTypeDAO;
 import org.tkit.document.management.domain.models.entities.Attachment;
@@ -44,6 +46,7 @@ import org.tkit.document.management.domain.models.entities.DocumentCharacteristi
 import org.tkit.document.management.domain.models.entities.DocumentRelationship;
 import org.tkit.document.management.domain.models.entities.DocumentSpecification;
 import org.tkit.document.management.domain.models.entities.DocumentType;
+import org.tkit.document.management.domain.models.entities.MinioAuditLog;
 import org.tkit.document.management.domain.models.entities.RelatedObjectRef;
 import org.tkit.document.management.domain.models.entities.RelatedPartyRef;
 import org.tkit.document.management.domain.models.entities.StorageUploadAudit;
@@ -54,6 +57,7 @@ import org.tkit.document.management.rs.v1.mappers.DocumentSpecificationMapper;
 import org.tkit.document.management.rs.v1.models.AttachmentCreateUpdateDTO;
 import org.tkit.document.management.rs.v1.models.DocumentCreateUpdateDTO;
 import org.tkit.document.management.rs.v1.models.DocumentSpecificationCreateUpdateDTO;
+import org.tkit.quarkus.jpa.models.TraceableEntity;
 import org.tkit.quarkus.rs.exceptions.RestException;
 
 import io.minio.GetObjectArgs;
@@ -67,6 +71,8 @@ import io.minio.errors.InvalidResponseException;
 import io.minio.errors.ServerException;
 import io.minio.errors.XmlParserException;
 import io.quarkus.logging.Log;
+import io.smallrye.mutiny.Uni;
+import io.smallrye.mutiny.infrastructure.Infrastructure;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -97,6 +103,9 @@ public class DocumentService {
 
     @Inject
     StorageUploadAuditDAO storageUploadAuditDAO;
+
+    @Inject
+    MinioAuditLogDAO minioAuditLogDAO;
 
     @Inject
     MinioClient minioClient;
@@ -279,24 +288,6 @@ public class DocumentService {
     }
 
     @Transactional
-    public void deleteFileInAttachment(Attachment attachment)
-            throws IOException, InvalidKeyException, InvalidResponseException, InsufficientDataException,
-            NoSuchAlgorithmException, ServerException, InternalException, XmlParserException, ErrorResponseException {
-        Log.info(CLASS_NAME, "Entered deleteFileInAttachment method", null);
-        minioClient.removeObject(
-                RemoveObjectArgs.builder()
-                        .bucket(bucketNamePrefix + bucketName)
-                        .object(attachment.getId())
-                        .build());
-        attachment.setSize(null);
-        attachment.setType(null);
-        attachment.setStorage(null);
-        attachment.setSizeUnit(null);
-        attachment.setExternalStorageURL(null);
-        Log.info(CLASS_NAME, "Exited deleteFileInAttachment method", null);
-    }
-
-    @Transactional
     public void deleteAttachmentInBulk(List<String> attachmentIds) {
         Log.info(CLASS_NAME, "Entered deleteAttachmentInBulk method", null);
         attachmentIds.stream().forEach(attachmentId -> {
@@ -305,31 +296,47 @@ public class DocumentService {
                 throw new RestException(Response.Status.NOT_FOUND, Response.Status.NOT_FOUND,
                         getAttachmentNotFoundMsg(attachmentId));
             }
-            try {
-                deleteFileInAttachment(attachment);
-            } catch (IOException | InvalidKeyException | InvalidResponseException | InsufficientDataException
-                    | NoSuchAlgorithmException | ServerException | InternalException | XmlParserException
-                    | ErrorResponseException e) {
-                throw new RestException(Response.Status.INTERNAL_SERVER_ERROR, Response.Status.INTERNAL_SERVER_ERROR,
-                        "An error occurred while deleting the attachment file from storage: " + e.getMessage());
-            }
-            attachmentDAO.delete(attachment);
+            attachment.setStorageUploadStatus(false);
+            asyncDeleteForAttachments(attachmentId);
         });
         Log.info(CLASS_NAME, "Exited deleteAttachmentInBulk method", null);
+    }
+
+    @Transactional(Transactional.TxType.NOT_SUPPORTED)
+    public void asyncDeleteForAttachments(String attachmentId) {
+        Log.info(CLASS_NAME, "Entered asyncDeleteInMultipleThreads method", null);
+        Uni.createFrom().item(attachmentId).emitOn(Infrastructure.getDefaultWorkerPool()).subscribe().with(
+                this::deleteFileInAttachmentAsync, Throwable::printStackTrace);
+        Log.info(CLASS_NAME, "Entered asyncDeleteInMultipleThreads method", null);
+    }
+
+    public void deleteFileInAttachmentAsync(String attachmentId) {
+        Log.info(CLASS_NAME, "Entered deleteFileInAttachmentAsync method", null);
+        try {
+            minioClient.removeObject(
+                    RemoveObjectArgs.builder()
+                            .bucket(bucketNamePrefix + bucketName)
+                            .object(attachmentId)
+                            .build());
+        } catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidKeyException
+                | InvalidResponseException | IOException | NoSuchAlgorithmException | ServerException
+                | XmlParserException e) {
+            MinioAuditLog minioAuditLog = new MinioAuditLog();
+            minioAuditLog.setAttachmentId(attachmentId);
+            minioAuditLogDAO.create(minioAuditLog);
+            throw new RuntimeException(e);
+        }
+        Log.info(CLASS_NAME, "Exited deleteFileInAttachmentAsync method", null);
     }
 
     @Transactional
     public void deleteFilesInDocument(Document document) {
         Log.info(CLASS_NAME, "Entered deleteFilesInDocument method", null);
-        document.getAttachments().forEach(att -> {
-            try {
-                deleteFileInAttachment(att);
-            } catch (IOException | ErrorResponseException | XmlParserException | InternalException | ServerException
-                    | NoSuchAlgorithmException | InsufficientDataException | InvalidResponseException
-                    | InvalidKeyException e) {
-                Log.error(e);
-            }
-        });
+        if (!Objects.isNull(document.getAttachments())) {
+            List<String> attachmentIds = document.getAttachments().stream().map(TraceableEntity::getId)
+                    .collect(Collectors.toList());
+            deleteAttachmentInBulk(attachmentIds);
+        }
         Log.info(CLASS_NAME, "Exited deleteFilesInDocument method", null);
     }
 

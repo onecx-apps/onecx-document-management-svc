@@ -59,7 +59,7 @@ class DocumentControllerTest extends AbstractTest {
     private static final String BASE_PATH = "/v1/document";
     private static final String EXISTING_DOCUMENT_ID = "51";
     private static final String EXISTING_DOCUMENT_ID_WITHOUT_ATTACHMENTS = "53";
-    private static final String NOT_EXISTING_DOCUMENT_ID = "1000";
+    private static final String NON_EXISTENT_DOCUMENT_ID = "1000";
     private static final String NAME_OF_DOCUMENT_1 = "document_1";
     private static final String DOCUMENT_CREATION_USER = "test";
     private static final String DESCRIPTION_OF_DOCUMENT_1 = "description_1";
@@ -92,7 +92,7 @@ class DocumentControllerTest extends AbstractTest {
     private static final String INVALID_MINIO_FILE_PATH_2 = "10002";
     private static final String EXISTING_DOCUMENT_ID_2 = "52";
     private static final String EXISTING_DOCUMENT_ID_4 = "54";
-    private static final String NOT_EXISTING_DOCUMENT_ID_2 = "1001";
+    private static final String NON_EXISTENT_DOCUMENT_ID_2 = "1001";
     private static final String UPDATED_DOCUMENT_NAME = "updated_document_name";
     private static final String UPDATED_DOCUMENT_TYPE = "203";
     private static final String UPDATED_DOCUMENT_DESCRIPTION = "updated_description";
@@ -202,12 +202,12 @@ class DocumentControllerTest extends AbstractTest {
                 .auth()
                 .oauth2(keycloakClient.getAccessToken(USER))
                 .when()
-                .get(BASE_PATH + "/" + NOT_EXISTING_DOCUMENT_ID);
+                .get(BASE_PATH + "/" + NON_EXISTENT_DOCUMENT_ID);
         response.then().statusCode(NOT_FOUND.getStatusCode());
         RFCProblemDTO rfcProblemDTO = response.as(RFCProblemDTO.class);
         assertThat(rfcProblemDTO.getStatus()).hasToString("404");
         assertThat(rfcProblemDTO.getDetail())
-                .isEqualTo("Document with id " + NOT_EXISTING_DOCUMENT_ID + " was not found.");
+                .isEqualTo("Document with id " + NON_EXISTENT_DOCUMENT_ID + " was not found.");
         assertThat(rfcProblemDTO.getInstance()).isNull();
         assertThat(rfcProblemDTO.getTitle()).isEqualTo("TECHNICAL ERROR");
         assertThat(rfcProblemDTO.getType()).isEqualTo("REST_EXCEPTION");
@@ -250,12 +250,12 @@ class DocumentControllerTest extends AbstractTest {
 
     @Test
     @DisplayName("Search criteria. Returns empty list when trying to find documents for nonexistent param.")
-    void testSuccessfulSearchCriteriaFindDocumentsByNotExistingParam() {
+    void testSuccessfulSearchCriteriaFindDocumentsByNonExistentParam() {
         Response response = given()
                 .auth()
                 .oauth2(keycloakClient.getAccessToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
-                .queryParam("id", NOT_EXISTING_DOCUMENT_ID)
+                .queryParam("id", NON_EXISTENT_DOCUMENT_ID)
                 .when()
                 .get(BASE_PATH);
 
@@ -271,7 +271,7 @@ class DocumentControllerTest extends AbstractTest {
                 .auth()
                 .oauth2(keycloakClient.getAccessToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
-                .queryParam("id", NOT_EXISTING_DOCUMENT_ID)
+                .queryParam("id", NON_EXISTENT_DOCUMENT_ID)
                 .when()
                 .get(BASE_PATH + "/show-all-documents");
 
@@ -718,21 +718,36 @@ class DocumentControllerTest extends AbstractTest {
                 .oauth2(keycloakClient.getAccessToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .when()
-                .get(BASE_PATH + "/" + NOT_EXISTING_DOCUMENT_ID);
+                .get(BASE_PATH + "/" + NON_EXISTENT_DOCUMENT_ID);
 
         response.then().statusCode(NOT_FOUND.getStatusCode());
         RFCProblemDTO rfcProblemDTO = response.as(RFCProblemDTO.class);
         assertThat(rfcProblemDTO.getStatus()).hasToString("404");
         assertThat(rfcProblemDTO.getDetail())
-                .isEqualTo("Document with id " + NOT_EXISTING_DOCUMENT_ID + " was not found.");
+                .isEqualTo("Document with id " + NON_EXISTENT_DOCUMENT_ID + " was not found.");
         assertThat(rfcProblemDTO.getInstance()).isNull();
         assertThat(rfcProblemDTO.getTitle()).isEqualTo("TECHNICAL ERROR");
         assertThat(rfcProblemDTO.getType()).isEqualTo("REST_EXCEPTION");
     }
 
     @Test
+    @DisplayName("Search criteria. Finds failed attachment by id.")
+    void testSuccessfulGetFailedAttachmentById() {
+        Response response = given().auth()
+                .oauth2(keycloakClient.getAccessToken(USER))
+                .accept(MediaType.APPLICATION_JSON)
+                .queryParam("id", EXISTING_DOCUMENT_ID)
+                .when()
+                .get(BASE_PATH);
+
+        response.then().statusCode(200);
+        PageResultDTO<DocumentDetailDTO> documents = response.as(getDocumentDetailDTOTypeRef());
+        assertThat(documents.getStream()).isNotEmpty();
+    }
+
+    @Test
     @DisplayName("Deletes document by id.")
-    void testSuccessfulDeletesDocumentById() {
+    void testSuccessfulDeleteDocumentById() {
         Response deleteResponse = given()
                 .auth()
                 .oauth2(keycloakClient.getAccessToken(USER))
@@ -760,12 +775,12 @@ class DocumentControllerTest extends AbstractTest {
                 .oauth2(keycloakClient.getAccessToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .when()
-                .delete(BASE_PATH + "/" + NOT_EXISTING_DOCUMENT_ID);
+                .delete(BASE_PATH + "/" + NON_EXISTENT_DOCUMENT_ID);
         deleteResponse.then().statusCode(NOT_FOUND.getStatusCode());
         RFCProblemDTO rfcProblemDTO = deleteResponse.as(RFCProblemDTO.class);
         assertThat(rfcProblemDTO.getStatus()).hasToString("404");
         assertThat(rfcProblemDTO.getDetail())
-                .isEqualTo("Document with id " + NOT_EXISTING_DOCUMENT_ID + " was not found.");
+                .isEqualTo("Document with id " + NON_EXISTENT_DOCUMENT_ID + " was not found.");
         assertThat(rfcProblemDTO.getInstance()).isNull();
         assertThat(rfcProblemDTO.getTitle()).isEqualTo("TECHNICAL ERROR");
         assertThat(rfcProblemDTO.getType()).isEqualTo("REST_EXCEPTION");
@@ -1626,13 +1641,13 @@ class DocumentControllerTest extends AbstractTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(documentCreateDTO)
                 .when()
-                .put(BASE_PATH + "/" + NOT_EXISTING_DOCUMENT_ID);
+                .put(BASE_PATH + "/" + NON_EXISTENT_DOCUMENT_ID);
 
         putResponse.then().statusCode(NOT_FOUND.getStatusCode());
         RFCProblemDTO rfcProblemDTO = putResponse.as(RFCProblemDTO.class);
         assertThat(rfcProblemDTO.getStatus()).hasToString("404");
         assertThat(rfcProblemDTO.getDetail())
-                .isEqualTo("Document with id " + NOT_EXISTING_DOCUMENT_ID + " was not found.");
+                .isEqualTo("Document with id " + NON_EXISTENT_DOCUMENT_ID + " was not found.");
         assertThat(rfcProblemDTO.getInstance()).isNull();
         assertThat(rfcProblemDTO.getTitle()).isEqualTo("TECHNICAL ERROR");
         assertThat(rfcProblemDTO.getType()).isEqualTo("REST_EXCEPTION");
@@ -1678,7 +1693,7 @@ class DocumentControllerTest extends AbstractTest {
                 .multiPart("file", Paths.get("src/test/resources/sample.jpg").toFile())
                 .multiPart("file", Paths.get("src/test/resources/sample2.jpg").toFile())
                 .when()
-                .post(BASE_PATH + "/files/upload/" + NOT_EXISTING_DOCUMENT_ID);
+                .post(BASE_PATH + "/files/upload/" + NON_EXISTENT_DOCUMENT_ID);
         postResponse.then().statusCode(NOT_FOUND.getStatusCode());
     }
 
@@ -1706,7 +1721,7 @@ class DocumentControllerTest extends AbstractTest {
         Response response = given()
                 .accept(MediaType.APPLICATION_OCTET_STREAM)
                 .when()
-                .get(BASE_PATH + "/file/" + NOT_EXISTING_DOCUMENT_ID);
+                .get(BASE_PATH + "/file/" + NON_EXISTENT_DOCUMENT_ID);
         response.then().statusCode(NOT_FOUND.getStatusCode());
     }
 
@@ -1734,8 +1749,8 @@ class DocumentControllerTest extends AbstractTest {
     void testFailedBulkDelete() {
 
         ArrayList<String> ids = new ArrayList<String>();
-        ids.add(NOT_EXISTING_DOCUMENT_ID);
-        ids.add(NOT_EXISTING_DOCUMENT_ID_2);
+        ids.add(NON_EXISTENT_DOCUMENT_ID);
+        ids.add(NON_EXISTENT_DOCUMENT_ID_2);
 
         Response deleteResponse = given()
                 .auth()
@@ -1780,7 +1795,7 @@ class DocumentControllerTest extends AbstractTest {
     @DisplayName("Bulk Update of non-existing document ids")
     void testFailedBulkUpdate() {
         DocumentCreateUpdateDTO doc1 = new DocumentCreateUpdateDTO();
-        doc1.setId(NOT_EXISTING_DOCUMENT_ID);
+        doc1.setId(NON_EXISTENT_DOCUMENT_ID);
         doc1.setName(UPDATED_DOCUMENT_NAME);
         doc1.setTypeId(UPDATED_DOCUMENT_TYPE);
         doc1.setDescription(UPDATED_DOCUMENT_DESCRIPTION);
@@ -1883,7 +1898,7 @@ class DocumentControllerTest extends AbstractTest {
                 .oauth2(keycloakClient.getAccessToken(USER))
                 .accept(MediaType.APPLICATION_OCTET_STREAM)
                 .when()
-                .get(BASE_PATH + "/file/" + NOT_EXISTING_DOCUMENT_ID + "/attachments");
+                .get(BASE_PATH + "/file/" + NON_EXISTENT_DOCUMENT_ID + "/attachments");
         getResponse.then().statusCode(400);
     }
 

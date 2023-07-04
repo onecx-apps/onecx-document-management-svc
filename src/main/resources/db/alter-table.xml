@@ -13,4 +13,14 @@
             <column name="storage_upload_status" type="boolean" defaultValue="1" defaultValueBoolean="1" />
         </addColumn>
     </changeSet>
+    <changeSet id="20230620-1100" author="dev (generated)">
+        <addColumn tableName="dm_document_type">
+            <column name="description" type="VARCHAR(100)" />
+            <column name="active_status" type = "boolean" defaultValue="1" defaultValueBoolean="1" />
+        </addColumn>
+    </changeSet>
+    <changeSet id="20230621-1055" author="dev (generated)">
+        <modifyDataType tableName="dm_document_type" columnName="name" newDataType="VARCHAR(60)"/>
+        <addUniqueConstraint tableName="dm_document_type" columnNames="name"/>
+    </changeSet>
 </databaseChangeLog>
