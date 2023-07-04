@@ -21,7 +21,7 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.Response;
 
 @QuarkusTest
-public class FileControllerTest extends AbstractTest {
+class FileControllerTest extends AbstractTest {
 
     private static final String SAMPLE_FILE_PATH = "src/test/resources/sample.jpg";
     private static final String SAMPLE2_FILE_PATH = "src/test/resources/sample2.jpg";

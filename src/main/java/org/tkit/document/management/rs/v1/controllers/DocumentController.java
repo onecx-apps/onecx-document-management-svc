@@ -281,7 +281,7 @@ public class DocumentController {
         // List of unique alphabetically sorted channel names ignoring cases
         List<Channel> uniqueSortedChannelNames = channelDAO.findAllSortedByNameAsc()
                 .filter(distinctByKey(c -> c.getName().toLowerCase(Locale.ROOT)))
-                .collect(Collectors.toList());
+                .toList();
         Log.info(CLASS_NAME, "Exited getAllChannels method", null);
         return Response.status(Response.Status.OK)
                 .entity(documentMapper.mapChannels(uniqueSortedChannelNames))

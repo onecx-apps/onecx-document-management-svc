@@ -1,7 +1,6 @@
 package org.tkit.document.management.rs.v1.controllers;
 
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -101,7 +100,7 @@ public class DocumentSpecificationController {
         return Response.status(Response.Status.OK)
                 .entity(documentSpecificationMapper
                         .findAllDocumentSpecifications(documentSpecificationDAO.findAll()
-                                .collect(Collectors.toList())))
+                                .toList()))
                 .build();
 
     }

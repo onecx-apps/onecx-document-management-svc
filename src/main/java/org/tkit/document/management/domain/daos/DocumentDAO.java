@@ -50,55 +50,7 @@ public class DocumentDAO extends AbstractDAO<Document> {
             throw new DAOException(ErrorKeys.ERROR_FIND_DOCUMENT_SEARCH_CRITERIA_REQUIRED, new NullPointerException());
         }
         try {
-            EntityManager entityManager = getEntityManager();
-            CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-            CriteriaQuery<Document> cq = cb.createQuery(Document.class);
-            Root<Document> root = cq.from(Document.class);
-            List<Predicate> predicates = new ArrayList<>();
-            cq.orderBy(cb.desc(root.get(AbstractTraceableEntity_.MODIFICATION_DATE)));
-            if (Objects.nonNull(criteria.getId())) {
-                predicates.add(cb.equal(root.get(TraceableEntity_.ID), criteria.getId()));
-            }
-            if (isNotEmpty(criteria.getName())) {
-                predicates.add(cb.like(cb.lower(root.get(Document_.NAME)), stringPattern(criteria.getName())));
-            }
-            if (!criteria.getLifeCycleState().isEmpty()) {
-                predicates.add(root.get(Document_.LIFE_CYCLE_STATE).in(criteria.getLifeCycleState()));
-            }
-            if (!criteria.getDocumentTypeId().isEmpty()) {
-                predicates.add(root.get(Document_.TYPE).get(TraceableEntity_.ID).in(criteria.getDocumentTypeId()));
-            }
-            if (isNotEmpty(criteria.getChannelName())) {
-                predicates.add(cb.equal(cb.lower(root.get(Document_.CHANNEL).get(Channel_.NAME)),
-                        criteria.getChannelName().toLowerCase()));
-            }
-            if (Objects.nonNull(criteria.getStartDate())) {
-                predicates.add(cb.greaterThanOrEqualTo(root.get(AbstractTraceableEntity_.CREATION_DATE),
-                        (criteria.getStartDate())));
-            }
-            if (Objects.nonNull(criteria.getEndDate())) {
-                predicates.add(cb.lessThanOrEqualTo(root.get(AbstractTraceableEntity_.CREATION_DATE),
-                        (criteria.getEndDate())));
-            }
-            if (Objects.nonNull(criteria.getCreateBy())) {
-                predicates.add(cb.equal(root.get(AbstractTraceableEntity_.CREATION_USER), criteria.getCreateBy()));
-            }
-
-            if (isNotEmpty(criteria.getObjectReferenceId())) {
-                predicates.add(
-                        cb.like(cb.lower(root.get(Document_.RELATED_OBJECT).get(RelatedObjectRef_.OBJECT_REFERENCE_ID)),
-                                stringPattern(criteria.getObjectReferenceId())));
-            }
-            if (isNotEmpty(criteria.getObjectReferenceType())) {
-                predicates.add(cb.like(
-                        cb.lower(root.get(Document_.RELATED_OBJECT).get(RelatedObjectRef_.OBJECT_REFERENCE_TYPE)),
-                        stringPattern(criteria.getObjectReferenceType())));
-            }
-
-            if (!predicates.isEmpty()) {
-                cq.where(cb.and(predicates.toArray(new Predicate[0])));
-            }
-
+            CriteriaQuery<Document> cq = createSearchCriteriaQuery(criteria);
             return createPageQuery(cq, Page.of(criteria.getPageNumber(), criteria.getPageSize())).getPageResult();
 
         } catch (Exception exception) {
@@ -166,60 +118,67 @@ public class DocumentDAO extends AbstractDAO<Document> {
         return (value.toLowerCase() + "%");
     }
 
+    private CriteriaQuery<Document> createSearchCriteriaQuery(DocumentSearchCriteria criteria) {
+
+        EntityManager entityManager = getEntityManager();
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Document> cq = cb.createQuery(Document.class);
+        Root<Document> root = cq.from(Document.class);
+        List<Predicate> predicates = new ArrayList<>();
+        cq.orderBy(cb.desc(root.get(AbstractTraceableEntity_.MODIFICATION_DATE)));
+        if (Objects.nonNull(criteria.getId())) {
+            predicates.add(cb.equal(root.get(TraceableEntity_.ID), criteria.getId()));
+        }
+        if (isNotEmpty(criteria.getName())) {
+            predicates.add(cb.like(cb.lower(root.get(Document_.NAME)), stringPattern(criteria.getName())));
+        }
+        if (!criteria.getLifeCycleState().isEmpty()) {
+            predicates.add(root.get(Document_.LIFE_CYCLE_STATE).in(criteria.getLifeCycleState()));
+        }
+        if (!criteria.getDocumentTypeId().isEmpty()) {
+            predicates.add(root.get(Document_.TYPE).get(TraceableEntity_.ID).in(criteria.getDocumentTypeId()));
+        }
+        if (isNotEmpty(criteria.getChannelName())) {
+            predicates.add(cb.equal(cb.lower(root.get(Document_.CHANNEL).get(Channel_.NAME)),
+                    criteria.getChannelName().toLowerCase()));
+        }
+        if (Objects.nonNull(criteria.getStartDate())) {
+            predicates.add(cb.greaterThanOrEqualTo(root.get(AbstractTraceableEntity_.CREATION_DATE),
+                    (criteria.getStartDate())));
+        }
+        if (Objects.nonNull(criteria.getEndDate())) {
+            predicates.add(cb.lessThanOrEqualTo(root.get(AbstractTraceableEntity_.CREATION_DATE),
+                    (criteria.getEndDate())));
+        }
+        if (Objects.nonNull(criteria.getCreateBy())) {
+            predicates.add(cb.equal(root.get(AbstractTraceableEntity_.CREATION_USER), criteria.getCreateBy()));
+        }
+
+        if (isNotEmpty(criteria.getObjectReferenceId())) {
+            predicates.add(
+                    cb.like(cb.lower(root.get(Document_.RELATED_OBJECT).get(RelatedObjectRef_.OBJECT_REFERENCE_ID)),
+                            stringPattern(criteria.getObjectReferenceId())));
+        }
+        if (isNotEmpty(criteria.getObjectReferenceType())) {
+            predicates.add(cb.like(
+                    cb.lower(root.get(Document_.RELATED_OBJECT).get(RelatedObjectRef_.OBJECT_REFERENCE_TYPE)),
+                    stringPattern(criteria.getObjectReferenceType())));
+        }
+
+        if (!predicates.isEmpty()) {
+            cq.where(cb.and(predicates.toArray(new Predicate[0])));
+        }
+
+        return cq;
+
+    }
+
     public List<Document> findAllDocumentsBySearchCriteria(DocumentSearchCriteria criteria) {
         if (criteria == null) {
             throw new DAOException(ErrorKeys.ERROR_FIND_DOCUMENT_SEARCH_CRITERIA_REQUIRED, new NullPointerException());
         }
         try {
-            EntityManager entityManager = getEntityManager();
-            CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-            CriteriaQuery<Document> cq = cb.createQuery(Document.class);
-            Root<Document> root = cq.from(Document.class);
-            List<Predicate> predicates = new ArrayList<>();
-            cq.orderBy(cb.desc(root.get(AbstractTraceableEntity_.MODIFICATION_DATE)));
-            if (Objects.nonNull(criteria.getId())) {
-                predicates.add(cb.equal(root.get(TraceableEntity_.ID), criteria.getId()));
-            }
-            if (isNotEmpty(criteria.getName())) {
-                predicates.add(cb.like(cb.lower(root.get(Document_.NAME)), stringPattern(criteria.getName())));
-            }
-            if (!criteria.getLifeCycleState().isEmpty()) {
-                predicates.add(root.get(Document_.LIFE_CYCLE_STATE).in(criteria.getLifeCycleState()));
-            }
-            if (!criteria.getDocumentTypeId().isEmpty()) {
-                predicates.add(root.get(Document_.TYPE).get(TraceableEntity_.ID).in(criteria.getDocumentTypeId()));
-            }
-            if (isNotEmpty(criteria.getChannelName())) {
-                predicates.add(cb.equal(cb.lower(root.get(Document_.CHANNEL).get(Channel_.NAME)),
-                        criteria.getChannelName().toLowerCase()));
-            }
-            if (Objects.nonNull(criteria.getStartDate())) {
-                predicates.add(cb.greaterThanOrEqualTo(root.get(AbstractTraceableEntity_.CREATION_DATE),
-                        (criteria.getStartDate())));
-            }
-            if (Objects.nonNull(criteria.getEndDate())) {
-                predicates.add(cb.lessThanOrEqualTo(root.get(AbstractTraceableEntity_.CREATION_DATE),
-                        (criteria.getEndDate())));
-            }
-            if (Objects.nonNull(criteria.getCreateBy())) {
-                predicates.add(cb.equal(root.get(AbstractTraceableEntity_.CREATION_USER), criteria.getCreateBy()));
-            }
-
-            if (isNotEmpty(criteria.getObjectReferenceId())) {
-                predicates.add(
-                        cb.like(cb.lower(root.get(Document_.RELATED_OBJECT).get(RelatedObjectRef_.OBJECT_REFERENCE_ID)),
-                                stringPattern(criteria.getObjectReferenceId())));
-            }
-            if (isNotEmpty(criteria.getObjectReferenceType())) {
-                predicates.add(cb.like(
-                        cb.lower(root.get(Document_.RELATED_OBJECT).get(RelatedObjectRef_.OBJECT_REFERENCE_TYPE)),
-                        stringPattern(criteria.getObjectReferenceType())));
-            }
-
-            if (!predicates.isEmpty()) {
-                cq.where(cb.and(predicates.toArray(new Predicate[0])));
-            }
-
+            CriteriaQuery<Document> cq = createSearchCriteriaQuery(criteria);
             TypedQuery<Document> typedQuery = em.createQuery(cq);
             return typedQuery.getResultList();
         } catch (Exception exception) {
