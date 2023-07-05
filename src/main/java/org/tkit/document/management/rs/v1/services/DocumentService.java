@@ -8,6 +8,7 @@ import java.net.URLConnection;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -298,17 +299,16 @@ public class DocumentService {
                         getAttachmentNotFoundMsg(attachmentId));
             }
             attachment.setStorageUploadStatus(false);
-            asyncDeleteForAttachments(attachmentId);
         });
         Log.info(CLASS_NAME, "Exited deleteAttachmentInBulk method", null);
     }
 
     @Transactional(Transactional.TxType.NOT_SUPPORTED)
     public void asyncDeleteForAttachments(String attachmentId) {
-        Log.info(CLASS_NAME, "Entered asyncDeleteInMultipleThreads method", null);
+        Log.info(CLASS_NAME, "Entered asyncDeleteForAttachments method", null);
         Uni.createFrom().item(attachmentId).emitOn(Infrastructure.getDefaultWorkerPool()).subscribe().with(
                 this::deleteFileInAttachmentAsync, Throwable::printStackTrace);
-        Log.info(CLASS_NAME, "Entered asyncDeleteInMultipleThreads method", null);
+        Log.info(CLASS_NAME, "Entered asyncDeleteForAttachments method", null);
     }
 
     public void deleteFileInAttachmentAsync(String attachmentId) {
@@ -331,21 +331,23 @@ public class DocumentService {
     }
 
     @Transactional
-    public void deleteFilesInDocument(Document document) {
+    public List<String> deleteFilesInDocument(Document document) {
         Log.info(CLASS_NAME, "Entered deleteFilesInDocument method", null);
         if (!Objects.isNull(document.getAttachments())) {
             List<String> attachmentIds = document.getAttachments().stream().map(TraceableEntity::getId)
                     .collect(Collectors.toList());
             deleteAttachmentInBulk(attachmentIds);
+            Log.info(CLASS_NAME, "Exited deleteFilesInDocument method", null);
+            return attachmentIds;
         }
-        Log.info(CLASS_NAME, "Exited deleteFilesInDocument method", null);
+        return Collections.emptyList();
     }
 
     /**
      * Finds the type {@link DocumentType} by id and sets the type in the document
      * entity {@link Document}.
      *
-     * @param dto a {@link DocumentCreateUpdateDTO}
+     * @param dto      a {@link DocumentCreateUpdateDTO}
      * @param document a {@link Document}
      */
     private void setType(@Valid DocumentCreateUpdateDTO dto, Document document) {
@@ -366,7 +368,7 @@ public class DocumentService {
      * specification
      * in the document entity {@link Document}.
      *
-     * @param dto a {@link DocumentCreateUpdateDTO}
+     * @param dto      a {@link DocumentCreateUpdateDTO}
      * @param document a {@link Document}
      */
     private void setSpecification(@Valid DocumentCreateUpdateDTO dto, Document document) {
@@ -406,7 +408,7 @@ public class DocumentService {
      * {@link Attachment}
      * in document entity {@link Document}.
      *
-     * @param dto a {@link DocumentCreateUpdateDTO}
+     * @param dto      a {@link DocumentCreateUpdateDTO}
      * @param document a {@link Document}
      */
     private void setAttachments(@Valid DocumentCreateUpdateDTO dto, Document document) {
@@ -431,7 +433,7 @@ public class DocumentService {
      * Updates {@link Channel} in {@link Document} or creates new {@link Channel}
      * and sets in {@link Document}.
      *
-     * @param document a {@link Document}
+     * @param document  a {@link Document}
      * @param updateDTO a {@link DocumentCreateUpdateDTO}
      */
     private void updateChannelInDocument(Document document, DocumentCreateUpdateDTO updateDTO) {
@@ -449,7 +451,7 @@ public class DocumentService {
      * Updates {@link RelatedObjectRef} in {@link Document} or creates new
      * {@link RelatedObjectRef} and sets in {@link Document}.
      *
-     * @param document a {@link Document}
+     * @param document  a {@link Document}
      * @param updateDTO a {@link DocumentCreateUpdateDTO}
      */
     private void updateRelatedObjectRefInDocument(Document document, DocumentCreateUpdateDTO updateDTO) {
@@ -474,7 +476,7 @@ public class DocumentService {
      * {@link Attachment}
      * and add to collection or remove {@link Attachment} from collection.
      *
-     * @param document a {@link Document}
+     * @param document  a {@link Document}
      * @param updateDTO a {@link DocumentCreateUpdateDTO}
      */
     private void updateAttachmentsInDocument(Document document, DocumentCreateUpdateDTO updateDTO) {
