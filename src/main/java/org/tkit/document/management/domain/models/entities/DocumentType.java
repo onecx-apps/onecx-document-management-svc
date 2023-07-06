@@ -16,7 +16,6 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "DM_DOCUMENT_TYPE")
-@java.lang.SuppressWarnings("java:S2160")
 public class DocumentType extends TraceableEntity {
     /**
      * Name of the document type.

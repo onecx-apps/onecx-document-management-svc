@@ -27,7 +27,6 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "DM_ATTACHMENT")
-@java.lang.SuppressWarnings("java:S2160")
 public class Attachment extends TraceableEntity {
     /**
      * Name of the attachment.

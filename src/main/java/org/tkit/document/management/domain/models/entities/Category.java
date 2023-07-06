@@ -16,7 +16,6 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "DM_CATEGORY")
-@java.lang.SuppressWarnings("java:S2160")
 public class Category extends TraceableEntity {
     /**
      * Name of the category.

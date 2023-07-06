@@ -21,7 +21,6 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "DM_MINIO_AUDIT_LOG")
-@java.lang.SuppressWarnings("java:S2160")
 public class MinioAuditLog extends TraceableEntity {
 
     /**

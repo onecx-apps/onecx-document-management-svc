@@ -16,7 +16,6 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "DM_SUPPORTED_MIME_TYPE")
-@java.lang.SuppressWarnings("java:S2160")
 public class SupportedMimeType extends TraceableEntity {
     /**
      * Name of the supported mime-type.

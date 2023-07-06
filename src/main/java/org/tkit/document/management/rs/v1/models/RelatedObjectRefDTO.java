@@ -7,7 +7,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@java.lang.SuppressWarnings("java:S2160")
 public class RelatedObjectRefDTO extends TraceableDTO {
 
     private String involvement;
