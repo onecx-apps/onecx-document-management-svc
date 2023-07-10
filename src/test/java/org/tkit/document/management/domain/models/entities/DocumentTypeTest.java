@@ -11,7 +11,7 @@ import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class DocumentTypeTest {
+class DocumentTypeTest {
     @Test
     @DisplayName("Getter and Setters for Document Type")
     void testDocumentTypeSetters() {

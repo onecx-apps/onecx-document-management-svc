@@ -14,7 +14,7 @@ import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class RFCProblemDTOTest extends AbstractTest {
+class RFCProblemDTOTest extends AbstractTest {
 
     private static final String TO_STRING_RESULT_1 = "RFCProblemDTO(type=test-type, title=test-title, status=200)";
     private static final String TO_STRING_RESULT_2 = "RFCProblemDTO(type=test-type, title=test-title, status=400)";

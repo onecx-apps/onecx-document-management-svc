@@ -11,7 +11,7 @@ import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class MinioAuditLogTest {
+class MinioAuditLogTest {
 
     @Test
     @DisplayName("Getter And Setters for AttachmentId")
