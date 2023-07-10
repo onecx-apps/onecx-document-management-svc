@@ -37,7 +37,7 @@ class StorageUploadAuditTest extends AbstractTest {
         String objectReferenceType = "Valorant";
         String objectReferenceId = "0000";
 
-        //Use setter method to set all the properties of storageUploadAudit
+        // Use setter method to set all the properties of storageUploadAudit
         storageUploadAudit.setDocumentId(documentId);
         storageUploadAudit.setDocumentName(documentName);
         storageUploadAudit.setDocumentDescription(documentDescription);

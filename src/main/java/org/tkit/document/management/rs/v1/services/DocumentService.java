@@ -82,7 +82,6 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @ApplicationScoped
-@SuppressWarnings("java:S3776")
 public class DocumentService {
 
     @Inject
@@ -171,12 +170,7 @@ public class DocumentService {
         Map<String, List<InputPart>> uploadForm = input.getFormDataMap();
         List<InputPart> inputParts = uploadForm.get(FORM_DATA_MAP_KEY);
         if (String.valueOf(inputParts.get(0).getMediaType()).equals(ATTACHMENT_ID_LIST_MEDIA_TYPE)) {
-            List<String> attachmentIdList = new ArrayList<>();
-            StringTokenizer stringTokenizer = new StringTokenizer(String.valueOf(inputParts.get(0).getBodyAsString()),
-                    STRING_TOKEN_DELIMITER);
-            while (stringTokenizer.hasMoreTokens()) {
-                attachmentIdList.add(stringTokenizer.nextToken());
-            }
+            List<String> attachmentIdList = getAttachmentIdList(inputParts);
             inputParts.remove(0);
             if (!attachmentIdList.isEmpty()) {
                 attachmentIdList.stream().forEach(attachmentId -> {
@@ -218,6 +212,16 @@ public class DocumentService {
         }
         Log.info(CLASS_NAME, "Exited uploadAttachment method", null);
         return map;
+    }
+
+    private List<String> getAttachmentIdList(List<InputPart> inputPartList) throws IOException {
+        List<String> attachmentIdList = new ArrayList<>();
+        StringTokenizer stringTokenizer = new StringTokenizer(String.valueOf(inputPartList.get(0).getBodyAsString()),
+                STRING_TOKEN_DELIMITER);
+        while (stringTokenizer.hasMoreTokens()) {
+            attachmentIdList.add(stringTokenizer.nextToken());
+        }
+        return attachmentIdList;
     }
 
     public void createStorageUploadAuditRecords(String documentId, Document document, Attachment attachment) {
@@ -290,8 +294,8 @@ public class DocumentService {
     }
 
     @Transactional
-    public void deleteAttachmentInBulk(List<String> attachmentIds) {
-        Log.info(CLASS_NAME, "Entered deleteAttachmentInBulk method", null);
+    public void updateAttachmentStatusInBulk(List<String> attachmentIds) {
+        Log.info(CLASS_NAME, "Entered updateAttachmentStatusInBulk method", null);
         attachmentIds.stream().forEach(attachmentId -> {
             Attachment attachment = attachmentDAO.findById(attachmentId);
             if (Objects.isNull(attachment)) {
@@ -300,7 +304,7 @@ public class DocumentService {
             }
             attachment.setStorageUploadStatus(false);
         });
-        Log.info(CLASS_NAME, "Exited deleteAttachmentInBulk method", null);
+        Log.info(CLASS_NAME, "Exited updateAttachmentStatusInBulk method", null);
     }
 
     @Transactional(Transactional.TxType.NOT_SUPPORTED)
@@ -331,13 +335,13 @@ public class DocumentService {
     }
 
     @Transactional
-    public List<String> deleteFilesInDocument(Document document) {
-        Log.info(CLASS_NAME, "Entered deleteFilesInDocument method", null);
+    public List<String> getFilesIdToBeDeletedInDocument(Document document) {
+        Log.info(CLASS_NAME, "Entered getFilesIdToBeDeletedInDocument method", null);
         if (!Objects.isNull(document.getAttachments())) {
             List<String> attachmentIds = document.getAttachments().stream().map(TraceableEntity::getId)
                     .collect(Collectors.toList());
-            deleteAttachmentInBulk(attachmentIds);
-            Log.info(CLASS_NAME, "Exited deleteFilesInDocument method", null);
+            updateAttachmentStatusInBulk(attachmentIds);
+            Log.info(CLASS_NAME, "Exited getFilesIdToBeDeletedInDocument method", null);
             return attachmentIds;
         }
         return Collections.emptyList();

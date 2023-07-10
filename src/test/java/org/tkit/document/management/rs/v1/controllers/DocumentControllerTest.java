@@ -8,6 +8,7 @@ import static javax.ws.rs.core.Response.Status.NO_CONTENT;
 import static javax.ws.rs.core.Response.Status.OK;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.io.File;
 import java.nio.file.Paths;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 
 import javax.ws.rs.core.MediaType;
 
+import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.tkit.document.management.domain.models.enums.LifeCycleState;
@@ -59,7 +61,7 @@ class DocumentControllerTest extends AbstractTest {
     private static final String BASE_PATH = "/v1/document";
     private static final String EXISTING_DOCUMENT_ID = "51";
     private static final String EXISTING_DOCUMENT_ID_WITHOUT_ATTACHMENTS = "53";
-    private static final String NON_EXISTENT_DOCUMENT_ID = "1000";
+    private static final String NONEXISTENT_DOCUMENT_ID = "1000";
     private static final String NAME_OF_DOCUMENT_1 = "document_1";
     private static final String DOCUMENT_CREATION_USER = "test";
     private static final String DESCRIPTION_OF_DOCUMENT_1 = "description_1";
@@ -81,21 +83,30 @@ class DocumentControllerTest extends AbstractTest {
     private static final int NUMBER_OF_CATEGORIES_RELATIONSHIPS_OF_DOCUMENT_1 = 3;
     private static final int NUMBER_OF_ATTACHMENTS_RELATIONSHIPS_OF_DOCUMENT_1 = 2;
     private static final String ZIP_CONTENT_TYPE = "application/zip";
-    //     private static final String SAMPLE_FILE_PATH_1 = "src/test/resources/sample.jpg";
-    //     private static final String SAMPLE_FILE_PATH_2 = "src/test/resources/sample2.jpg";
-    //     private static final String FORM_PARAM_FILE = "file";
-    //     private static final String FILE_BASE_PATH = "/v1/files/";
-    //     private static final String BUCKET_NAME = "test-bucket";
-    //     private static final String MINIO_FILE_PATH_1 = "101";
-    //     private static final String MINIO_FILE_PATH_2 = "102";
+    private static final String SAMPLE_FILE_PATH_1 = "src/test/resources/105";
+    private static final String SAMPLE_FILE_PATH_2 = "src/test/resources/106";
+    private static final String FORM_PARAM_FILE = "file";
+    private static final String FILE_BASE_PATH = "/v1/files/";
+    private static final String BUCKET_NAME = "test-bucket";
+    private static final String MINIO_FILE_PATH_1 = "105";
+    private static final String MINIO_FILE_PATH_2 = "106";
+    private static final String EXISTING_DOCUMENT_ID_5 = "55";
     private static final String INVALID_MINIO_FILE_PATH_1 = "10001";
     private static final String INVALID_MINIO_FILE_PATH_2 = "10002";
+    private static final String NONEXISTENT_ATTACHMENT_ID = "1001";
+    private static final String EXISTING_ATTACHMENT_ID = "105";
     private static final String EXISTING_DOCUMENT_ID_2 = "52";
     private static final String EXISTING_DOCUMENT_ID_4 = "54";
-    private static final String NON_EXISTENT_DOCUMENT_ID_2 = "1001";
+    private static final String NONEXISTENT_DOCUMENT_ID_2 = "1001";
     private static final String UPDATED_DOCUMENT_NAME = "updated_document_name";
     private static final String UPDATED_DOCUMENT_TYPE = "203";
     private static final String UPDATED_DOCUMENT_DESCRIPTION = "updated_description";
+    private static final String SAMPLE_JPG_FILE1 = "src/test/resources/sample.jpg";
+    private static final String SAMPLE_JPG_FILE2 = "src/test/resources/sample2.jpg";
+    private static final String SAMPLE_TEXT_FILE1 = "src/test/resources/file1.txt";
+    private static final String VALID_DOCUMENT_ID_WITH_ATTACHMENTS = "56";
+    private static final String API_PATH_MULTIPLE_FILE_UPLOADS = "/files/upload/";
+    private static final String DIRECTORY_SEPERATOR = "/";
 
     @Test
     @DisplayName("Returns all documents with no criteria given.")
@@ -108,8 +119,8 @@ class DocumentControllerTest extends AbstractTest {
                 .get(BASE_PATH);
 
         response.then().statusCode(200);
-        PageResultDTO documents = response.as(PageResultDTO.class);
-        assertThat(documents.getStream()).hasSize(4);
+        PageResultDTO<DocumentDetailDTO> documents = response.as(getDocumentDetailDTOTypeRef());
+        assertThat(documents.getStream()).hasSize(6);
     }
 
     @Test
@@ -124,7 +135,7 @@ class DocumentControllerTest extends AbstractTest {
                 .get(BASE_PATH);
 
         response.then().statusCode(200);
-        PageResultDTO documents = response.as(PageResultDTO.class);
+        PageResultDTO<DocumentDetailDTO> documents = response.as(getDocumentDetailDTOTypeRef());
         assertThat(documents.getStream()).hasSize(1);
     }
 
@@ -141,7 +152,7 @@ class DocumentControllerTest extends AbstractTest {
                 .get(BASE_PATH);
 
         response.then().statusCode(200);
-        PageResultDTO documents = response.as(PageResultDTO.class);
+        PageResultDTO<DocumentDetailDTO> documents = response.as(getDocumentDetailDTOTypeRef());
         assertThat(documents.getStream()).hasSize(1);
     }
 
@@ -159,12 +170,11 @@ class DocumentControllerTest extends AbstractTest {
         attachmentIds.add("101");
         attachmentIds.add("102");
 
-        Response response = given()
-                .auth()
+        Response response = given().auth()
                 .oauth2(keycloakClient.getAccessToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .when()
-                .get(BASE_PATH + "/" + EXISTING_DOCUMENT_ID);
+                .get(BASE_PATH + DIRECTORY_SEPERATOR + EXISTING_DOCUMENT_ID);
 
         response.then().statusCode(200);
         DocumentDetailDTO document = response.as(DocumentDetailDTO.class);
@@ -202,12 +212,12 @@ class DocumentControllerTest extends AbstractTest {
                 .auth()
                 .oauth2(keycloakClient.getAccessToken(USER))
                 .when()
-                .get(BASE_PATH + "/" + NON_EXISTENT_DOCUMENT_ID);
+                .get(BASE_PATH + DIRECTORY_SEPERATOR + NONEXISTENT_DOCUMENT_ID);
         response.then().statusCode(NOT_FOUND.getStatusCode());
         RFCProblemDTO rfcProblemDTO = response.as(RFCProblemDTO.class);
         assertThat(rfcProblemDTO.getStatus()).hasToString("404");
         assertThat(rfcProblemDTO.getDetail())
-                .isEqualTo("Document with id " + NON_EXISTENT_DOCUMENT_ID + " was not found.");
+                .isEqualTo("Document with id " + NONEXISTENT_DOCUMENT_ID + " was not found.");
         assertThat(rfcProblemDTO.getInstance()).isNull();
         assertThat(rfcProblemDTO.getTitle()).isEqualTo("TECHNICAL ERROR");
         assertThat(rfcProblemDTO.getType()).isEqualTo("REST_EXCEPTION");
@@ -255,7 +265,7 @@ class DocumentControllerTest extends AbstractTest {
                 .auth()
                 .oauth2(keycloakClient.getAccessToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
-                .queryParam("id", NON_EXISTENT_DOCUMENT_ID)
+                .queryParam("id", NONEXISTENT_DOCUMENT_ID)
                 .when()
                 .get(BASE_PATH);
 
@@ -271,7 +281,7 @@ class DocumentControllerTest extends AbstractTest {
                 .auth()
                 .oauth2(keycloakClient.getAccessToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
-                .queryParam("id", NON_EXISTENT_DOCUMENT_ID)
+                .queryParam("id", NONEXISTENT_DOCUMENT_ID)
                 .when()
                 .get(BASE_PATH + "/show-all-documents");
 
@@ -327,7 +337,7 @@ class DocumentControllerTest extends AbstractTest {
 
         response.then().statusCode(200);
         PageResultDTO<DocumentDetailDTO> documents = response.as(getDocumentDetailDTOTypeRef());
-        assertThat(documents.getStream()).hasSize(4);
+        assertThat(documents.getStream()).hasSize(6);
     }
 
     @Test
@@ -343,7 +353,7 @@ class DocumentControllerTest extends AbstractTest {
 
         response.then().statusCode(200);
         PageResultDTO<DocumentDetailDTO> documents = response.as(getDocumentDetailDTOTypeRef());
-        assertThat(documents.getStream()).hasSize(4);
+        assertThat(documents.getStream()).hasSize(6);
         assertThat(documents.getStream().stream()).allMatch(el -> el.getName().startsWith("docu"));
     }
 
@@ -360,7 +370,7 @@ class DocumentControllerTest extends AbstractTest {
 
         response.then().statusCode(200);
         List<DocumentDetailDTO> documentList = Arrays.asList(response.getBody().as(DocumentDetailDTO[].class));
-        assertThat(documentList).hasSize(4);
+        assertThat(documentList).hasSize(6);
         assertThat(documentList.stream()).allMatch(el -> el.getName().startsWith("docu"));
     }
 
@@ -519,7 +529,7 @@ class DocumentControllerTest extends AbstractTest {
 
         response.then().statusCode(200);
         PageResultDTO<DocumentDetailDTO> documents = response.as(getDocumentDetailDTOTypeRef());
-        assertThat(documents.getStream()).hasSize(2);
+        assertThat(documents.getStream()).hasSize(3);
         assertThat(documents.getStream().stream()).allMatch(el -> el.getRelatedObject().getObjectReferenceId()
                 .equals(RELATED_OBJECT_REF_ID_OF_DOCUMENT));
     }
@@ -537,7 +547,7 @@ class DocumentControllerTest extends AbstractTest {
 
         response.then().statusCode(200);
         List<DocumentDetailDTO> documentList = Arrays.asList(response.getBody().as(DocumentDetailDTO[].class));
-        assertThat(documentList).hasSize(2);
+        assertThat(documentList).hasSize(3);
         assertThat(documentList.stream()).allMatch(el -> el.getRelatedObject().getObjectReferenceId()
                 .equals(RELATED_OBJECT_REF_ID_OF_DOCUMENT));
     }
@@ -555,7 +565,7 @@ class DocumentControllerTest extends AbstractTest {
 
         response.then().statusCode(200);
         PageResultDTO<DocumentDetailDTO> documents = response.as(getDocumentDetailDTOTypeRef());
-        assertThat(documents.getStream()).hasSize(3);
+        assertThat(documents.getStream()).hasSize(4);
         assertThat(documents.getStream().stream()).allMatch(el -> el.getRelatedObject().getObjectReferenceType()
                 .equals(RELATED_OBJECT_REF_TYPE_OF_DOCUMENT));
     }
@@ -573,7 +583,7 @@ class DocumentControllerTest extends AbstractTest {
 
         response.then().statusCode(200);
         List<DocumentDetailDTO> documentList = Arrays.asList(response.getBody().as(DocumentDetailDTO[].class));
-        assertThat(documentList).hasSize(3);
+        assertThat(documentList).hasSize(4);
         assertThat(documentList.stream()).allMatch(el -> el.getRelatedObject().getObjectReferenceType()
                 .equals(RELATED_OBJECT_REF_TYPE_OF_DOCUMENT));
     }
@@ -718,13 +728,13 @@ class DocumentControllerTest extends AbstractTest {
                 .oauth2(keycloakClient.getAccessToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .when()
-                .get(BASE_PATH + "/" + NON_EXISTENT_DOCUMENT_ID);
+                .get(BASE_PATH + DIRECTORY_SEPERATOR + NONEXISTENT_DOCUMENT_ID);
 
         response.then().statusCode(NOT_FOUND.getStatusCode());
         RFCProblemDTO rfcProblemDTO = response.as(RFCProblemDTO.class);
         assertThat(rfcProblemDTO.getStatus()).hasToString("404");
         assertThat(rfcProblemDTO.getDetail())
-                .isEqualTo("Document with id " + NON_EXISTENT_DOCUMENT_ID + " was not found.");
+                .isEqualTo("Document with id " + NONEXISTENT_DOCUMENT_ID + " was not found.");
         assertThat(rfcProblemDTO.getInstance()).isNull();
         assertThat(rfcProblemDTO.getTitle()).isEqualTo("TECHNICAL ERROR");
         assertThat(rfcProblemDTO.getType()).isEqualTo("REST_EXCEPTION");
@@ -753,7 +763,7 @@ class DocumentControllerTest extends AbstractTest {
                 .oauth2(keycloakClient.getAccessToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .when()
-                .delete(BASE_PATH + "/" + EXISTING_DOCUMENT_ID);
+                .delete(BASE_PATH + DIRECTORY_SEPERATOR + EXISTING_DOCUMENT_ID);
         deleteResponse.then().statusCode(NO_CONTENT.getStatusCode());
 
         Response getResponse = given()
@@ -764,7 +774,7 @@ class DocumentControllerTest extends AbstractTest {
                 .get(BASE_PATH);
         getResponse.then().statusCode(200);
         PageResultDTO<DocumentDetailDTO> documents = getResponse.as(getDocumentDetailDTOTypeRef());
-        assertThat(documents.getStream()).hasSize(3);
+        assertThat(documents.getStream()).hasSize(5);
     }
 
     @Test
@@ -775,12 +785,12 @@ class DocumentControllerTest extends AbstractTest {
                 .oauth2(keycloakClient.getAccessToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .when()
-                .delete(BASE_PATH + "/" + NON_EXISTENT_DOCUMENT_ID);
+                .delete(BASE_PATH + DIRECTORY_SEPERATOR + NONEXISTENT_DOCUMENT_ID);
         deleteResponse.then().statusCode(NOT_FOUND.getStatusCode());
         RFCProblemDTO rfcProblemDTO = deleteResponse.as(RFCProblemDTO.class);
         assertThat(rfcProblemDTO.getStatus()).hasToString("404");
         assertThat(rfcProblemDTO.getDetail())
-                .isEqualTo("Document with id " + NON_EXISTENT_DOCUMENT_ID + " was not found.");
+                .isEqualTo("Document with id " + NONEXISTENT_DOCUMENT_ID + " was not found.");
         assertThat(rfcProblemDTO.getInstance()).isNull();
         assertThat(rfcProblemDTO.getTitle()).isEqualTo("TECHNICAL ERROR");
         assertThat(rfcProblemDTO.getType()).isEqualTo("REST_EXCEPTION");
@@ -1400,7 +1410,7 @@ class DocumentControllerTest extends AbstractTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(documentCreateDTO)
                 .when()
-                .put(BASE_PATH + "/" + EXISTING_DOCUMENT_ID);
+                .put(BASE_PATH + DIRECTORY_SEPERATOR + EXISTING_DOCUMENT_ID);
 
         putResponse.then().statusCode(201);
         DocumentDetailDTO documentDetailDTO = putResponse.as(DocumentDetailDTO.class);
@@ -1438,7 +1448,7 @@ class DocumentControllerTest extends AbstractTest {
                 .oauth2(keycloakClient.getAccessToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .when()
-                .get(BASE_PATH + "/" + EXISTING_DOCUMENT_ID)
+                .get(BASE_PATH + DIRECTORY_SEPERATOR + EXISTING_DOCUMENT_ID)
                 .as(DocumentDetailDTO.class);
 
         assertThat(documentDetailDTO.getId()).isEqualTo(EXISTING_DOCUMENT_ID);
@@ -1498,7 +1508,7 @@ class DocumentControllerTest extends AbstractTest {
         Set<RelatedPartyRefCreateUpdateDTO> relatedParties = Set.of(existingRelatedParty, newRelatedParty);
 
         CategoryCreateUpdateDTO existingCategory = new CategoryCreateUpdateDTO();
-        existingCategory.setId("4");
+        existingCategory.setId("1");
         existingCategory.setName("TEST_Name_1");
         CategoryCreateUpdateDTO newCategory = new CategoryCreateUpdateDTO();
         newCategory.setName("TEST_Name_2");
@@ -1529,7 +1539,7 @@ class DocumentControllerTest extends AbstractTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(documentCreateDTO)
                 .when()
-                .put(BASE_PATH + "/" + EXISTING_DOCUMENT_ID);
+                .put(BASE_PATH + DIRECTORY_SEPERATOR + EXISTING_DOCUMENT_ID);
 
         putResponse.then().statusCode(201);
 
@@ -1538,7 +1548,7 @@ class DocumentControllerTest extends AbstractTest {
                 .oauth2(keycloakClient.getAccessToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .when()
-                .get(BASE_PATH + "/" + EXISTING_DOCUMENT_ID)
+                .get(BASE_PATH + DIRECTORY_SEPERATOR + EXISTING_DOCUMENT_ID)
                 .as(DocumentDetailDTO.class);
 
         assertThat(documentDetailDTO.getId()).isEqualTo(EXISTING_DOCUMENT_ID);
@@ -1641,13 +1651,13 @@ class DocumentControllerTest extends AbstractTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(documentCreateDTO)
                 .when()
-                .put(BASE_PATH + "/" + NON_EXISTENT_DOCUMENT_ID);
+                .put(BASE_PATH + DIRECTORY_SEPERATOR + NONEXISTENT_DOCUMENT_ID);
 
         putResponse.then().statusCode(NOT_FOUND.getStatusCode());
         RFCProblemDTO rfcProblemDTO = putResponse.as(RFCProblemDTO.class);
         assertThat(rfcProblemDTO.getStatus()).hasToString("404");
         assertThat(rfcProblemDTO.getDetail())
-                .isEqualTo("Document with id " + NON_EXISTENT_DOCUMENT_ID + " was not found.");
+                .isEqualTo("Document with id " + NONEXISTENT_DOCUMENT_ID + " was not found.");
         assertThat(rfcProblemDTO.getInstance()).isNull();
         assertThat(rfcProblemDTO.getTitle()).isEqualTo("TECHNICAL ERROR");
         assertThat(rfcProblemDTO.getType()).isEqualTo("REST_EXCEPTION");
@@ -1675,11 +1685,11 @@ class DocumentControllerTest extends AbstractTest {
                 .auth()
                 .oauth2(keycloakClient.getAccessToken(USER))
                 .contentType(MediaType.MULTIPART_FORM_DATA)
-                .multiPart("file", Paths.get("src/test/resources/file1.txt").toFile())
-                .multiPart("file", Paths.get("src/test/resources/sample.jpg").toFile())
-                .multiPart("file", Paths.get("src/test/resources/sample2.jpg").toFile())
+                .multiPart(FORM_PARAM_FILE, Paths.get(SAMPLE_TEXT_FILE1).toFile())
+                .multiPart(FORM_PARAM_FILE, Paths.get(SAMPLE_JPG_FILE1).toFile())
+                .multiPart(FORM_PARAM_FILE, Paths.get(SAMPLE_JPG_FILE2).toFile())
                 .when()
-                .post(BASE_PATH + "/files/upload/" + EXISTING_DOCUMENT_ID_WITHOUT_ATTACHMENTS);
+                .post(BASE_PATH + API_PATH_MULTIPLE_FILE_UPLOADS + EXISTING_DOCUMENT_ID_WITHOUT_ATTACHMENTS);
         postResponse.then().statusCode(CREATED.getStatusCode());
     }
 
@@ -1690,17 +1700,47 @@ class DocumentControllerTest extends AbstractTest {
                 .auth()
                 .oauth2(keycloakClient.getAccessToken(USER))
                 .contentType(MediaType.MULTIPART_FORM_DATA)
-                .multiPart("file", Paths.get("src/test/resources/sample.jpg").toFile())
-                .multiPart("file", Paths.get("src/test/resources/sample2.jpg").toFile())
+                .multiPart(FORM_PARAM_FILE, Paths.get(SAMPLE_JPG_FILE1).toFile())
+                .multiPart(FORM_PARAM_FILE, Paths.get(SAMPLE_JPG_FILE2).toFile())
                 .when()
-                .post(BASE_PATH + "/files/upload/" + NON_EXISTENT_DOCUMENT_ID);
+                .post(BASE_PATH + API_PATH_MULTIPLE_FILE_UPLOADS + NONEXISTENT_DOCUMENT_ID);
         postResponse.then().statusCode(NOT_FOUND.getStatusCode());
+    }
+
+    @Test
+    @DisplayName("Uploads attachment to Minio incase of Create New Document and Quick Upload")
+    void testSuccessfulUploadAttachmentForNewCreate() {
+        File file1 = new File(SAMPLE_JPG_FILE1);
+        File file2 = new File(SAMPLE_JPG_FILE2);
+        Response postResponse = given().auth()
+                .oauth2(keycloakClient.getAccessToken(USER))
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .multiPart(FORM_PARAM_FILE, file1)
+                .multiPart(FORM_PARAM_FILE, file2)
+                .when()
+                .post(BASE_PATH + API_PATH_MULTIPLE_FILE_UPLOADS + VALID_DOCUMENT_ID_WITH_ATTACHMENTS);
+        postResponse.then().statusCode(CREATED.getStatusCode());
+    }
+
+    @Test
+    @DisplayName("Edits the attachment's file object in Minio incase of editing attachments")
+    void testSuccessfulUploadAttachmentForEditAttachment() {
+        File file1 = new File(SAMPLE_JPG_FILE1);
+        File file2 = new File(SAMPLE_JPG_FILE2);
+        Response postResponse = given().auth()
+                .oauth2(keycloakClient.getAccessToken(USER))
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .multiPart(FORM_PARAM_FILE, Paths.get(SAMPLE_TEXT_FILE1).toFile(), ContentType.TEXT_PLAIN.getMimeType())
+                .multiPart(FORM_PARAM_FILE, file1)
+                .multiPart(FORM_PARAM_FILE, file2)
+                .when()
+                .post(BASE_PATH + API_PATH_MULTIPLE_FILE_UPLOADS + VALID_DOCUMENT_ID_WITH_ATTACHMENTS);
+        postResponse.then().statusCode(CREATED.getStatusCode());
     }
 
     // @Test
     // @DisplayName("Test method for cleanup of failed files.")
     // void testSuccessfulDbCleanupOfFailedAttachments() {
-    // DocumentController documentController = new DocumentController();
     // documentController.clearFailedFilesFromDBPeriodically();
     // }
 
@@ -1716,12 +1756,30 @@ class DocumentControllerTest extends AbstractTest {
     }
 
     @Test
+    @DisplayName("Get File By Existing Attachment Id")
+    void testSuccessfulGetFileById() {
+        File sampleFile1 = new File(SAMPLE_FILE_PATH_1);
+
+        Response putResponse = given()
+                .multiPart(FORM_PARAM_FILE, sampleFile1)
+                .when()
+                .put(FILE_BASE_PATH + BUCKET_NAME + DIRECTORY_SEPERATOR + MINIO_FILE_PATH_1);
+        putResponse.then().statusCode(201);
+
+        Response response = given()
+                .accept(MediaType.APPLICATION_OCTET_STREAM)
+                .when()
+                .get(BASE_PATH + "/file/" + EXISTING_ATTACHMENT_ID);
+        response.then().statusCode(200);
+    }
+
+    @Test
     @DisplayName("Get File By Non-Existing Id Failed")
     void testFailedGetFileById() {
         Response response = given()
                 .accept(MediaType.APPLICATION_OCTET_STREAM)
                 .when()
-                .get(BASE_PATH + "/file/" + NON_EXISTENT_DOCUMENT_ID);
+                .get(BASE_PATH + "/file/" + NONEXISTENT_ATTACHMENT_ID);
         response.then().statusCode(NOT_FOUND.getStatusCode());
     }
 
@@ -1749,8 +1807,8 @@ class DocumentControllerTest extends AbstractTest {
     void testFailedBulkDelete() {
 
         ArrayList<String> ids = new ArrayList<String>();
-        ids.add(NON_EXISTENT_DOCUMENT_ID);
-        ids.add(NON_EXISTENT_DOCUMENT_ID_2);
+        ids.add(NONEXISTENT_DOCUMENT_ID);
+        ids.add(NONEXISTENT_DOCUMENT_ID_2);
 
         Response deleteResponse = given()
                 .auth()
@@ -1795,7 +1853,7 @@ class DocumentControllerTest extends AbstractTest {
     @DisplayName("Bulk Update of non-existing document ids")
     void testFailedBulkUpdate() {
         DocumentCreateUpdateDTO doc1 = new DocumentCreateUpdateDTO();
-        doc1.setId(NON_EXISTENT_DOCUMENT_ID);
+        doc1.setId(NONEXISTENT_DOCUMENT_ID);
         doc1.setName(UPDATED_DOCUMENT_NAME);
         doc1.setTypeId(UPDATED_DOCUMENT_TYPE);
         doc1.setDescription(UPDATED_DOCUMENT_DESCRIPTION);
@@ -1826,12 +1884,12 @@ class DocumentControllerTest extends AbstractTest {
     //         Response putResponse1 = given()
     //                 .multiPart(FORM_PARAM_FILE, sampleFile1)
     //                 .when()
-    //                 .put(FILE_BASE_PATH + BUCKET_NAME + "/" + MINIO_FILE_PATH_1);
+    //                 .put(FILE_BASE_PATH + BUCKET_NAME + DIRECTORY_SEPERATOR + MINIO_FILE_PATH_1);
     //         putResponse1.then().statusCode(201);
     //         Response putResponse2 = given()
     //                 .multiPart(FORM_PARAM_FILE, sampleFile2)
     //                 .when()
-    //                 .put(FILE_BASE_PATH + BUCKET_NAME + "/" + MINIO_FILE_PATH_2);
+    //                 .put(FILE_BASE_PATH + BUCKET_NAME + DIRECTORY_SEPERATOR + MINIO_FILE_PATH_2);
     //         putResponse2.then().statusCode(201);
 
     //         List<String> attachmentIds = new ArrayList<>();
@@ -1859,6 +1917,21 @@ class DocumentControllerTest extends AbstractTest {
     //          */
 
     //     }
+
+    @Test
+    @DisplayName("Bulk Delete of existing document's attachments")
+    void testSuccessfulDeleteFilesInBulk() {
+        List<String> attachmentIds = new ArrayList<>();
+        attachmentIds.add(MINIO_FILE_PATH_1);
+        attachmentIds.add(MINIO_FILE_PATH_2);
+        Response deleteResponse = given().auth()
+                .oauth2(keycloakClient.getAccessToken(USER))
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(attachmentIds)
+                .when()
+                .delete(BASE_PATH + "/file/delete-bulk-attachment");
+        assertThat(deleteResponse.statusCode()).isEqualTo(204);
+    }
 
     @Test
     @DisplayName("Bulk Delete of non-existing document's attachments")
@@ -1898,7 +1971,7 @@ class DocumentControllerTest extends AbstractTest {
                 .oauth2(keycloakClient.getAccessToken(USER))
                 .accept(MediaType.APPLICATION_OCTET_STREAM)
                 .when()
-                .get(BASE_PATH + "/file/" + NON_EXISTENT_DOCUMENT_ID + "/attachments");
+                .get(BASE_PATH + "/file/" + NONEXISTENT_DOCUMENT_ID + "/attachments");
         getResponse.then().statusCode(400);
     }
 
@@ -1912,6 +1985,30 @@ class DocumentControllerTest extends AbstractTest {
                 .when()
                 .get(BASE_PATH + "/file/" + EXISTING_DOCUMENT_ID_WITHOUT_ATTACHMENTS + "/attachments");
         getResponse.then().statusCode(204);
+    }
+
+    @Test
+    @DisplayName("Get All existing Document's Attachments from Minio As Zip")
+    void testSuccessfulGetAllDocumentAttachmentsFromMinioAsZip() {
+        File sampleFile1 = new File(SAMPLE_FILE_PATH_1);
+        File sampleFile2 = new File(SAMPLE_FILE_PATH_2);
+        Response putResponse1 = given()
+                .multiPart(FORM_PARAM_FILE, sampleFile1)
+                .when()
+                .put(FILE_BASE_PATH + BUCKET_NAME + DIRECTORY_SEPERATOR + MINIO_FILE_PATH_1);
+        putResponse1.then().statusCode(201);
+        Response putResponse2 = given()
+                .multiPart(FORM_PARAM_FILE, sampleFile2)
+                .when()
+                .put(FILE_BASE_PATH + BUCKET_NAME + DIRECTORY_SEPERATOR + MINIO_FILE_PATH_2);
+        putResponse2.then().statusCode(201);
+        Response getResponse = given().auth()
+                .oauth2(keycloakClient.getAccessToken(USER))
+                .accept(MediaType.APPLICATION_OCTET_STREAM)
+                .when()
+                .get(BASE_PATH + "/file/" + EXISTING_DOCUMENT_ID_5 + "/attachments");
+        getResponse.then().statusCode(200);
+        getResponse.then().contentType(ZIP_CONTENT_TYPE);
     }
 
     @Test

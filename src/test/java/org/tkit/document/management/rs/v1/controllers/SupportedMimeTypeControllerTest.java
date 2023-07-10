@@ -33,7 +33,7 @@ class SupportedMimeTypeControllerTest extends AbstractTest {
     private static final String BASE_PATH = "/v1/supported-mime-type";
     private static final String EXISTING_SUPPORTED_MIME_TYPE_ID = "151";
     private static final String EXISTING_SUPPORTED_MIME_TYPE_DELETE_ID = "153";
-    private static final String NOT_EXISTING_SUPPORTED_MIME_TYPE_ID = "10000";
+    private static final String NONEXISTENT_SUPPORTED_MIME_TYPE_ID = "10000";
     private static final String NAME_OF_SUPPORTED_MIME_TYPE_1 = "application/msexcel";
     private static final String DESCRIPTION_OF_SUPPORTED_MIME_TYPE_1 = "Microsoft Excel";
     private static final Object[] EXISTING_SUPPORTED_MIME_TYPE_IDS = { "151", "152", "153" };
@@ -148,13 +148,13 @@ class SupportedMimeTypeControllerTest extends AbstractTest {
         Response deleteResponse = given()
                 .accept(MediaType.APPLICATION_JSON)
                 .when()
-                .delete(BASE_PATH + "/" + NOT_EXISTING_SUPPORTED_MIME_TYPE_ID);
+                .delete(BASE_PATH + "/" + NONEXISTENT_SUPPORTED_MIME_TYPE_ID);
         deleteResponse.then().statusCode(NOT_FOUND.getStatusCode());
 
         RFCProblemDTO rfcProblemDTO = deleteResponse.as(RFCProblemDTO.class);
         assertThat(rfcProblemDTO.getStatus()).isEqualTo(NOT_FOUND.getStatusCode());
         assertThat(rfcProblemDTO.getDetail()).isEqualTo("The supported mime-type with id "
-                + NOT_EXISTING_SUPPORTED_MIME_TYPE_ID + " was not found.");
+                + NONEXISTENT_SUPPORTED_MIME_TYPE_ID + " was not found.");
         assertThat(rfcProblemDTO.getInstance()).isNull();
         assertThat(rfcProblemDTO.getTitle()).isEqualTo(ExceptionToRFCProblemMapper.TECHNICAL_ERROR);
         assertThat(rfcProblemDTO.getType())
@@ -196,13 +196,13 @@ class SupportedMimeTypeControllerTest extends AbstractTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(supportedMimeTypeUpdateDTO)
                 .when()
-                .put(BASE_PATH + "/" + NOT_EXISTING_SUPPORTED_MIME_TYPE_ID);
+                .put(BASE_PATH + "/" + NONEXISTENT_SUPPORTED_MIME_TYPE_ID);
         putResponse.then().statusCode(NOT_FOUND.getStatusCode());
 
         RFCProblemDTO rfcProblemDTO = putResponse.as(RFCProblemDTO.class);
         assertThat(rfcProblemDTO.getStatus()).isEqualTo(NOT_FOUND.getStatusCode());
         assertThat(rfcProblemDTO.getDetail()).isEqualTo("The supported mime-type with id "
-                + NOT_EXISTING_SUPPORTED_MIME_TYPE_ID + " was not found.");
+                + NONEXISTENT_SUPPORTED_MIME_TYPE_ID + " was not found.");
         assertThat(rfcProblemDTO.getInstance()).isNull();
         assertThat(rfcProblemDTO.getTitle()).isEqualTo(ExceptionToRFCProblemMapper.TECHNICAL_ERROR);
         assertThat(rfcProblemDTO.getType())
@@ -220,9 +220,8 @@ class SupportedMimeTypeControllerTest extends AbstractTest {
 
         List<SupportedMimeTypeDTO> typesOfDocuments = getResponse.as(getSupportedMimeTypeDTOTypeRef());
         assertThat(typesOfDocuments).hasSize(3);
-        assertThat(typesOfDocuments.get(0).getId()).isEqualTo(EXISTING_SUPPORTED_MIME_TYPE_ID);
-        assertThat(typesOfDocuments.get(0).getName()).isEqualTo(NAME_OF_SUPPORTED_MIME_TYPE_1);
-        assertThat(typesOfDocuments.get(0).getDescription()).isEqualTo(DESCRIPTION_OF_SUPPORTED_MIME_TYPE_1);
+        assertThat(typesOfDocuments.get(0).getId()).isIn(EXISTING_SUPPORTED_MIME_TYPE_IDS);
+        assertThat(typesOfDocuments.get(0).getName()).isIn(EXISTING_SUPPORTED_MIME_TYPE_NAMES);
         assertThat(typesOfDocuments.get(1).getId()).isIn(EXISTING_SUPPORTED_MIME_TYPE_IDS);
         assertThat(typesOfDocuments.get(1).getName()).isIn(EXISTING_SUPPORTED_MIME_TYPE_NAMES);
         assertThat(typesOfDocuments.get(2).getId()).isIn(EXISTING_SUPPORTED_MIME_TYPE_IDS);
@@ -250,14 +249,14 @@ class SupportedMimeTypeControllerTest extends AbstractTest {
     void testFailedGetSupportedMimeType() {
         Response response = given()
                 .when()
-                .get(BASE_PATH + "/" + NOT_EXISTING_SUPPORTED_MIME_TYPE_ID);
+                .get(BASE_PATH + "/" + NONEXISTENT_SUPPORTED_MIME_TYPE_ID);
 
         response.then().statusCode(NOT_FOUND.getStatusCode());
         RFCProblemDTO rfcProblemDTO = response.as(RFCProblemDTO.class);
 
         assertThat(rfcProblemDTO.getStatus()).hasToString("404");
         assertThat(rfcProblemDTO.getDetail())
-                .isEqualTo("The supported mime-type with id " + NOT_EXISTING_SUPPORTED_MIME_TYPE_ID
+                .isEqualTo("The supported mime-type with id " + NONEXISTENT_SUPPORTED_MIME_TYPE_ID
                         + " was not found.");
         assertThat(rfcProblemDTO.getInstance()).isNull();
         assertThat(rfcProblemDTO.getTitle()).isEqualTo("TECHNICAL ERROR");

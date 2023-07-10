@@ -33,7 +33,7 @@ class DocumentTypeControllerTest extends AbstractTest {
     private static final String BASE_PATH = "/v1/document-type";
     private static final String EXISTING_DOCUMENT_TYPE_ID = "201";
     private static final String EXISTING_DOCUMENT_TYPE_DELETE_ID = "203";
-    private static final String NOT_EXISTING_DOCUMENT_TYPE_ID = "1000";
+    private static final String NONEXISTENT_DOCUMENT_TYPE_ID = "1000";
     private static final String NAME_OF_DOCUMENT_TYPE_1 = "invoice";
     private static final Object[] EXISTING_DOCUMENT_TYPE_IDS = { "201", "202", "203" };
     private static final Object[] EXISTING_DOCUMENT_TYPE_NAMES = { "invoice", "exploration protocol",
@@ -122,13 +122,13 @@ class DocumentTypeControllerTest extends AbstractTest {
         Response deleteResponse = given()
                 .accept(MediaType.APPLICATION_JSON)
                 .when()
-                .delete(BASE_PATH + "/" + NOT_EXISTING_DOCUMENT_TYPE_ID);
+                .delete(BASE_PATH + "/" + NONEXISTENT_DOCUMENT_TYPE_ID);
         deleteResponse.then().statusCode(NOT_FOUND.getStatusCode());
 
         RFCProblemDTO rfcProblemDTO = deleteResponse.as(RFCProblemDTO.class);
         assertThat(rfcProblemDTO.getStatus()).isEqualTo(NOT_FOUND.getStatusCode());
         assertThat(rfcProblemDTO.getDetail())
-                .isEqualTo("The document type with id " + NOT_EXISTING_DOCUMENT_TYPE_ID
+                .isEqualTo("The document type with id " + NONEXISTENT_DOCUMENT_TYPE_ID
                         + " was not found.");
         assertThat(rfcProblemDTO.getInstance()).isNull();
         assertThat(rfcProblemDTO.getTitle()).isEqualTo(ExceptionToRFCProblemMapper.TECHNICAL_ERROR);
@@ -166,13 +166,13 @@ class DocumentTypeControllerTest extends AbstractTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(documentTypeUpdateDTO)
                 .when()
-                .put(BASE_PATH + "/" + NOT_EXISTING_DOCUMENT_TYPE_ID);
+                .put(BASE_PATH + "/" + NONEXISTENT_DOCUMENT_TYPE_ID);
         putResponse.then().statusCode(NOT_FOUND.getStatusCode());
 
         RFCProblemDTO rfcProblemDTO = putResponse.as(RFCProblemDTO.class);
         assertThat(rfcProblemDTO.getStatus()).isEqualTo(NOT_FOUND.getStatusCode());
         assertThat(rfcProblemDTO.getDetail()).isEqualTo("The document type with id "
-                + NOT_EXISTING_DOCUMENT_TYPE_ID + " was not found.");
+                + NONEXISTENT_DOCUMENT_TYPE_ID + " was not found.");
         assertThat(rfcProblemDTO.getInstance()).isNull();
         assertThat(rfcProblemDTO.getTitle()).isEqualTo(ExceptionToRFCProblemMapper.TECHNICAL_ERROR);
         assertThat(rfcProblemDTO.getType())
@@ -218,14 +218,14 @@ class DocumentTypeControllerTest extends AbstractTest {
     void testFailedGetDocumentTypeById() {
         Response response = given()
                 .when()
-                .get(BASE_PATH + "/" + NOT_EXISTING_DOCUMENT_TYPE_ID);
+                .get(BASE_PATH + "/" + NONEXISTENT_DOCUMENT_TYPE_ID);
 
         response.then().statusCode(NOT_FOUND.getStatusCode());
         RFCProblemDTO rfcProblemDTO = response.as(RFCProblemDTO.class);
 
         assertThat(rfcProblemDTO.getStatus()).hasToString("404");
         assertThat(rfcProblemDTO.getDetail())
-                .isEqualTo("The document type with id " + NOT_EXISTING_DOCUMENT_TYPE_ID
+                .isEqualTo("The document type with id " + NONEXISTENT_DOCUMENT_TYPE_ID
                         + " was not found.");
         assertThat(rfcProblemDTO.getInstance()).isNull();
         assertThat(rfcProblemDTO.getTitle()).isEqualTo("TECHNICAL ERROR");
