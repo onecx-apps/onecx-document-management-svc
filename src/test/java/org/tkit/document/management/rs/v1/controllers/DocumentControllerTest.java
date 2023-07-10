@@ -27,6 +27,7 @@ import org.tkit.document.management.domain.models.enums.LifeCycleState;
 import org.tkit.document.management.rs.v1.models.AttachmentCreateUpdateDTO;
 import org.tkit.document.management.rs.v1.models.AttachmentDTO;
 import org.tkit.document.management.rs.v1.models.CategoryCreateUpdateDTO;
+import org.tkit.document.management.rs.v1.models.CategoryDTO;
 import org.tkit.document.management.rs.v1.models.ChannelCreateUpdateDTO;
 import org.tkit.document.management.rs.v1.models.ChannelDTO;
 import org.tkit.document.management.rs.v1.models.DocumentCharacteristicCreateUpdateDTO;
@@ -1599,19 +1600,18 @@ class DocumentControllerTest extends AbstractTest {
         RelatedPartyRefDTO newRelatedPartyDTO = listRelatedParties2.get(0);
         assertThat(newRelatedPartyDTO.getName()).isEqualTo("TEST_Name_2");
 
-        /*
-         * assertThat(documentDetailDTO.getCategories()).hasSize(1);
-         * List<CategoryDTO> listCategories1 = documentDetailDTO.getCategories()
-         * .stream().filter(p -> p.getId().equals("4")).collect(Collectors.toList());
-         * assertThat(listCategories1).hasSize(1);
-         * CategoryDTO existingCategoryDTO = listCategories1.get(0);
-         * assertThat(existingCategoryDTO.getName()).isEqualTo("TEST_Name_1");
-         * List<CategoryDTO> listCategories2 = documentDetailDTO.getCategories()
-         * .stream().filter(p -> !p.getId().equals("4")).collect(Collectors.toList());
-         * assertThat(listCategories2).hasSize(1);
-         * CategoryDTO newCategoryDTO = listCategories2.get(0);
-         * assertThat(newCategoryDTO.getName()).isEqualTo("TEST_Name_2");
-         */
+        assertThat(documentDetailDTO.getCategories()).hasSize(2);
+        List<CategoryDTO> listCategories1 = documentDetailDTO.getCategories()
+                .stream().filter(p -> p.getId().equals("1")).collect(Collectors.toList());
+        assertThat(listCategories1).hasSize(1);
+        CategoryDTO existingCategoryDTO = listCategories1.get(0);
+        assertThat(existingCategoryDTO.getName()).isEqualTo("TEST_Name_1");
+        List<CategoryDTO> listCategories2 = documentDetailDTO.getCategories()
+                .stream().filter(p -> !p.getId().equals("1")).collect(Collectors.toList());
+        assertThat(listCategories2).hasSize(1);
+        CategoryDTO newCategoryDTO = listCategories2.get(0);
+        assertThat(newCategoryDTO.getName()).isEqualTo("TEST_Name_2");
+
         assertThat(documentDetailDTO.getAttachments()).hasSize(3);
         List<AttachmentDTO> listAttachment1 = documentDetailDTO.getAttachments()
                 .stream().filter(p -> p.getId().equals("101")).collect(Collectors.toList());
