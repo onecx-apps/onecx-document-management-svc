@@ -12,7 +12,7 @@ import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class RFCProblemDetailDTOTest {
+class RFCProblemDetailDTOTest {
 
     private static final String TO_STRING_RESULT = "RFCProblemDetailDTO(messageId=12345, code=105)";
 

@@ -16,7 +16,7 @@ import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class DocumentSearchCriteriaDTOTest extends AbstractTest {
+class DocumentSearchCriteriaDTOTest extends AbstractTest {
 
     @Test
     @DisplayName("Get criteria Should Return criteria value")

@@ -14,7 +14,7 @@ import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class AttachmentTest {
+class AttachmentTest {
 
     @Test
     @DisplayName("Getter And Setters for Attachment")

@@ -11,7 +11,7 @@ import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class FileInfoDTOTest extends AbstractTest {
+class FileInfoDTOTest extends AbstractTest {
 
     private static final String TO_STRING_RESULT = "FileInfoDTO(contentType=test, path=src/resources/105, bucket=test-bucket)";
 
