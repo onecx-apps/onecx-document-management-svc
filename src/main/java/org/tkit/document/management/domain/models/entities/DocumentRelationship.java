@@ -16,7 +16,6 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "DM_DOCUMENT_RELATIONSHIP")
-@java.lang.SuppressWarnings("java:S2160")
 public class DocumentRelationship extends TraceableEntity {
     /**
      * Type of the relationship.

@@ -10,7 +10,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@java.lang.SuppressWarnings("java:S2160")
 public class AttachmentDTO extends TraceableDTO {
 
     private String name;

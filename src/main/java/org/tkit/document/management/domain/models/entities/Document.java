@@ -32,7 +32,6 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "DM_DOCUMENT")
-@java.lang.SuppressWarnings("java:S2160")
 @NamedEntityGraph(name = "Document.loadAll", includeAllAttributes = true)
 public class Document extends TraceableEntity {
     /**
