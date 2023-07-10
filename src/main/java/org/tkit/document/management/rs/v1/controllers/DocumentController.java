@@ -211,14 +211,14 @@ public class DocumentController {
     @APIResponse(responseCode = "500", description = "Internal Server Error, please check Problem Details", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RFCProblemDTO.class)))
     public Response deleteDocumentById(@PathParam("id") String id) {
         Log.info(CLASS_NAME, "Entered deleteDocumentById method", null);
-        List<String> listOfFilesToBeDeleted = new ArrayList<>();
+        List<String> listOfFilesIdToBeDeleted = new ArrayList<>();
         Document document = documentDAO.findById(id);
         if (Objects.isNull(document)) {
             throw new RestException(Response.Status.NOT_FOUND, Response.Status.NOT_FOUND, getDocumentNotFoundMsg(id));
         }
-        listOfFilesToBeDeleted.addAll(documentService.deleteFilesInDocument(document));
+        listOfFilesIdToBeDeleted.addAll(documentService.getFilesIdToBeDeletedInDocument(document));
         documentDAO.delete(document);
-        listOfFilesToBeDeleted.stream().forEach(eachFile -> documentService.asyncDeleteForAttachments(eachFile));
+        listOfFilesIdToBeDeleted.stream().forEach(eachFileId -> documentService.asyncDeleteForAttachments(eachFileId));
         Log.info(CLASS_NAME, "Exited deleteDocumentById method", null);
         return Response.status(Response.Status.NO_CONTENT).build();
     }
@@ -467,7 +467,7 @@ public class DocumentController {
     @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RestException.class)))
     public Response deleteFilesInBulk(List<String> attachmentIds) {
         Log.info(CLASS_NAME, "Entered deleteFilesInBulk method", null);
-        documentService.deleteAttachmentInBulk(attachmentIds);
+        documentService.updateAttachmentStatusInBulk(attachmentIds);
         attachmentIds.stream().forEach(attachmentId -> documentService.asyncDeleteForAttachments(attachmentId));
         Log.info(CLASS_NAME, "Exited deleteFilesInBulk method", null);
         return Response.noContent().build();
@@ -517,7 +517,7 @@ public class DocumentController {
     @APIResponse(responseCode = "500", description = "Internal Server Error, please check Problem Details", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RFCProblemDTO.class)))
     public Response deleteBulkDocuments(List<String> ids) {
         Log.info(CLASS_NAME, "Entered deleteBulkDocuments method", null);
-        List<String> listOfFilesToBeDeleted = new ArrayList<>();
+        List<String> listOfFilesIdToBeDeleted = new ArrayList<>();
         Iterator<String> itr = ids.iterator();
         while (itr.hasNext()) {
             String currentDocId = itr.next();
@@ -526,9 +526,9 @@ public class DocumentController {
                 throw new RestException(Response.Status.NOT_FOUND, Response.Status.NOT_FOUND,
                         getDocumentNotFoundMsg(currentDocId));
             }
-            listOfFilesToBeDeleted.addAll(documentService.deleteFilesInDocument(document));
+            listOfFilesIdToBeDeleted.addAll(documentService.getFilesIdToBeDeletedInDocument(document));
             documentDAO.delete(document);
-            listOfFilesToBeDeleted.stream().forEach(eachFile -> documentService.asyncDeleteForAttachments(eachFile));
+            listOfFilesIdToBeDeleted.stream().forEach(eachFileId -> documentService.asyncDeleteForAttachments(eachFileId));
         }
         Log.info(CLASS_NAME, "Exited deleteBulkDocuments method", null);
         return Response.status(Response.Status.NO_CONTENT).build();

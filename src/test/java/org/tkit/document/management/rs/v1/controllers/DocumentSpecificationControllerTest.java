@@ -33,7 +33,7 @@ class DocumentSpecificationControllerTest extends AbstractTest {
     private static final String BASE_PATH = "/v1/document-specification";
     private static final String EXISTING_DOCUMENT_SPECIFICATION_ID = "251";
     private static final String EXISTING_DOCUMENT_SPECIFICATION_DELETE_ID = "253";
-    private static final String NOT_EXISTING_DOCUMENT_SPECIFICATION_ID = "10000";
+    private static final String NONEXISTENT_DOCUMENT_SPECIFICATION_ID = "10000";
     private static final String NAME_OF_DOCUMENT_SPECIFICATION_1 = "specification_1";
     private static final String VERSION_OF_DOCUMENT_SPECIFICATION_1 = "v_1";
 
@@ -148,13 +148,13 @@ class DocumentSpecificationControllerTest extends AbstractTest {
         Response deleteResponse = given()
                 .accept(MediaType.APPLICATION_JSON)
                 .when()
-                .delete(BASE_PATH + "/" + NOT_EXISTING_DOCUMENT_SPECIFICATION_ID);
+                .delete(BASE_PATH + "/" + NONEXISTENT_DOCUMENT_SPECIFICATION_ID);
         deleteResponse.then().statusCode(NOT_FOUND.getStatusCode());
 
         RFCProblemDTO rfcProblemDTO = deleteResponse.as(RFCProblemDTO.class);
         assertThat(rfcProblemDTO.getStatus()).isEqualTo(NOT_FOUND.getStatusCode());
         assertThat(rfcProblemDTO.getDetail()).isEqualTo("The document specification with id "
-                + NOT_EXISTING_DOCUMENT_SPECIFICATION_ID + " was not found.");
+                + NONEXISTENT_DOCUMENT_SPECIFICATION_ID + " was not found.");
         assertThat(rfcProblemDTO.getInstance()).isNull();
         assertThat(rfcProblemDTO.getTitle()).isEqualTo(ExceptionToRFCProblemMapper.TECHNICAL_ERROR);
         assertThat(rfcProblemDTO.getType())
@@ -197,13 +197,13 @@ class DocumentSpecificationControllerTest extends AbstractTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(documentSpecificationUpdateDTO)
                 .when()
-                .put(BASE_PATH + "/" + NOT_EXISTING_DOCUMENT_SPECIFICATION_ID);
+                .put(BASE_PATH + "/" + NONEXISTENT_DOCUMENT_SPECIFICATION_ID);
         putResponse.then().statusCode(NOT_FOUND.getStatusCode());
 
         RFCProblemDTO rfcProblemDTO = putResponse.as(RFCProblemDTO.class);
         assertThat(rfcProblemDTO.getStatus()).isEqualTo(NOT_FOUND.getStatusCode());
         assertThat(rfcProblemDTO.getDetail()).isEqualTo("The document specification with id "
-                + NOT_EXISTING_DOCUMENT_SPECIFICATION_ID + " was not found.");
+                + NONEXISTENT_DOCUMENT_SPECIFICATION_ID + " was not found.");
         assertThat(rfcProblemDTO.getInstance()).isNull();
         assertThat(rfcProblemDTO.getTitle()).isEqualTo(ExceptionToRFCProblemMapper.TECHNICAL_ERROR);
         assertThat(rfcProblemDTO.getType())
@@ -250,7 +250,7 @@ class DocumentSpecificationControllerTest extends AbstractTest {
     void testFailedGetDocumentSpecification() {
         Response response = given()
                 .when()
-                .get(BASE_PATH + "/" + NOT_EXISTING_DOCUMENT_SPECIFICATION_ID);
+                .get(BASE_PATH + "/" + NONEXISTENT_DOCUMENT_SPECIFICATION_ID);
 
         response.then().statusCode(NOT_FOUND.getStatusCode());
         RFCProblemDTO rfcProblemDTO = response.as(RFCProblemDTO.class);
@@ -258,7 +258,7 @@ class DocumentSpecificationControllerTest extends AbstractTest {
         assertThat(rfcProblemDTO.getStatus()).hasToString("404");
         assertThat(rfcProblemDTO.getDetail())
                 .isEqualTo("The document specification with id "
-                        + NOT_EXISTING_DOCUMENT_SPECIFICATION_ID + " was not found.");
+                        + NONEXISTENT_DOCUMENT_SPECIFICATION_ID + " was not found.");
         assertThat(rfcProblemDTO.getInstance()).isNull();
         assertThat(rfcProblemDTO.getTitle()).isEqualTo("TECHNICAL ERROR");
         assertThat(rfcProblemDTO.getType()).isEqualTo("REST_EXCEPTION");
