@@ -24,7 +24,6 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.tkit.document.management.domain.daos.DocumentDAO;
 import org.tkit.document.management.domain.daos.DocumentTypeDAO;
-import org.tkit.document.management.domain.models.entities.DocumentType;
 import org.tkit.document.management.rs.v1.mappers.DocumentTypeMapper;
 import org.tkit.document.management.rs.v1.models.DocumentTypeCreateUpdateDTO;
 import org.tkit.document.management.rs.v1.models.DocumentTypeDTO;
@@ -60,7 +59,7 @@ public class DocumentTypeController {
 
     public Response createDocumentType(@Valid DocumentTypeCreateUpdateDTO dto) {
         Log.info(CLASS_NAME, "Entered createDocumentType method", null);
-        DocumentType documentType = documentTypeDAO.create(documentTypeMapper.map(dto));
+        var documentType = documentTypeDAO.create(documentTypeMapper.map(dto));
         Log.info(CLASS_NAME, "Exited createDocumentType method", null);
         return Response.status(Response.Status.CREATED)
                 .entity(documentTypeMapper.mapDocumentType(documentType))
@@ -76,7 +75,7 @@ public class DocumentTypeController {
 
     public Response getDocumentTypeById(@PathParam("id") String id) {
         Log.info(CLASS_NAME, "Entered getDocumentTypeById method", null);
-        DocumentType documentType = documentTypeDAO.findById(id);
+        var documentType = documentTypeDAO.findById(id);
         if (Objects.isNull(documentType)) {
             throw new RestException(Response.Status.NOT_FOUND, Response.Status.NOT_FOUND,
                     getTypeNotFoundMsg(id));
@@ -113,7 +112,7 @@ public class DocumentTypeController {
 
     public Response deleteDocumentTypeById(@PathParam("id") String id) {
         Log.info(CLASS_NAME, "Entered deleteDocumentTypeById method", null);
-        DocumentType documentType = documentTypeDAO.findById(id);
+        var documentType = documentTypeDAO.findById(id);
         if (Objects.nonNull(documentType)) {
             if (!documentDAO.findDocumentsWithDocumentTypeId(id).isEmpty()) {
                 throw new RestException(Response.Status.BAD_REQUEST, Response.Status.BAD_REQUEST,
@@ -137,7 +136,7 @@ public class DocumentTypeController {
 
     public Response updateDocumentTypeById(@PathParam("id") String id, @Valid DocumentTypeCreateUpdateDTO dto) {
         Log.info(CLASS_NAME, "Entered updateDocumentTypeById method", null);
-        DocumentType documentType = documentTypeDAO.findById(id);
+        var documentType = documentTypeDAO.findById(id);
         if (Objects.isNull(documentType)) {
             throw new RestException(Response.Status.NOT_FOUND, Response.Status.NOT_FOUND,
                     getTypeNotFoundMsg(id));

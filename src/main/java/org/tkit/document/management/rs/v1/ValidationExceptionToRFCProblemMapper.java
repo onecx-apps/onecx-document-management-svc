@@ -56,7 +56,7 @@ public class ValidationExceptionToRFCProblemMapper implements ExceptionMapper<Va
      * @return the corresponding {@link Response}
      */
     private Response createResponse(ValidationException validationException) {
-        RFCProblemDTO rfcProblemDTO = RFCProblemDTO.builder()
+        var rfcProblemDTO = RFCProblemDTO.builder()
                 .type(RFCProblemType.VALIDATION_EXCEPTION.name())
                 .title(TECHNICAL_ERROR)
                 .status(Response.Status.BAD_REQUEST.getStatusCode())
@@ -81,7 +81,7 @@ public class ValidationExceptionToRFCProblemMapper implements ExceptionMapper<Va
     }
 
     private RFCProblemDetailDTO mapStackTraceElement(StackTraceElement stackTraceElement) {
-        RFCProblemDetailDTO problemDetail = new RFCProblemDetailDTO();
+        var problemDetail = new RFCProblemDetailDTO();
         problemDetail.setMessage(
                 "An error occured in " + stackTraceElement.getMethodName() + " at line "
                         + stackTraceElement.getLineNumber());

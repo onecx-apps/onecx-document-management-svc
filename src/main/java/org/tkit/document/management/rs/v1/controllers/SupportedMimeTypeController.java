@@ -24,7 +24,6 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.tkit.document.management.domain.daos.AttachmentDAO;
 import org.tkit.document.management.domain.daos.SupportedMimeTypeDAO;
-import org.tkit.document.management.domain.models.entities.SupportedMimeType;
 import org.tkit.document.management.rs.v1.mappers.SupportedMimeTypeMapper;
 import org.tkit.document.management.rs.v1.models.RFCProblemDTO;
 import org.tkit.document.management.rs.v1.models.SupportedMimeTypeCreateUpdateDTO;
@@ -60,7 +59,7 @@ public class SupportedMimeTypeController {
 
     public Response createSupportedMimeType(@Valid SupportedMimeTypeCreateUpdateDTO dto) {
         Log.info(CLASS_NAME, "Entered createSupportedMimeType method", null);
-        SupportedMimeType supportedMimeType = supportedMimeTypeDAO.create(supportedMimeTypeMapper.map(dto));
+        var supportedMimeType = supportedMimeTypeDAO.create(supportedMimeTypeMapper.map(dto));
         Log.info(CLASS_NAME, "Exited createSupportedMimeType method", null);
         return Response.status(Response.Status.CREATED)
                 .entity(supportedMimeTypeMapper.mapToDTO(supportedMimeType))
@@ -76,7 +75,7 @@ public class SupportedMimeTypeController {
 
     public Response getSupportedMimeTypeById(@PathParam("id") String id) {
         Log.info(CLASS_NAME, "Entered getSupportedMimeTypeById method", null);
-        SupportedMimeType supportedMimeType = supportedMimeTypeDAO.findById(id);
+        var supportedMimeType = supportedMimeTypeDAO.findById(id);
         if (Objects.isNull(supportedMimeType)) {
             throw new RestException(Response.Status.NOT_FOUND, Response.Status.NOT_FOUND,
                     getMimeTypeNotFoundMsg(id));
@@ -114,7 +113,7 @@ public class SupportedMimeTypeController {
 
     public Response deleteSupportedMimeTypeById(@PathParam("id") String id) {
         Log.info(CLASS_NAME, "Entered deleteSupportedMimeTypeById method", null);
-        SupportedMimeType supportedMimeType = supportedMimeTypeDAO.findById(id);
+        var supportedMimeType = supportedMimeTypeDAO.findById(id);
         if (Objects.nonNull(supportedMimeType)) {
             if (!attachmentDAO.findAttachmentsWithSupportedMimeTypeId(id).isEmpty()) {
                 throw new RestException(Response.Status.BAD_REQUEST, Response.Status.BAD_REQUEST,
@@ -139,7 +138,7 @@ public class SupportedMimeTypeController {
 
     public Response updateSupportedMimeTypeById(@PathParam("id") String id, SupportedMimeTypeCreateUpdateDTO dto) {
         Log.info(CLASS_NAME, "Entered updateSupportedMimeTypeById method", null);
-        SupportedMimeType supportedMimeType = supportedMimeTypeDAO.findById(id);
+        var supportedMimeType = supportedMimeTypeDAO.findById(id);
         if (Objects.isNull(supportedMimeType)) {
             throw new RestException(Response.Status.NOT_FOUND, Response.Status.NOT_FOUND,
                     getMimeTypeNotFoundMsg(id));

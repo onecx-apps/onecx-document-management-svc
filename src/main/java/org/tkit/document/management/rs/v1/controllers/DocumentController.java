@@ -164,7 +164,7 @@ public class DocumentController {
     @APIResponse(responseCode = "500", description = "Internal Server Error, please check Problem Details", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RFCProblemDTO.class)))
     public Response getDocumentById(@PathParam("id") String id) {
         Log.info(CLASS_NAME, "Entered getDocumentById method", null);
-        Document document = documentDAO.findDocumentById(id);
+        var document = documentDAO.findDocumentById(id);
         if (Objects.isNull(document)) {
             throw new RestException(Response.Status.NOT_FOUND, Response.Status.NOT_FOUND, getDocumentNotFoundMsg(id));
         }
@@ -212,7 +212,7 @@ public class DocumentController {
     public Response deleteDocumentById(@PathParam("id") String id) {
         Log.info(CLASS_NAME, "Entered deleteDocumentById method", null);
         List<String> listOfFilesIdToBeDeleted = new ArrayList<>();
-        Document document = documentDAO.findById(id);
+        var document = documentDAO.findById(id);
         if (Objects.isNull(document)) {
             throw new RestException(Response.Status.NOT_FOUND, Response.Status.NOT_FOUND, getDocumentNotFoundMsg(id));
         }
@@ -234,7 +234,7 @@ public class DocumentController {
     @APIResponse(responseCode = "500", description = "Internal Server Error, please check Problem Details", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RFCProblemDTO.class)))
     public Response createDocument(@Valid DocumentCreateUpdateDTO documentDTO) {
         Log.info(CLASS_NAME, "Entered createDocument method", null);
-        Document document = documentService.createDocument(documentDTO);
+        var document = documentService.createDocument(documentDTO);
         Log.info(CLASS_NAME, "Exited createDocument method", null);
         return Response.status(Response.Status.CREATED)
                 .entity(documentMapper.mapDetail(document))
@@ -256,7 +256,7 @@ public class DocumentController {
             @MultipartForm MultipartFormDataInput input) throws IOException {
         Log.info(CLASS_NAME, "Entered multipleFileUploads method", null);
         Map<String, Integer> map = documentService.uploadAttachment(documentId, input);
-        DocumentResponseDTO responseDTO = new DocumentResponseDTO();
+        var responseDTO = new DocumentResponseDTO();
         responseDTO.setAttachmentResponse(map);
         Log.info(CLASS_NAME, "Exited multipleFileUploads method", null);
         return Response.status(Response.Status.CREATED)
@@ -292,7 +292,7 @@ public class DocumentController {
     @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RFCProblemDTO.class)))
     public Response updateDocument(@PathParam("id") String id, @Valid DocumentCreateUpdateDTO dto) {
         Log.info(CLASS_NAME, "Entered updateDocument method", null);
-        Document document = documentDAO.findDocumentById(id);
+        var document = documentDAO.findDocumentById(id);
         if (Objects.isNull(document)) {
             throw new RestException(Response.Status.NOT_FOUND, Response.Status.NOT_FOUND, getDocumentNotFoundMsg(id));
         }
@@ -339,7 +339,7 @@ public class DocumentController {
             throws IOException, InvalidKeyException, InvalidResponseException, InsufficientDataException,
             NoSuchAlgorithmException, ServerException, InternalException, XmlParserException, ErrorResponseException {
         Log.info(CLASS_NAME, "Entered getFile method", null);
-        Attachment attachment = attachmentDAO.findById(attachmentId);
+        var attachment = attachmentDAO.findById(attachmentId);
         if (Objects.isNull(attachment)) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
@@ -364,7 +364,7 @@ public class DocumentController {
         Log.info(CLASS_NAME, "Entered getAllDocumentAttachmentsAsZip method", null);
         try {
             /* Retrieve the document by its ID */
-            Document document = documentDAO.findById(documentId);
+            var document = documentDAO.findById(documentId);
 
             /*
              * Return a bad request response if the document is not found because a document
@@ -393,7 +393,7 @@ public class DocumentController {
                  * transmitting over the internet. We are using the default compression level
                  * because it is a good balance between file size and compression speed.
                  */
-                try (ZipOutputStream zip = new ZipOutputStream(output)) {
+                try (var zip = new ZipOutputStream(output)) {
 
                     /* Iterate over the set of attachments of the document using Java Streams */
                     documentAttachmentSet.stream()
@@ -410,7 +410,7 @@ public class DocumentController {
                                      * Add the attachment file into the zip with the
                                      * same filename
                                      */
-                                    ZipEntry entry = new ZipEntry(
+                                    var entry = new ZipEntry(
                                             attachment.getFileName());
                                     entry.setSize(object.available());
                                     ZoneId clientZoneId = clientTimezone != null ? ZoneId.of(clientTimezone)
@@ -488,7 +488,7 @@ public class DocumentController {
         List<Document> document1 = new ArrayList<>();
         while (it.hasNext()) {
             DocumentCreateUpdateDTO dto1 = it.next();
-            Document document = documentDAO.findDocumentById(dto1.getId());
+            var document = documentDAO.findDocumentById(dto1.getId());
             if (Objects.isNull(document)) {
                 throw new RestException(Response.Status.NOT_FOUND, Response.Status.NOT_FOUND,
                         getDocumentNotFoundMsg(dto1.getId()));
@@ -521,7 +521,7 @@ public class DocumentController {
         Iterator<String> itr = ids.iterator();
         while (itr.hasNext()) {
             String currentDocId = itr.next();
-            Document document = documentDAO.findById(currentDocId);
+            var document = documentDAO.findById(currentDocId);
             if (Objects.isNull(document)) {
                 throw new RestException(Response.Status.NOT_FOUND, Response.Status.NOT_FOUND,
                         getDocumentNotFoundMsg(currentDocId));

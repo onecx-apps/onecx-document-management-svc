@@ -73,7 +73,7 @@ public class ExceptionToRFCProblemMapper implements ExceptionMapper<Exception> {
                 ? daoException.getCause().getCause().getMessage()
                 : null;
 
-        RFCProblemDTO rfcProblemDTO = RFCProblemDTO.builder()
+        var rfcProblemDTO = RFCProblemDTO.builder()
                 .type(RFCProblemType.DAO_EXCEPTION.name())
                 .title(TECHNICAL_ERROR)
                 .status(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode())
@@ -95,7 +95,7 @@ public class ExceptionToRFCProblemMapper implements ExceptionMapper<Exception> {
      * @return the corresponding {@link Response}
      */
     private Response createResponse(RestException restException) {
-        RFCProblemDTO rfcProblemDTO = RFCProblemDTO.builder()
+        var rfcProblemDTO = RFCProblemDTO.builder()
                 .type(RFCProblemType.REST_EXCEPTION.name())
                 .title(TECHNICAL_ERROR)
                 .status(restException.getStatus().getStatusCode())
@@ -120,7 +120,7 @@ public class ExceptionToRFCProblemMapper implements ExceptionMapper<Exception> {
     }
 
     private RFCProblemDetailDTO mapStackTraceElement(StackTraceElement stackTraceElement) {
-        RFCProblemDetailDTO problemDetail = new RFCProblemDetailDTO();
+        var problemDetail = new RFCProblemDetailDTO();
         problemDetail.setMessage(
                 "An error occured in " + stackTraceElement.getMethodName() + " at line "
                         + stackTraceElement.getLineNumber());
@@ -136,7 +136,7 @@ public class ExceptionToRFCProblemMapper implements ExceptionMapper<Exception> {
      * @return the corresponding {@link Response}
      */
     private Response createResponse(WebApplicationException webApplicationException) {
-        RFCProblemDTO rfcProblemDTO = RFCProblemDTO.builder()
+        var rfcProblemDTO = RFCProblemDTO.builder()
                 .type(RFCProblemType.WEB_APPLICATION_EXCEPTION.name())
                 .title(TECHNICAL_ERROR)
                 .status(webApplicationException.getResponse().getStatus())
@@ -158,7 +158,7 @@ public class ExceptionToRFCProblemMapper implements ExceptionMapper<Exception> {
      * @return the corresponding {@link Response}
      */
     private Response createResponse(Exception exception) {
-        RFCProblemDTO rfcProblemDTO = RFCProblemDTO.builder()
+        var rfcProblemDTO = RFCProblemDTO.builder()
                 .type(Response.Status.INTERNAL_SERVER_ERROR.name())
                 .title(TECHNICAL_ERROR)
                 .status(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode())
