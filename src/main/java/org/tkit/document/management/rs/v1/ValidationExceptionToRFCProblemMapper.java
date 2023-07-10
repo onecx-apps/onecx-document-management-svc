@@ -3,6 +3,7 @@ package org.tkit.document.management.rs.v1;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.Priority;
 import javax.validation.ValidationException;
@@ -77,7 +78,7 @@ public class ValidationExceptionToRFCProblemMapper implements ExceptionMapper<Va
         }
         return Arrays.stream(cause.getStackTrace())
                 .map(this::mapStackTraceElement)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     private RFCProblemDetailDTO mapStackTraceElement(StackTraceElement stackTraceElement) {
