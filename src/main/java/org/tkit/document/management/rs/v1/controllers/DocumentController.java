@@ -413,7 +413,8 @@ public class DocumentController {
                                     var entry = new ZipEntry(
                                             attachment.getFileName());
                                     entry.setSize(object.available());
-                                    ZoneId clientZoneId = clientTimezone != null ? ZoneId.of(clientTimezone)
+                                    ZoneId clientZoneId = (clientTimezone != null && !clientTimezone.isEmpty())
+                                            ? ZoneId.of(clientTimezone)
                                             : ZoneId.of("UTC");
                                     LocalDateTime attachmentDateTime = attachment.getCreationDate();
                                     FileTime fileTime;
