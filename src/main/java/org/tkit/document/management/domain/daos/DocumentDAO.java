@@ -6,9 +6,7 @@ import java.util.Objects;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityGraph;
-import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -75,7 +73,7 @@ public class DocumentDAO extends AbstractDAO<Document> {
      * @return a {@link List<Document>} contains given {@link DocumentType} id
      */
     public List<Document> findDocumentsWithDocumentTypeId(String id) {
-        CriteriaBuilder criteriaBuilder = this.getEntityManager().getCriteriaBuilder();
+        var criteriaBuilder = this.getEntityManager().getCriteriaBuilder();
         CriteriaQuery<Document> criteriaQuery = criteriaBuilder.createQuery(Document.class);
         Root<Document> root = criteriaQuery.from(Document.class);
         criteriaQuery.where(
@@ -91,7 +89,7 @@ public class DocumentDAO extends AbstractDAO<Document> {
      *         id
      */
     public List<Document> findDocumentsWithDocumentSpecificationId(String id) {
-        CriteriaBuilder criteriaBuilder = this.getEntityManager().getCriteriaBuilder();
+        var criteriaBuilder = this.getEntityManager().getCriteriaBuilder();
         CriteriaQuery<Document> criteriaQuery = criteriaBuilder.createQuery(Document.class);
         Root<Document> root = criteriaQuery.from(Document.class);
         criteriaQuery.where(
@@ -120,8 +118,8 @@ public class DocumentDAO extends AbstractDAO<Document> {
 
     private CriteriaQuery<Document> createSearchCriteriaQuery(DocumentSearchCriteria criteria) {
 
-        EntityManager entityManager = getEntityManager();
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        var entityManager = getEntityManager();
+        var cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Document> cq = cb.createQuery(Document.class);
         Root<Document> root = cq.from(Document.class);
         List<Predicate> predicates = new ArrayList<>();

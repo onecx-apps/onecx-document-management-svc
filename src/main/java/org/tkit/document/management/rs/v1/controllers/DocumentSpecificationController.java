@@ -24,7 +24,6 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.tkit.document.management.domain.daos.DocumentDAO;
 import org.tkit.document.management.domain.daos.DocumentSpecificationDAO;
-import org.tkit.document.management.domain.models.entities.DocumentSpecification;
 import org.tkit.document.management.rs.v1.mappers.DocumentSpecificationMapper;
 import org.tkit.document.management.rs.v1.models.DocumentSpecificationCreateUpdateDTO;
 import org.tkit.document.management.rs.v1.models.DocumentSpecificationDTO;
@@ -60,7 +59,7 @@ public class DocumentSpecificationController {
 
     public Response createDocumentSpecification(@Valid DocumentSpecificationCreateUpdateDTO dto) {
         Log.info(CLASS_NAME, "Entered createDocumentSpecification method", null);
-        DocumentSpecification documentSpecification = documentSpecificationDAO
+        var documentSpecification = documentSpecificationDAO
                 .create(documentSpecificationMapper.map(dto));
         Log.info(CLASS_NAME, "Exited createDocumentSpecification method", null);
         return Response.status(Response.Status.CREATED)
@@ -77,7 +76,7 @@ public class DocumentSpecificationController {
 
     public Response getDocumentSpecificationById(@PathParam("id") String id) {
         Log.info(CLASS_NAME, "Entered getDocumentSpecificationById method", null);
-        DocumentSpecification documentSpecification = documentSpecificationDAO.findById(id);
+        var documentSpecification = documentSpecificationDAO.findById(id);
         if (Objects.isNull(documentSpecification)) {
             throw new RestException(Response.Status.NOT_FOUND, Response.Status.NOT_FOUND,
                     getSpecificationNotFoundMsg(id));
@@ -116,7 +115,7 @@ public class DocumentSpecificationController {
 
     public Response deleteDocumentSpecificationById(@PathParam("id") String id) {
         Log.info(CLASS_NAME, "Entered deleteDocumentSpecificationById method", null);
-        DocumentSpecification documentSpecification = documentSpecificationDAO.findById(id);
+        var documentSpecification = documentSpecificationDAO.findById(id);
         if (Objects.nonNull(documentSpecification)) {
             if (!documentDAO.findDocumentsWithDocumentSpecificationId(id).isEmpty()) {
                 throw new RestException(Response.Status.BAD_REQUEST, Response.Status.BAD_REQUEST,
@@ -143,7 +142,7 @@ public class DocumentSpecificationController {
     public Response updateDocumentSpecificationById(@PathParam("id") String id,
             @Valid DocumentSpecificationCreateUpdateDTO dto) {
         Log.info(CLASS_NAME, "Entered updateDocumentSpecificationById method", null);
-        DocumentSpecification documentSpecification = documentSpecificationDAO.findById(id);
+        var documentSpecification = documentSpecificationDAO.findById(id);
         if (Objects.isNull(documentSpecification)) {
             throw new RestException(Response.Status.NOT_FOUND, Response.Status.NOT_FOUND,
                     getSpecificationNotFoundMsg(id));

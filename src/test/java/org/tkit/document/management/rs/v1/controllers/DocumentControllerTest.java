@@ -18,11 +18,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.tkit.document.management.domain.daos.MinioAuditLogDAO;
 import org.tkit.document.management.domain.models.enums.LifeCycleState;
 import org.tkit.document.management.rs.v1.models.AttachmentCreateUpdateDTO;
 import org.tkit.document.management.rs.v1.models.AttachmentDTO;
@@ -37,6 +39,7 @@ import org.tkit.document.management.rs.v1.models.DocumentDetailDTO;
 import org.tkit.document.management.rs.v1.models.DocumentRelationshipCreateUpdateDTO;
 import org.tkit.document.management.rs.v1.models.DocumentRelationshipDTO;
 import org.tkit.document.management.rs.v1.models.DocumentSpecificationCreateUpdateDTO;
+import org.tkit.document.management.rs.v1.models.FileInfoDTO;
 import org.tkit.document.management.rs.v1.models.RFCProblemDTO;
 import org.tkit.document.management.rs.v1.models.RelatedObjectRefCreateUpdateDTO;
 import org.tkit.document.management.rs.v1.models.RelatedPartyRefCreateUpdateDTO;
@@ -108,6 +111,16 @@ class DocumentControllerTest extends AbstractTest {
     private static final String VALID_DOCUMENT_ID_WITH_ATTACHMENTS = "56";
     private static final String API_PATH_MULTIPLE_FILE_UPLOADS = "/files/upload/";
     private static final String DIRECTORY_SEPERATOR = "/";
+    private static final String SAMPLE_FILE_PATH = "src/test/resources/sample.jpg";
+    private static final String MINIO_FILE_PATH_3 = "110";
+    private static final String SAMPLE_FILE_TYPE = "image/jpeg";
+    private static final String BUCKET_PREFIX = "fs-prod-";
+
+    @Inject
+    DocumentController documentController;
+
+    @Inject
+    MinioAuditLogDAO minioAuditLogDAO;
 
     @Test
     @DisplayName("Returns all documents with no criteria given.")
@@ -121,7 +134,7 @@ class DocumentControllerTest extends AbstractTest {
 
         response.then().statusCode(200);
         PageResultDTO<DocumentDetailDTO> documents = response.as(getDocumentDetailDTOTypeRef());
-        assertThat(documents.getStream()).hasSize(6);
+        assertThat(documents.getStream()).hasSize(8);
     }
 
     @Test
@@ -338,7 +351,7 @@ class DocumentControllerTest extends AbstractTest {
 
         response.then().statusCode(200);
         PageResultDTO<DocumentDetailDTO> documents = response.as(getDocumentDetailDTOTypeRef());
-        assertThat(documents.getStream()).hasSize(6);
+        assertThat(documents.getStream()).hasSize(8);
     }
 
     @Test
@@ -354,7 +367,7 @@ class DocumentControllerTest extends AbstractTest {
 
         response.then().statusCode(200);
         PageResultDTO<DocumentDetailDTO> documents = response.as(getDocumentDetailDTOTypeRef());
-        assertThat(documents.getStream()).hasSize(6);
+        assertThat(documents.getStream()).hasSize(8);
         assertThat(documents.getStream().stream()).allMatch(el -> el.getName().startsWith("docu"));
     }
 
@@ -371,7 +384,7 @@ class DocumentControllerTest extends AbstractTest {
 
         response.then().statusCode(200);
         List<DocumentDetailDTO> documentList = Arrays.asList(response.getBody().as(DocumentDetailDTO[].class));
-        assertThat(documentList).hasSize(6);
+        assertThat(documentList).hasSize(8);
         assertThat(documentList.stream()).allMatch(el -> el.getName().startsWith("docu"));
     }
 
@@ -530,7 +543,7 @@ class DocumentControllerTest extends AbstractTest {
 
         response.then().statusCode(200);
         PageResultDTO<DocumentDetailDTO> documents = response.as(getDocumentDetailDTOTypeRef());
-        assertThat(documents.getStream()).hasSize(3);
+        assertThat(documents.getStream()).hasSize(5);
         assertThat(documents.getStream().stream()).allMatch(el -> el.getRelatedObject().getObjectReferenceId()
                 .equals(RELATED_OBJECT_REF_ID_OF_DOCUMENT));
     }
@@ -548,7 +561,7 @@ class DocumentControllerTest extends AbstractTest {
 
         response.then().statusCode(200);
         List<DocumentDetailDTO> documentList = Arrays.asList(response.getBody().as(DocumentDetailDTO[].class));
-        assertThat(documentList).hasSize(3);
+        assertThat(documentList).hasSize(5);
         assertThat(documentList.stream()).allMatch(el -> el.getRelatedObject().getObjectReferenceId()
                 .equals(RELATED_OBJECT_REF_ID_OF_DOCUMENT));
     }
@@ -566,7 +579,7 @@ class DocumentControllerTest extends AbstractTest {
 
         response.then().statusCode(200);
         PageResultDTO<DocumentDetailDTO> documents = response.as(getDocumentDetailDTOTypeRef());
-        assertThat(documents.getStream()).hasSize(4);
+        assertThat(documents.getStream()).hasSize(6);
         assertThat(documents.getStream().stream()).allMatch(el -> el.getRelatedObject().getObjectReferenceType()
                 .equals(RELATED_OBJECT_REF_TYPE_OF_DOCUMENT));
     }
@@ -584,7 +597,7 @@ class DocumentControllerTest extends AbstractTest {
 
         response.then().statusCode(200);
         List<DocumentDetailDTO> documentList = Arrays.asList(response.getBody().as(DocumentDetailDTO[].class));
-        assertThat(documentList).hasSize(4);
+        assertThat(documentList).hasSize(6);
         assertThat(documentList.stream()).allMatch(el -> el.getRelatedObject().getObjectReferenceType()
                 .equals(RELATED_OBJECT_REF_TYPE_OF_DOCUMENT));
     }
@@ -775,7 +788,7 @@ class DocumentControllerTest extends AbstractTest {
                 .get(BASE_PATH);
         getResponse.then().statusCode(200);
         PageResultDTO<DocumentDetailDTO> documents = getResponse.as(getDocumentDetailDTOTypeRef());
-        assertThat(documents.getStream()).hasSize(5);
+        assertThat(documents.getStream()).hasSize(7);
     }
 
     @Test
@@ -1738,11 +1751,54 @@ class DocumentControllerTest extends AbstractTest {
         postResponse.then().statusCode(CREATED.getStatusCode());
     }
 
-    // @Test
-    // @DisplayName("Test method for cleanup of failed files.")
-    // void testSuccessfulDbCleanupOfFailedAttachments() {
-    // documentController.clearFailedFilesFromDBPeriodically();
-    // }
+    @Test
+    @DisplayName("Test method for cleanup of failed files.")
+    void testSuccessfulDbCleanupOfFailedAttachments() {
+        documentController.clearFailedFilesFromDBPeriodically();
+        Response getResponse = given()
+                .auth()
+                .oauth2(keycloakClient.getAccessToken(USER))
+                .accept(MediaType.APPLICATION_OCTET_STREAM)
+                .when()
+                .get(BASE_PATH + "/file/" + "57" + "/attachments");
+        getResponse.then().statusCode(204);
+    }
+
+    @Test
+    @DisplayName("Test method for cleanup of a Minio Audit Log record for which there is an attachment file in Minio.")
+    void testSuccessfulDeleteOfMinioAuditLogRecordHavingFileinMinio() {
+        File sampleFile = new File(SAMPLE_FILE_PATH);
+        Response putResponse = given()
+                .multiPart(FORM_PARAM_FILE, sampleFile)
+                .when()
+                .put(FILE_BASE_PATH + BUCKET_NAME + "/" + MINIO_FILE_PATH_3);
+        putResponse.then().statusCode(201);
+        FileInfoDTO file = putResponse.as(FileInfoDTO.class);
+
+        assertThat(file.getPath()).isEqualTo(MINIO_FILE_PATH_3);
+        assertThat(file.getContentType()).isEqualTo(SAMPLE_FILE_TYPE);
+        assertThat(file.getBucket()).isEqualTo(BUCKET_PREFIX + BUCKET_NAME);
+
+        assertThat(minioAuditLogDAO.getAllRecords()).hasSize(1);
+        documentController.deleteAllRecordsFromMinioAuditLog();
+        assertThat(minioAuditLogDAO.getAllRecords()).isEmpty();
+    }
+
+    //     @Test
+    //     @DisplayName("Test method for cleanup of a Minio Audit Log record for which there is no attachment file in Minio.")
+    //     void testFailedDeleteOfMinioAuditLogRecordHavingNoFileinMinio() {
+    //         var minioAuditLog = new MinioAuditLog();
+    //         minioAuditLog.setAttachmentId("temp");
+    //         minioAuditLogDAO.create(minioAuditLog);
+
+    //         Exception exception = assertThrows(CustomException.class, () -> {
+    //             documentController.deleteAllRecordsFromMinioAuditLog();
+    //         });
+
+    //         String expectedMessage = "An error occurred while deleting the attachment file.";
+    //         String actualMessage = exception.getMessage();
+    //         assertThat(actualMessage).isEqualTo(expectedMessage);
+    //     }
 
     private TypeRef<List<ChannelDTO>> getChannelDTOTypeRef() {
         return new TypeRef<>() {
@@ -1964,6 +2020,20 @@ class DocumentControllerTest extends AbstractTest {
     }
 
     @Test
+    @DisplayName("Get All existing Document's Attachments As Zip with client timezone")
+    void testSuccessfulGetAllDocumentAttachmentsAsZipWithClientTimezone() {
+        Response getResponse = given()
+                .auth()
+                .oauth2(keycloakClient.getAccessToken(USER))
+                .accept(MediaType.APPLICATION_OCTET_STREAM)
+                .header("client-timezone", "UTC")
+                .when()
+                .get(BASE_PATH + "/file/" + EXISTING_DOCUMENT_ID + "/attachments");
+        getResponse.then().statusCode(200);
+        getResponse.then().contentType(ZIP_CONTENT_TYPE);
+    }
+
+    @Test
     @DisplayName("Get All non-existing Document's Attachments As Zip")
     void testFailedGetAllDocumentAttachmentsAsZip() {
         Response getResponse = given()
@@ -1974,6 +2044,26 @@ class DocumentControllerTest extends AbstractTest {
                 .get(BASE_PATH + "/file/" + NONEXISTENT_DOCUMENT_ID + "/attachments");
         getResponse.then().statusCode(400);
     }
+
+    //     @Test
+    //     @DisplayName("Get All existing Document's Attachments As Zip. Test fails when we mock an exception.")
+    //     void testExceptionInGetAllDocumentAttachmentsAsZip() {
+    //         DocumentDAO documentDAO = mock(DocumentDAO.class);
+    //         doThrow(new RuntimeException("Internal Server Error")).when(documentDAO).findById(anyString()); // Simulating document not found
+
+    //         DocumentController documentController = new DocumentController();
+    //         documentController.documentDAO = documentDAO;
+
+    //         Response getResponse = given()
+    //                 .auth()
+    //                 .oauth2(keycloakClient.getAccessToken(USER))
+    //                 .accept(MediaType.APPLICATION_OCTET_STREAM)
+    //                 .when()
+    //                 .get(BASE_PATH + "/file/" + EXISTING_DOCUMENT_ID + "/attachments");
+
+    //         getResponse.then().statusCode(500);
+    //         getResponse.then().contentType(MediaType.APPLICATION_JSON);
+    //     }
 
     @Test
     @DisplayName("Get existing document's with no attachments as zip")

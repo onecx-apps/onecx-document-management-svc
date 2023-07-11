@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 
 import org.tkit.document.management.domain.models.entities.MinioAuditLog;
@@ -20,7 +19,7 @@ public class MinioAuditLogDAO extends AbstractDAO<MinioAuditLog> {
      * @return List of records as MinioAuditLog object
      */
     public List<MinioAuditLog> getAllRecords() {
-        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+        var criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<MinioAuditLog> selectQuery = criteriaBuilder.createQuery(MinioAuditLog.class);
         selectQuery.from(MinioAuditLog.class);
         TypedQuery<MinioAuditLog> typedQuery = em.createQuery(selectQuery);
