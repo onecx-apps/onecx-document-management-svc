@@ -25,6 +25,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
@@ -123,7 +124,7 @@ public class DocumentService {
 
     private static final String SLASH = "/";
 
-    private static final String ATTACHMENT_ID_LIST_MEDIA_TYPE = "text/plain;charset=us-ascii";
+    private static final String ATTACHMENT_ID_LIST_MEDIA_TYPE = "text/plain";
 
     private static final String FORM_DATA_MAP_KEY = "file";
 
@@ -168,7 +169,9 @@ public class DocumentService {
         }
         Map<String, List<InputPart>> uploadForm = input.getFormDataMap();
         List<InputPart> inputParts = uploadForm.get(FORM_DATA_MAP_KEY);
-        if (String.valueOf(inputParts.get(0).getMediaType()).equals(ATTACHMENT_ID_LIST_MEDIA_TYPE)) {
+        if (String.valueOf(MediaType.valueOf(inputParts.get(0).getMediaType().toString()).getType() + SLASH
+                + MediaType.valueOf(inputParts.get(0).getMediaType().toString()).getSubtype())
+                .equals(ATTACHMENT_ID_LIST_MEDIA_TYPE)) {
             List<String> attachmentIdList = getAttachmentIdList(inputParts);
             inputParts.remove(0);
             if (!attachmentIdList.isEmpty()) {
