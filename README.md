@@ -83,7 +83,7 @@ password: [your MTR access token]
 In a local development environment, Docker Compose is used to define and manage multiple containers as a single application stack. It enables developers to easily start, stop, and configure all the necessary services and dependencies required by OneCX Document Management using a simple configuration file.
 
 ```bash
-cd tkit-dev-env
+cd document-management-dev
 docker-compose up -d traefik postgresdb pgadmin keycloak-app tkit-portal-server minio apm
 ```
 
