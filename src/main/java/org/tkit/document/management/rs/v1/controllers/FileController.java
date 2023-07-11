@@ -56,10 +56,6 @@ public class FileController {
     @APIResponse(responseCode = "500", description = "Internal Server Error")
     @Consumes(MediaType.WILDCARD)
     public Response createBucket(@PathParam("name") String name) {
-        if (name == null) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Bucket name has to be provided").build();
-        }
-
         try {
             fileService.checkAndCreateBucket(name);
         } catch (Exception e) {

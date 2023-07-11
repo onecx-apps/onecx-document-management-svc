@@ -57,10 +57,12 @@ import org.tkit.document.management.domain.criteria.DocumentSearchCriteria;
 import org.tkit.document.management.domain.daos.AttachmentDAO;
 import org.tkit.document.management.domain.daos.ChannelDAO;
 import org.tkit.document.management.domain.daos.DocumentDAO;
+import org.tkit.document.management.domain.daos.MinioAuditLogDAO;
 import org.tkit.document.management.domain.daos.StorageUploadAuditDAO;
 import org.tkit.document.management.domain.models.entities.Attachment;
 import org.tkit.document.management.domain.models.entities.Channel;
 import org.tkit.document.management.domain.models.entities.Document;
+import org.tkit.document.management.domain.models.entities.MinioAuditLog;
 import org.tkit.document.management.domain.models.entities.StorageUploadAudit;
 import org.tkit.document.management.rs.v1.mappers.DocumentMapper;
 import org.tkit.document.management.rs.v1.models.AttachmentDTO;
@@ -104,6 +106,9 @@ public class DocumentController {
     StorageUploadAuditDAO storageUploadAuditDAO;
 
     @Inject
+    MinioAuditLogDAO minioAuditLogDAO;
+
+    @Inject
     DocumentMapper documentMapper;
 
     @Inject
@@ -117,10 +122,36 @@ public class DocumentController {
 
     private static final String CLASS_NAME = "DocumentController";
 
+    /**
+     * This scheduler gets triggered at every Saturday at 23:00 hours
+     * This scheduler deletes all the records from the "dm_attachment" table
+     * when the value of "storage_upload_status" column is "false"
+     */
     @Transactional
-    @Scheduled(cron = "0 0 23 * * ?", concurrentExecution = PROCEED)
+    @Scheduled(cron = "0 0 23 ? * SAT", concurrentExecution = PROCEED)
     public void clearFailedFilesFromDBPeriodically() {
         attachmentDAO.deleteAttachmentsBasedOnFileUploadStatus();
+    }
+
+    /**
+     * This scheduler gets triggered at every Sunday at 23:00 hours
+     * It calls the getAllRecords method of MinioAuditLogDAO class
+     * If the returned list is not null then all objects are iterated over a loop
+     * and
+     * it calls the deleteFileInAttachmentAsync method to delete object from Minio
+     * storage
+     * it then deletes that specific record from the MinioAuditLog table
+     */
+    @Transactional
+    @Scheduled(cron = "0 0 23 ? * SUN", concurrentExecution = PROCEED)
+    public void deleteAllRecordsFromMinioAuditLog() {
+        List<MinioAuditLog> minioAuditLogAllRecords = minioAuditLogDAO.getAllRecords();
+        if (!Objects.isNull(minioAuditLogAllRecords)) {
+            minioAuditLogAllRecords.stream().forEach(auditRecord -> {
+                documentService.deleteFileInAttachmentAsync(auditRecord.getAttachmentId());
+                minioAuditLogDAO.delete(auditRecord);
+            });
+        }
     }
 
     @GET
@@ -133,7 +164,7 @@ public class DocumentController {
     @APIResponse(responseCode = "500", description = "Internal Server Error, please check Problem Details", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RFCProblemDTO.class)))
     public Response getDocumentById(@PathParam("id") String id) {
         Log.info(CLASS_NAME, "Entered getDocumentById method", null);
-        Document document = documentDAO.findDocumentById(id);
+        var document = documentDAO.findDocumentById(id);
         if (Objects.isNull(document)) {
             throw new RestException(Response.Status.NOT_FOUND, Response.Status.NOT_FOUND, getDocumentNotFoundMsg(id));
         }
@@ -180,12 +211,14 @@ public class DocumentController {
     @APIResponse(responseCode = "500", description = "Internal Server Error, please check Problem Details", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RFCProblemDTO.class)))
     public Response deleteDocumentById(@PathParam("id") String id) {
         Log.info(CLASS_NAME, "Entered deleteDocumentById method", null);
-        Document document = documentDAO.findById(id);
+        List<String> listOfFilesIdToBeDeleted = new ArrayList<>();
+        var document = documentDAO.findById(id);
         if (Objects.isNull(document)) {
             throw new RestException(Response.Status.NOT_FOUND, Response.Status.NOT_FOUND, getDocumentNotFoundMsg(id));
         }
-        documentService.deleteFilesInDocument(document);
+        listOfFilesIdToBeDeleted.addAll(documentService.getFilesIdToBeDeletedInDocument(document));
         documentDAO.delete(document);
+        listOfFilesIdToBeDeleted.stream().forEach(eachFileId -> documentService.asyncDeleteForAttachments(eachFileId));
         Log.info(CLASS_NAME, "Exited deleteDocumentById method", null);
         return Response.status(Response.Status.NO_CONTENT).build();
     }
@@ -201,7 +234,7 @@ public class DocumentController {
     @APIResponse(responseCode = "500", description = "Internal Server Error, please check Problem Details", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RFCProblemDTO.class)))
     public Response createDocument(@Valid DocumentCreateUpdateDTO documentDTO) {
         Log.info(CLASS_NAME, "Entered createDocument method", null);
-        Document document = documentService.createDocument(documentDTO);
+        var document = documentService.createDocument(documentDTO);
         Log.info(CLASS_NAME, "Exited createDocument method", null);
         return Response.status(Response.Status.CREATED)
                 .entity(documentMapper.mapDetail(document))
@@ -223,7 +256,7 @@ public class DocumentController {
             @MultipartForm MultipartFormDataInput input) throws IOException {
         Log.info(CLASS_NAME, "Entered multipleFileUploads method", null);
         Map<String, Integer> map = documentService.uploadAttachment(documentId, input);
-        DocumentResponseDTO responseDTO = new DocumentResponseDTO();
+        var responseDTO = new DocumentResponseDTO();
         responseDTO.setAttachmentResponse(map);
         Log.info(CLASS_NAME, "Exited multipleFileUploads method", null);
         return Response.status(Response.Status.CREATED)
@@ -259,7 +292,7 @@ public class DocumentController {
     @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RFCProblemDTO.class)))
     public Response updateDocument(@PathParam("id") String id, @Valid DocumentCreateUpdateDTO dto) {
         Log.info(CLASS_NAME, "Entered updateDocument method", null);
-        Document document = documentDAO.findDocumentById(id);
+        var document = documentDAO.findDocumentById(id);
         if (Objects.isNull(document)) {
             throw new RestException(Response.Status.NOT_FOUND, Response.Status.NOT_FOUND, getDocumentNotFoundMsg(id));
         }
@@ -281,7 +314,7 @@ public class DocumentController {
         // List of unique alphabetically sorted channel names ignoring cases
         List<Channel> uniqueSortedChannelNames = channelDAO.findAllSortedByNameAsc()
                 .filter(distinctByKey(c -> c.getName().toLowerCase(Locale.ROOT)))
-                .toList();
+                .collect(Collectors.toList());
         Log.info(CLASS_NAME, "Exited getAllChannels method", null);
         return Response.status(Response.Status.OK)
                 .entity(documentMapper.mapChannels(uniqueSortedChannelNames))
@@ -306,7 +339,7 @@ public class DocumentController {
             throws IOException, InvalidKeyException, InvalidResponseException, InsufficientDataException,
             NoSuchAlgorithmException, ServerException, InternalException, XmlParserException, ErrorResponseException {
         Log.info(CLASS_NAME, "Entered getFile method", null);
-        Attachment attachment = attachmentDAO.findById(attachmentId);
+        var attachment = attachmentDAO.findById(attachmentId);
         if (Objects.isNull(attachment)) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
@@ -331,7 +364,7 @@ public class DocumentController {
         Log.info(CLASS_NAME, "Entered getAllDocumentAttachmentsAsZip method", null);
         try {
             /* Retrieve the document by its ID */
-            Document document = documentDAO.findById(documentId);
+            var document = documentDAO.findById(documentId);
 
             /*
              * Return a bad request response if the document is not found because a document
@@ -360,7 +393,7 @@ public class DocumentController {
                  * transmitting over the internet. We are using the default compression level
                  * because it is a good balance between file size and compression speed.
                  */
-                try (ZipOutputStream zip = new ZipOutputStream(output)) {
+                try (var zip = new ZipOutputStream(output)) {
 
                     /* Iterate over the set of attachments of the document using Java Streams */
                     documentAttachmentSet.stream()
@@ -377,10 +410,11 @@ public class DocumentController {
                                      * Add the attachment file into the zip with the
                                      * same filename
                                      */
-                                    ZipEntry entry = new ZipEntry(
+                                    var entry = new ZipEntry(
                                             attachment.getFileName());
                                     entry.setSize(object.available());
-                                    ZoneId clientZoneId = clientTimezone != null ? ZoneId.of(clientTimezone)
+                                    ZoneId clientZoneId = (clientTimezone != null && !clientTimezone.isEmpty())
+                                            ? ZoneId.of(clientTimezone)
                                             : ZoneId.of("UTC");
                                     LocalDateTime attachmentDateTime = attachment.getCreationDate();
                                     FileTime fileTime;
@@ -434,7 +468,8 @@ public class DocumentController {
     @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RestException.class)))
     public Response deleteFilesInBulk(List<String> attachmentIds) {
         Log.info(CLASS_NAME, "Entered deleteFilesInBulk method", null);
-        documentService.deleteAttachmentInBulk(attachmentIds);
+        documentService.updateAttachmentStatusInBulk(attachmentIds);
+        attachmentIds.stream().forEach(attachmentId -> documentService.asyncDeleteForAttachments(attachmentId));
         Log.info(CLASS_NAME, "Exited deleteFilesInBulk method", null);
         return Response.noContent().build();
     }
@@ -454,7 +489,7 @@ public class DocumentController {
         List<Document> document1 = new ArrayList<>();
         while (it.hasNext()) {
             DocumentCreateUpdateDTO dto1 = it.next();
-            Document document = documentDAO.findDocumentById(dto1.getId());
+            var document = documentDAO.findDocumentById(dto1.getId());
             if (Objects.isNull(document)) {
                 throw new RestException(Response.Status.NOT_FOUND, Response.Status.NOT_FOUND,
                         getDocumentNotFoundMsg(dto1.getId()));
@@ -483,16 +518,18 @@ public class DocumentController {
     @APIResponse(responseCode = "500", description = "Internal Server Error, please check Problem Details", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RFCProblemDTO.class)))
     public Response deleteBulkDocuments(List<String> ids) {
         Log.info(CLASS_NAME, "Entered deleteBulkDocuments method", null);
+        List<String> listOfFilesIdToBeDeleted = new ArrayList<>();
         Iterator<String> itr = ids.iterator();
         while (itr.hasNext()) {
             String currentDocId = itr.next();
-            Document document = documentDAO.findById(currentDocId);
+            var document = documentDAO.findById(currentDocId);
             if (Objects.isNull(document)) {
                 throw new RestException(Response.Status.NOT_FOUND, Response.Status.NOT_FOUND,
                         getDocumentNotFoundMsg(currentDocId));
             }
-            documentService.deleteFilesInDocument(document);
+            listOfFilesIdToBeDeleted.addAll(documentService.getFilesIdToBeDeletedInDocument(document));
             documentDAO.delete(document);
+            listOfFilesIdToBeDeleted.stream().forEach(eachFileId -> documentService.asyncDeleteForAttachments(eachFileId));
         }
         Log.info(CLASS_NAME, "Exited deleteBulkDocuments method", null);
         return Response.status(Response.Status.NO_CONTENT).build();

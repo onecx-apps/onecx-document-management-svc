@@ -16,7 +16,6 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "DM_DOCUMENT_TYPE")
-@java.lang.SuppressWarnings("java:S2160")
 public class DocumentType extends TraceableEntity {
     /**
      * Name of the document type.
@@ -24,4 +23,15 @@ public class DocumentType extends TraceableEntity {
     @Column(name = "NAME")
     private String name;
 
+    /**
+     * Description of the document type
+     */
+    @Column(name = "DESCRIPTION")
+    private String description;
+
+    /**
+     * Document type active status
+     */
+    @Column(name = "ACTIVE_STATUS")
+    private Boolean activeStatus;
 }

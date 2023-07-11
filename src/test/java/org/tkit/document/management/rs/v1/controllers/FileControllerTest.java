@@ -34,13 +34,13 @@ class FileControllerTest extends AbstractTest {
     private static final String NOT_ALLOWED_BUCKET_NAME = "test_bucket";
     private static final String FORM_PARAM_FILE = "file";
     private static final String BASE_PATH = "/v1/files/";
-    private static final String NON_EXISTING_FILE_PATH = "l.png";
+    private static final String NONEXISTENT_FILE_PATH = "l.png";
     private static final String APPLICATION_OCTET_STREAM_CONTENT_TYPE = "application/octet-stream";
-    private static final String prefix = "fs-prod-";
+    private static final String BUCKET_PREFIX = "fs-prod-";
 
     @Test
     @DisplayName("Create bucket for given name.")
-    void testCreateBucketTest() {
+    void testSuccessfulCreateBucket() {
 
         given()
                 .accept(MediaType.APPLICATION_JSON)
@@ -51,8 +51,18 @@ class FileControllerTest extends AbstractTest {
     }
 
     @Test
-    @DisplayName("Uploads jpg file")
-    void testSuccessfulUploadJPGFileTest() {
+    @DisplayName("Test createBucket method for Bad Request")
+    void testCreateBucketForBadRequest() {
+        given()
+                .accept(MediaType.APPLICATION_JSON)
+                .when()
+                .post(BASE_PATH + "bucket/" + NOT_ALLOWED_BUCKET_NAME)
+                .then().log().all().statusCode(400);
+    }
+
+    @Test
+    @DisplayName("Uploads a jpg file")
+    void testSuccessfulUploadJPGFile() {
 
         File sampleFile = new File(SAMPLE_FILE_PATH);
         Response putResponse = given()
@@ -63,7 +73,7 @@ class FileControllerTest extends AbstractTest {
         FileInfoDTO file = putResponse.as(FileInfoDTO.class);
         assertEquals(MINIO_FILE_PATH, file.getPath());
         assertEquals(SAMPLE_FILE_TYPE, file.getContentType());
-        assertEquals(prefix + BUCKET_NAME, file.getBucket());
+        assertEquals(BUCKET_PREFIX + BUCKET_NAME, file.getBucket());
     }
 
     @Test
@@ -78,7 +88,7 @@ class FileControllerTest extends AbstractTest {
         FileInfoDTO file = putResponse.as(FileInfoDTO.class);
         assertEquals(MINIO_UNKNOWN_FILE_PATH, file.getPath());
         assertEquals(APPLICATION_OCTET_STREAM_CONTENT_TYPE, file.getContentType());
-        assertEquals(prefix + BUCKET_NAME, file.getBucket());
+        assertEquals(BUCKET_PREFIX + BUCKET_NAME, file.getBucket());
     }
 
     @Test
@@ -101,16 +111,16 @@ class FileControllerTest extends AbstractTest {
     }
 
     @Test
-    @DisplayName("Returns internal server error when getting file that does not exist")
+    @DisplayName("Returns internal server error when downloading a file that does not exist")
     void testFailedDownloadJPGFile() {
         Response getResponse = given()
                 .when()
-                .get(BASE_PATH + BUCKET_NAME + "/" + NON_EXISTING_FILE_PATH).andReturn();
+                .get(BASE_PATH + BUCKET_NAME + "/" + NONEXISTENT_FILE_PATH).andReturn();
         getResponse.then().statusCode(500);
     }
 
     @Test
-    @DisplayName("Returns bad request when bucket contains not allowed characters")
+    @DisplayName("Returns a bad request error when the bucket name contains unallowed characters")
     void testFailedUploadJPGFile() {
         File sampleFile = new File(SAMPLE_FILE_PATH);
         Response putResponse = given()
@@ -184,7 +194,7 @@ class FileControllerTest extends AbstractTest {
     void testFailedDeleteNonexistentFile() throws IOException {
         Response deleteResponse = given()
                 .when()
-                .delete(BASE_PATH + BUCKET_NAME + "/" + NON_EXISTING_FILE_PATH).andReturn();
+                .delete(BASE_PATH + BUCKET_NAME + "/" + NONEXISTENT_FILE_PATH).andReturn();
         deleteResponse.then().statusCode(404);
     }
 }

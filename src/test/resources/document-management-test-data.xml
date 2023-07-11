@@ -29,6 +29,10 @@
     <dm_document guid="52" optlock="0" description="description_2" version="v_1" status="REVIEW" name="document_2" channel_guid="2" related_object_guid="2" specification_guid="252" type_guid="202" creationUser="onecx"/>
     <dm_document guid="53" optlock="0" description="description_3" version="v_1" status="RELEASED" name="document_3" channel_guid="2" related_object_guid="2" specification_guid="252" type_guid="202" creationUser="tester"/>
     <dm_document guid="54" optlock="0" description="description_4" version="v_1" status="RELEASED" name="document_4"/>
+    <dm_document guid="55" optlock="0" description="description_5" version="v_1" status="RELEASED" name="document_5"/>
+    <dm_document guid="56" optlock="0" description="description_5" version="v_1" status="RELEASED" name="document_5" channel_guid="2" related_object_guid="2" specification_guid="252" type_guid="202" creationUser="onecx"/>
+    <dm_document guid="57" optlock="0" description="description_7" version="v_1" status="RELEASED" name="document_7" channel_guid="2" related_object_guid="2" specification_guid="252" type_guid="202" creationUser="onecx"/>
+    <dm_document guid="58" optlock="0" description="description_8" version="v_1" status="RELEASED" name="document_8" channel_guid="2" related_object_guid="2" specification_guid="252" type_guid="202" creationUser="onecx"/>
 
     <!-- dm_document_characteristic -->
     <dm_document_characteristic guid="1" optlock="0" name="characteristic_1" value="value_1" document_guid="51"/>
@@ -48,10 +52,16 @@
     <dm_related_party guid="2" optlock="0" name="bill_2" role="role_2" end_date_time="2024-10-19 14:14:27.049" start_date_time="2020-10-19 10:14:27.049" document_guid="52"/>
 
     <!-- dm_attachment -->
-    <dm_attachment guid="101" optlock="0" description="atachment_1" storage_url="href/storageURL" name="atachment_1" size="2.00" size_unit="BYTES" storage="storage_1" type="bill" end_date_time="2023-10-19 14:14:27.049" start_date_time="2020-10-19 10:14:27.049" mimetype_guid="151" document_guid="51"/>
-    <dm_attachment guid="102" optlock="0" description="atachment_2" storage_url="href/storageURL" name="atachment_2" size="2.50" size_unit="BYTES" storage="storage_2" type="bill" end_date_time="2024-10-19 14:14:27.049" start_date_time="2020-10-19 10:14:27.049" mimetype_guid="151" document_guid="51"/>
-    <dm_attachment guid="103" optlock="0" description="atachment_3" storage_url="href/storageURL" name="atachment_3" size="1.50" size_unit="BYTES" storage="storage_3" type="bill" end_date_time="2025-10-19 14:14:27.049" start_date_time="2020-10-19 10:14:27.049" mimetype_guid="152" document_guid="52"/>
-    <dm_attachment guid="104" optlock="0" description="atachment_4" storage_url="href/storageURL" name="atachment_4" size="2.00" size_unit="BYTES" storage="storage_4" type="bill" end_date_time="2027-10-19 14:14:27.049" start_date_time="2020-10-19 10:14:27.049" mimetype_guid="152"/>
+    <dm_attachment guid="101" optlock="0" description="atachment_1" storage_url="href/storageURL" name="atachment_1" size="2.00" size_unit="BYTES" storage="storage_1" type="bill" end_date_time="2023-10-19 14:14:27.049" start_date_time="2020-10-19 10:14:27.049" mimetype_guid="151" document_guid="51" storage_upload_status="true"/>
+    <dm_attachment guid="102" optlock="0" description="atachment_2" storage_url="href/storageURL" name="atachment_2" size="2.50" size_unit="BYTES" storage="storage_2" type="bill" end_date_time="2024-10-19 14:14:27.049" start_date_time="2020-10-19 10:14:27.049" mimetype_guid="151" document_guid="51" storage_upload_status="true"/>
+    <dm_attachment guid="103" optlock="0" description="atachment_3" storage_url="href/storageURL" name="atachment_3" size="1.50" size_unit="BYTES" storage="storage_3" type="bill" end_date_time="2025-10-19 14:14:27.049" start_date_time="2020-10-19 10:14:27.049" mimetype_guid="152" document_guid="52" storage_upload_status="true"/>
+    <dm_attachment guid="104" optlock="0" description="atachment_4" storage_url="href/storageURL" name="atachment_4" size="2.00" size_unit="BYTES" storage="storage_4" type="bill" end_date_time="2027-10-19 14:14:27.049" start_date_time="2020-10-19 10:14:27.049" mimetype_guid="152" storage_upload_status="true"/>
+    <dm_attachment guid="105" optlock="0" description="atachment_5" storage_url="href/storageURL" name="atachment_5" size="3.00" size_unit="BYTES" storage="storage_5" type="bill" end_date_time="2027-10-19 14:14:27.050" start_date_time="2020-10-19 10:14:27.050" mimetype_guid="152" document_guid="55" filename="105" creationdate="2023-07-07 06:25:48.050" storage_upload_status="true"/>
+    <dm_attachment guid="106" optlock="0" description="atachment_6" storage_url="href/storageURL" name="atachment_6" size="3.00" size_unit="BYTES" storage="storage_6" type="bill" end_date_time="2027-10-19 14:14:27.051" start_date_time="2020-10-19 10:14:27.051" mimetype_guid="152" document_guid="55" filename="106" storage_upload_status="true"/>
+    <dm_attachment guid="107" optlock="0" description="atachment_7" storage_url="href/storageURL" name="atachment_7" size="3.00" size_unit="BYTES" storage="storage_7" type="bill" end_date_time="2027-10-19 14:14:27.051" start_date_time="2020-10-19 10:14:27.051" mimetype_guid="152" document_guid="56" filename="sample.jpg" storage_upload_status="true"/>
+    <dm_attachment guid="108" optlock="0" description="atachment_8" storage_url="href/storageURL" name="atachment_8" size="3.00" size_unit="BYTES" storage="storage_7" type="bill" end_date_time="2027-10-19 14:14:27.051" start_date_time="2020-10-19 10:14:27.051" mimetype_guid="152" document_guid="56" filename="sample2.jpg" storage_upload_status="true"/>
+    <dm_attachment guid="109" optlock="0" description="atachment_9" storage_url="href/storageURL" name="atachment_9" size="2.50" size_unit="BYTES" storage="storage_9" type="bill" end_date_time="2024-10-19 14:14:27.049" start_date_time="2020-10-19 10:14:27.049" mimetype_guid="151" document_guid="57" filename="sample.jpg" storage_upload_status="false"/>
+    <dm_attachment guid="110" optlock="0" description="atachment_9" storage_url="href/storageURL" name="atachment_9" size="2.50" size_unit="BYTES" storage="storage_9" type="bill" end_date_time="2024-10-19 14:14:27.049" start_date_time="2020-10-19 10:14:27.049" mimetype_guid="151" document_guid="58" filename="sample.jpg" storage_upload_status="false"/>
 
     <!-- dm_document_tags -->
     <dm_document_tags document_guid="51" tags="tag_1"/>
@@ -68,5 +78,8 @@
         <!-- dm_storage_upload_audit -->
     <dm_storage_upload_audit guid="1001" document_guid="51" attachment_guid="101" optlock="0"/>
     <dm_storage_upload_audit guid="1002" document_guid="51" attachment_guid="102" optlock="0"/>
+
+    <!-- dm_minio_audit_log -->
+    <dm_minio_audit_log guid="351" attachment_guid="110" optlock="0"/>
 
 </dataset>

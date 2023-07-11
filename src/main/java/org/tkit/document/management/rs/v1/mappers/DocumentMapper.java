@@ -169,7 +169,7 @@ public interface DocumentMapper {
             Function<S, T> mapFunction) {
         if (collectionDTO != null) {
             for (Iterator<T> i = collection.iterator(); i.hasNext();) {
-                T entity = i.next();
+                var entity = i.next();
                 Optional<S> dtoOptional = collectionDTO.stream()
                         .filter(dto -> dto.getId() != null)
                         .filter(dto -> entity.getId().equals(dto.getId()))
@@ -182,7 +182,7 @@ public interface DocumentMapper {
             }
             for (S dto : collectionDTO) {
                 if (dto.getId() == null || dto.getId().isEmpty()) {
-                    T entity = mapFunction.apply(dto);
+                    var entity = mapFunction.apply(dto);
                     collection.add(entity);
                 }
             }

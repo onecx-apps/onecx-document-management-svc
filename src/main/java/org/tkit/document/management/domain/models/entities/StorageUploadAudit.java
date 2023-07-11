@@ -13,7 +13,6 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "DM_STORAGE_UPLOAD_AUDIT")
-@java.lang.SuppressWarnings("java:S2160")
 public class StorageUploadAudit extends TraceableEntity {
 
     @Column(name = "DOCUMENT_GUID")
