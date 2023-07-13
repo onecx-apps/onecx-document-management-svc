@@ -1,19 +1,4 @@
 == OneCX Document-Management-Service
-
-=== Licence
-
-This software is licensed under the
-https://www.apache.org/licenses/LICENSE-2.0[Apache License&#44; Version
-2.0]. You may obtain a copy of the license in the corresponding LICENSE
-file or visit the https://www.apache.org/licenses/LICENSE-2.0[Apache
-website] for more information.
-
-=== Contributing
-
-We welcome contributions from the community. If you would like to
-contribute to the development of OneCX Document Management Software,
-please follow our link:[contribution guidelines (tbd)].
-
 === What is Document Management
 
 Document management refers to the systematic process of capturing,
