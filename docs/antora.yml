@@ -1,0 +1,6 @@
+name: document-management-svc
+title: Document Management Service
+version: latest
+start_page: svc:index.adoc
+nav:
+ - modules/svc/nav.adoc
