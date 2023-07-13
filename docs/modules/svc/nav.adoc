@@ -1,1 +1,1 @@
-* xref:svc:index.adoc[General]
+* xref:svc:index.adoc[Service]
