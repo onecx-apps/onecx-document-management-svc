@@ -1,5 +1,5 @@
-name: document-management-svc
-title: Document Management Service
+name: document-management
+title: Document Management
 version: latest
 start_page: svc:index.adoc
 nav:
