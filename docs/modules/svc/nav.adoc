@@ -1,2 +1,1 @@
-* xref:general:index.adoc[Document Management]
-** xref:svc:index.adoc[Service]
+* xref:svc:index.adoc[Service]
