@@ -1,4 +1,6 @@
 == OneCX Document-Management-Service
+image:https://github.com/onecx-apps/onecx-document-management-svc/actions/workflows/build.yml/badge.svg[OneCX Document Management SVC]
+
 === What is Document Management
 
 Document management refers to the systematic process of capturing,
