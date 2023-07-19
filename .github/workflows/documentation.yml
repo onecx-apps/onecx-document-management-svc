@@ -1,8 +1,9 @@
-name: CI
+name: Update documentation
 on:
   push:
     branches: [ main ]
-
+    paths:
+      - 'docs/**'
 jobs:
   build:
     runs-on: ubuntu-latest
