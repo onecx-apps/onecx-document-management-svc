@@ -17,7 +17,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
@@ -41,9 +40,6 @@ public class FileController {
 
     @Inject
     FileService fileService;
-
-    @ConfigProperty(name = "minio.bucket.prefix", defaultValue = "def-")
-    String bucketNamePrefix;
 
     private static final String CLASS_NAME = "FileController";
 
@@ -82,7 +78,7 @@ public class FileController {
         }
         FileInfoDTO fileInfoDTO;
         try {
-            fileInfoDTO = fileService.uploadFile(path, data.file, bucketNamePrefix + bucket);
+            fileInfoDTO = fileService.uploadFile(path, data.file, bucket);
         } catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
@@ -101,7 +97,7 @@ public class FileController {
     public Response downloadFileBytes(@PathParam("bucket") String bucket, @PathParam("path") String path) {
         Log.info(CLASS_NAME, "Entered downloadFileBytes method", null);
         try {
-            final GetObjectResponse object = fileService.downloadFile(path, bucketNamePrefix + bucket);
+            final GetObjectResponse object = fileService.downloadFile(path, bucket);
             String contentType = object.headers().get("Content-Type");
 
             final byte[] data = object.readAllBytes();
@@ -128,7 +124,7 @@ public class FileController {
     public Response deleteFile(@PathParam("bucket") String bucket, @PathParam("path") String path) {
         Log.info(CLASS_NAME, "Entered deleteFile method", null);
         try {
-            fileService.deleteFile(path, bucketNamePrefix + bucket);
+            fileService.deleteFile(path, bucket);
             Log.info(CLASS_NAME, "Exited deleteFile method", null);
             return Response.status(Response.Status.CREATED).build();
         } catch (FileNotFoundException e) {

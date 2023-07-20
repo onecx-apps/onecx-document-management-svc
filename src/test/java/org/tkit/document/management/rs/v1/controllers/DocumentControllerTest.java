@@ -114,7 +114,6 @@ class DocumentControllerTest extends AbstractTest {
     private static final String SAMPLE_FILE_PATH = "src/test/resources/sample.jpg";
     private static final String MINIO_FILE_PATH_3 = "110";
     private static final String SAMPLE_FILE_TYPE = "image/jpeg";
-    private static final String BUCKET_PREFIX = "fs-prod-";
 
     @Inject
     DocumentController documentController;
@@ -1777,7 +1776,7 @@ class DocumentControllerTest extends AbstractTest {
 
         assertThat(file.getPath()).isEqualTo(MINIO_FILE_PATH_3);
         assertThat(file.getContentType()).isEqualTo(SAMPLE_FILE_TYPE);
-        assertThat(file.getBucket()).isEqualTo(BUCKET_PREFIX + BUCKET_NAME);
+        assertThat(file.getBucket()).isEqualTo(BUCKET_NAME);
 
         assertThat(minioAuditLogDAO.getAllRecords()).hasSize(1);
         documentController.deleteAllRecordsFromMinioAuditLog();

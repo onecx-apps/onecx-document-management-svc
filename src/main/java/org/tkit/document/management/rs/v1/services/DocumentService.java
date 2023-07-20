@@ -111,11 +111,8 @@ public class DocumentService {
     @Inject
     MinioClient minioClient;
 
-    @ConfigProperty(name = "minio.bucket.name")
-    String bucketName;
-
-    @ConfigProperty(name = "minio.bucket.prefix")
-    String bucketNamePrefix;
+    @ConfigProperty(name = "minio.bucket.folder")
+    String bucketFolder;
 
     @ConfigProperty(name = "quarkus.minio.url")
     String minioUrl;
@@ -288,7 +285,7 @@ public class DocumentService {
             NoSuchAlgorithmException, ServerException, InternalException, XmlParserException, ErrorResponseException {
         Log.info(CLASS_NAME, "Entered getObjectFromObjectStore method", null);
         var getObjectArgs = GetObjectArgs.builder()
-                .bucket(bucketNamePrefix + bucketName)
+                .bucket(bucketFolder)
                 .object(objectId)
                 .build();
         Log.info(CLASS_NAME, "Exited getObjectFromObjectStore method", null);
@@ -322,7 +319,7 @@ public class DocumentService {
         try {
             minioClient.removeObject(
                     RemoveObjectArgs.builder()
-                            .bucket(bucketNamePrefix + bucketName)
+                            .bucket(bucketFolder)
                             .object(attachmentId)
                             .build());
         } catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidKeyException
@@ -510,7 +507,7 @@ public class DocumentService {
             NoSuchAlgorithmException, ServerException, InternalException, XmlParserException, ErrorResponseException {
         Log.info(CLASS_NAME, "Entered uploadFileToObjectStorage method", null);
         minioClient.putObject(PutObjectArgs.builder()
-                .bucket(bucketNamePrefix + bucketName)
+                .bucket(bucketFolder)
                 .object(id)
                 .stream(new ByteArrayInputStream(fileBytes), fileBytes.length, -1)
                 .build());

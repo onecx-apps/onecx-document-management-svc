@@ -36,7 +36,6 @@ class FileControllerTest extends AbstractTest {
     private static final String BASE_PATH = "/v1/files/";
     private static final String NONEXISTENT_FILE_PATH = "l.png";
     private static final String APPLICATION_OCTET_STREAM_CONTENT_TYPE = "application/octet-stream";
-    private static final String BUCKET_PREFIX = "fs-prod-";
 
     @Test
     @DisplayName("Create bucket for given name.")
@@ -73,7 +72,7 @@ class FileControllerTest extends AbstractTest {
         FileInfoDTO file = putResponse.as(FileInfoDTO.class);
         assertEquals(MINIO_FILE_PATH, file.getPath());
         assertEquals(SAMPLE_FILE_TYPE, file.getContentType());
-        assertEquals(BUCKET_PREFIX + BUCKET_NAME, file.getBucket());
+        assertEquals(BUCKET_NAME, file.getBucket());
     }
 
     @Test
@@ -88,7 +87,7 @@ class FileControllerTest extends AbstractTest {
         FileInfoDTO file = putResponse.as(FileInfoDTO.class);
         assertEquals(MINIO_UNKNOWN_FILE_PATH, file.getPath());
         assertEquals(APPLICATION_OCTET_STREAM_CONTENT_TYPE, file.getContentType());
-        assertEquals(BUCKET_PREFIX + BUCKET_NAME, file.getBucket());
+        assertEquals(BUCKET_NAME, file.getBucket());
     }
 
     @Test
