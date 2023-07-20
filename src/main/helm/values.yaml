@@ -4,3 +4,36 @@ app:
     tag: 999-SNAPSHOT
   db:
     enabled: true
+  operator:
+    keycloak:
+      enabled: true
+      client: |-
+        {
+            "clientId": "{{ .Release.Name }}",
+            "enabled": true,
+            "description": "Keycloack client for {{ .Release.Name }}",
+            "redirectUris": [
+                "*"
+            ],
+            "webOrigins": [
+                "*"
+            ],
+            "publicClient": true,
+            "protocol": "openid-connect"
+        }
+
+      roles: |-
+        [
+          {
+            "name": "document-admin",
+            "description": "Document Admin role"
+          },
+          {
+            "name": "document-user",
+            "description": "Document management user role"
+          },
+          {
+            "name": "document-responsible",
+            "description": "Document management responsible role"
+          }
+        ]
