@@ -16,7 +16,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
@@ -211,10 +210,10 @@ class DocumentControllerTest extends AbstractTest {
         assertThat(document.getRelatedParties()).hasSize(NUMBER_OF_RELATED_PARTIES_OF_DOCUMENT_1);
         assertThat(document.getRelatedParties().stream().findFirst().get().getId()).isEqualTo(RELATED_PARTY_ID);
         assertThat(document.getCategories()).hasSize(NUMBER_OF_CATEGORIES_RELATIONSHIPS_OF_DOCUMENT_1);
-        assertThat(document.getCategories().stream().map(TraceableDTO::getId).collect(Collectors.toList()))
+        assertThat(document.getCategories().stream().map(TraceableDTO::getId).toList())
                 .isEqualTo(categoryIds);
         assertThat(document.getAttachments()).hasSize(NUMBER_OF_ATTACHMENTS_RELATIONSHIPS_OF_DOCUMENT_1);
-        assertThat(document.getAttachments().stream().map(TraceableDTO::getId).collect(Collectors.toList()))
+        assertThat(document.getAttachments().stream().map(TraceableDTO::getId).toList())
                 .containsAll(attachmentIds);
     }
 
@@ -1578,60 +1577,60 @@ class DocumentControllerTest extends AbstractTest {
 
         assertThat(documentDetailDTO.getDocumentRelationships()).hasSize(2);
         List<DocumentRelationshipDTO> relationships1 = documentDetailDTO.getDocumentRelationships()
-                .stream().filter(p -> p.getId().equals("1")).collect(Collectors.toList());
+                .stream().filter(p -> p.getId().equals("1")).toList();
         assertThat(relationships1).hasSize(1);
         DocumentRelationshipDTO existingDocumentRelationship = relationships1.get(0);
         assertThat(existingDocumentRelationship.getType()).isEqualTo("TEST_TYPE_1");
         List<DocumentRelationshipDTO> newRelationship = documentDetailDTO.getDocumentRelationships()
-                .stream().filter(p -> !p.getId().equals("1")).collect(Collectors.toList());
+                .stream().filter(p -> !p.getId().equals("1")).toList();
         assertThat(newRelationship).hasSize(1);
         DocumentRelationshipDTO existingDocumentRelationship2 = newRelationship.get(0);
         assertThat(existingDocumentRelationship2.getType()).isEqualTo("TEST_TYPE_2");
 
         assertThat(documentDetailDTO.getCharacteristics()).hasSize(2);
         List<DocumentCharacteristicDTO> list1 = documentDetailDTO.getCharacteristics()
-                .stream().filter(p -> p.getId().equals("1")).collect(Collectors.toList());
+                .stream().filter(p -> p.getId().equals("1")).toList();
         assertThat(list1).hasSize(1);
         DocumentCharacteristicDTO existingCharacteristicDTO = list1.get(0);
         assertThat(existingCharacteristicDTO.getName()).isEqualTo("TEST_Name_1");
         List<DocumentCharacteristicDTO> list2 = documentDetailDTO.getCharacteristics()
-                .stream().filter(p -> !p.getId().equals("1")).collect(Collectors.toList());
+                .stream().filter(p -> !p.getId().equals("1")).toList();
         assertThat(list2).hasSize(1);
         DocumentCharacteristicDTO newCharacteristicDTO = list2.get(0);
         assertThat(newCharacteristicDTO.getName()).isEqualTo("TEST_Name_2");
 
         assertThat(documentDetailDTO.getRelatedParties()).hasSize(2);
         List<RelatedPartyRefDTO> listRelatedParties1 = documentDetailDTO.getRelatedParties()
-                .stream().filter(p -> p.getId().equals("1")).collect(Collectors.toList());
+                .stream().filter(p -> p.getId().equals("1")).toList();
         assertThat(listRelatedParties1).hasSize(1);
         RelatedPartyRefDTO existingRelatedPartyDTO = listRelatedParties1.get(0);
         assertThat(existingRelatedPartyDTO.getName()).isEqualTo("TEST_Name_1");
         List<RelatedPartyRefDTO> listRelatedParties2 = documentDetailDTO.getRelatedParties()
-                .stream().filter(p -> !p.getId().equals("1")).collect(Collectors.toList());
+                .stream().filter(p -> !p.getId().equals("1")).toList();
         assertThat(listRelatedParties2).hasSize(1);
         RelatedPartyRefDTO newRelatedPartyDTO = listRelatedParties2.get(0);
         assertThat(newRelatedPartyDTO.getName()).isEqualTo("TEST_Name_2");
 
         assertThat(documentDetailDTO.getCategories()).hasSize(2);
         List<CategoryDTO> listCategories1 = documentDetailDTO.getCategories()
-                .stream().filter(p -> p.getId().equals("1")).collect(Collectors.toList());
+                .stream().filter(p -> p.getId().equals("1")).toList();
         assertThat(listCategories1).hasSize(1);
         CategoryDTO existingCategoryDTO = listCategories1.get(0);
         assertThat(existingCategoryDTO.getName()).isEqualTo("TEST_Name_1");
         List<CategoryDTO> listCategories2 = documentDetailDTO.getCategories()
-                .stream().filter(p -> !p.getId().equals("1")).collect(Collectors.toList());
+                .stream().filter(p -> !p.getId().equals("1")).toList();
         assertThat(listCategories2).hasSize(1);
         CategoryDTO newCategoryDTO = listCategories2.get(0);
         assertThat(newCategoryDTO.getName()).isEqualTo("TEST_Name_2");
 
         assertThat(documentDetailDTO.getAttachments()).hasSize(3);
         List<AttachmentDTO> listAttachment1 = documentDetailDTO.getAttachments()
-                .stream().filter(p -> p.getId().equals("101")).collect(Collectors.toList());
+                .stream().filter(p -> p.getId().equals("101")).toList();
         assertThat(listAttachment1).hasSize(1);
         AttachmentDTO existingAttachmentDTO = listAttachment1.get(0);
         assertThat(existingAttachmentDTO.getMimeType().getId()).isEqualTo("152");
         List<AttachmentDTO> listAttachment2 = documentDetailDTO.getAttachments()
-                .stream().filter(p -> !p.getId().equals("101")).collect(Collectors.toList());
+                .stream().filter(p -> !p.getId().equals("101")).toList();
         assertThat(listAttachment2).hasSize(2);
         AttachmentDTO newAttachmentDTO = listAttachment2.get(0);
         assertThat(newAttachmentDTO.getMimeType().getId()).isEqualTo("151");

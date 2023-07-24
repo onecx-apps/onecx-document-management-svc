@@ -19,7 +19,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -338,7 +337,7 @@ public class DocumentService {
         Log.info(CLASS_NAME, "Entered getFilesIdToBeDeletedInDocument method", null);
         if (!Objects.isNull(document.getAttachments())) {
             List<String> attachmentIds = document.getAttachments().stream().map(TraceableEntity::getId)
-                    .collect(Collectors.toList());
+                    .toList();
             updateAttachmentStatusInBulk(attachmentIds);
             Log.info(CLASS_NAME, "Exited getFilesIdToBeDeletedInDocument method", null);
             return attachmentIds;
