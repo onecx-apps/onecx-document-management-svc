@@ -119,18 +119,6 @@ editor and add the following entries:
 Open the file `\etc\hosts` in `your` favorite linux editor and add the
 same entries like above.
 
-==== Add Mageta Trusted Repository
-
-In order to resolve and download the required docker images defined in
-the docker-compose file an additional docker registry must be defined.
-
-[source,bash]
-----
-docker login mtr.devops.telekom.de
-username: [your MTR username]
-password: [your MTR access token]
-----
-
 ==== Starting OneCX dependencies
 
 In a local development environment, Docker Compose is used to define and
