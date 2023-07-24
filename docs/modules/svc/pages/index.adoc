@@ -109,9 +109,10 @@ editor and add the following entries:
 127.0.0.1       jaeger
 127.0.0.1       tkit-portal
 127.0.0.1       tkit-portal-app
-127.0.0.1       data-mgmt-ui-app
-127.0.0.1       data-mgmt-ui
 127.0.0.1       tkit-portal-server
+127.0.0.1       onecx-document-management-ui
+127.0.0.1       onecx-document-management-bff
+127.0.0.1       onecx-document-management-svc
 ----
 
 ===== Update WSL host file
