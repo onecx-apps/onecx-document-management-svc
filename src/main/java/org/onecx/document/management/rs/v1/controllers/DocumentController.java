@@ -40,12 +40,14 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.io.IOUtils;
 import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.headers.Header;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -226,9 +228,9 @@ public class DocumentController {
     @POST
     @RolesAllowed({ "document-admin", "document-responsible" })
     @Operation(operationId = "createDocument", description = "Create Document")
-    @APIResponse(responseCode = "201", description = "Created Document resource", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = DocumentDetailDTO.class)), headers = {
-            @Header(name = "Location", description = "URL for the create Document resource")
-    })
+    @APIResponse(responseCode = "201", description = "Created Document resource", content = @Content(mediaType =
+    MediaType.APPLICATION_JSON, schema = @Schema(implementation = DocumentDetailDTO.class)), headers =
+          @Header(name = HttpHeaders.LOCATION, schema = @Schema(type = SchemaType.STRING), description = "URL of the entity created"))
     @APIResponse(responseCode = "400", description = "Bad Request", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RFCProblemDTO.class)))
     @APIResponse(responseCode = "403", description = "Not Authorized")
     @APIResponse(responseCode = "500", description = "Internal Server Error, please check Problem Details", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RFCProblemDTO.class)))
