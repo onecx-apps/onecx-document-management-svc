@@ -228,9 +228,7 @@ public class DocumentController {
     @POST
     @RolesAllowed({ "document-admin", "document-responsible" })
     @Operation(operationId = "createDocument", description = "Create Document")
-    @APIResponse(responseCode = "201", description = "Created Document resource", content = @Content(mediaType =
-    MediaType.APPLICATION_JSON, schema = @Schema(implementation = DocumentDetailDTO.class)), headers =
-          @Header(name = HttpHeaders.LOCATION, schema = @Schema(type = SchemaType.STRING), description = "URL of the entity created"))
+    @APIResponse(responseCode = "201", description = "Created Document resource", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = DocumentDetailDTO.class)), headers = @Header(name = HttpHeaders.LOCATION, schema = @Schema(type = SchemaType.STRING), description = "URL of the entity created"))
     @APIResponse(responseCode = "400", description = "Bad Request", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RFCProblemDTO.class)))
     @APIResponse(responseCode = "403", description = "Not Authorized")
     @APIResponse(responseCode = "500", description = "Internal Server Error, please check Problem Details", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RFCProblemDTO.class)))
