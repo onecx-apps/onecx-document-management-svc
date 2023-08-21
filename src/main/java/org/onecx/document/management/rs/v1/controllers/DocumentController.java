@@ -278,7 +278,9 @@ public class DocumentController {
         List<StorageUploadAudit> failedAttachmentList = storageUploadAuditDAO
                 .findFailedAttachmentsByDocumentId(documentId);
         Log.info(CLASS_NAME, "Exited getFailedAttachmentById method", null);
-        return Response.status(Response.Status.OK).entity(failedAttachmentList).build();
+        return Response.status(Response.Status.OK)
+                .entity(documentMapper.mapStorageUploadAudit(failedAttachmentList))
+                .build();
     }
 
     @PUT
