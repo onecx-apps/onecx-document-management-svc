@@ -67,13 +67,7 @@ import org.onecx.document.management.domain.models.entities.Document;
 import org.onecx.document.management.domain.models.entities.MinioAuditLog;
 import org.onecx.document.management.domain.models.entities.StorageUploadAudit;
 import org.onecx.document.management.rs.v1.mappers.DocumentMapper;
-import org.onecx.document.management.rs.v1.models.AttachmentDTO;
-import org.onecx.document.management.rs.v1.models.ChannelDTO;
-import org.onecx.document.management.rs.v1.models.DocumentCreateUpdateDTO;
-import org.onecx.document.management.rs.v1.models.DocumentDetailDTO;
-import org.onecx.document.management.rs.v1.models.DocumentResponseDTO;
-import org.onecx.document.management.rs.v1.models.DocumentSearchCriteriaDTO;
-import org.onecx.document.management.rs.v1.models.RFCProblemDTO;
+import org.onecx.document.management.rs.v1.models.*;
 import org.onecx.document.management.rs.v1.services.DocumentService;
 import org.tkit.quarkus.jpa.daos.PageResult;
 import org.tkit.quarkus.rs.exceptions.RestException;
@@ -269,7 +263,7 @@ public class DocumentController {
     @RolesAllowed({ "document-admin", "document-responsible", "document-user" })
     @Transactional
     @Operation(operationId = "getFailedAttachmentData", description = "Get data of all the failed attachment based on document ID")
-    @APIResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @APIResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = StorageUploadAuditDTO[].class)))
     @APIResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RFCProblemDTO.class)))
     @APIResponse(responseCode = "403", description = "Not Authorized")
     @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RFCProblemDTO.class)))
