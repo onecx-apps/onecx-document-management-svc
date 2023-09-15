@@ -21,6 +21,7 @@ import org.onecx.document.management.domain.models.entities.DocumentCharacterist
 import org.onecx.document.management.domain.models.entities.DocumentRelationship;
 import org.onecx.document.management.domain.models.entities.RelatedObjectRef;
 import org.onecx.document.management.domain.models.entities.RelatedPartyRef;
+import org.onecx.document.management.domain.models.entities.StorageUploadAudit;
 import org.onecx.document.management.rs.v1.models.AttachmentCreateUpdateDTO;
 import org.onecx.document.management.rs.v1.models.AttachmentDTO;
 import org.onecx.document.management.rs.v1.models.CategoryCreateUpdateDTO;
@@ -34,6 +35,7 @@ import org.onecx.document.management.rs.v1.models.DocumentSearchCriteriaDTO;
 import org.onecx.document.management.rs.v1.models.IdentifiableTraceableDTO;
 import org.onecx.document.management.rs.v1.models.RelatedObjectRefCreateUpdateDTO;
 import org.onecx.document.management.rs.v1.models.RelatedPartyRefCreateUpdateDTO;
+import org.onecx.document.management.rs.v1.models.StorageUploadAuditDTO;
 import org.tkit.quarkus.jpa.daos.PageResult;
 import org.tkit.quarkus.jpa.models.TraceableEntity;
 import org.tkit.quarkus.rs.mappers.OffsetDateTimeMapper;
@@ -43,6 +45,8 @@ import org.tkit.quarkus.rs.models.PageResultDTO;
 public interface DocumentMapper {
 
     DocumentDetailDTO mapDetail(Document document);
+
+    List<StorageUploadAuditDTO> mapStorageUploadAudit(List<StorageUploadAudit> audit);
 
     Stream<DocumentDetailDTO> mapDetailBulk(Stream<Document> document);
 

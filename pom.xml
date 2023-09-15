@@ -123,7 +123,32 @@
             <artifactId>quarkus-test-keycloak-server</artifactId>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
-
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>smallrye-open-api-maven-plugin</artifactId>
+                <groupId>io.smallrye</groupId>
+                <executions>
+                    <execution>
+                        <id>v1</id>
+                        <goals>
+                            <goal>generate-schema</goal>
+                        </goals>
+                        <configuration>
+                            <scanPackages>
+                                org.onecx.document.management.rs.v1,
+                                org.tkit.quarkus.rs.models
+                            </scanPackages>
+                            <scanClasses>org.onecx.document.management.rs.v1.RestApplication</scanClasses>
+                            <infoTitle>Document Management API v1</infoTitle>
+                            <schemaFilename>document-management-openapi-v1</schemaFilename>
+                            <encoding>UTF-8</encoding>
+                            <outputDirectory>target</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
