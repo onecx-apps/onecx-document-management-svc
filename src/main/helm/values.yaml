@@ -1,4 +1,5 @@
 app:
+  name: ""
   image:
     repository: "onecx-apps/onecx-document-management-svc"
   db:
