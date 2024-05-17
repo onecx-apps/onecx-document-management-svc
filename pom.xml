@@ -16,7 +16,6 @@
     <version>999-SNAPSHOT</version>
     <name>onecx-document-management-svc</name>
 
-
     <dependencies>
         <!-- 1000kit -->
         <dependency>
