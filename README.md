@@ -10,3 +10,4 @@ We welcome contributions from the community. If you would like to contribute to 
 
 ## Issue tracking
 All OneCX Document Management issues are tracked and maintained here [issue tracking tool][].
+
