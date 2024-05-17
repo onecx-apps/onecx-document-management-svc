@@ -3,3 +3,4 @@ app:
     repository: "onecx-apps/onecx-document-management-svc"
   db:
     enabled: true
+  product: false
