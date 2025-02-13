@@ -9,9 +9,10 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.onecx.document.management.domain.models.enums.LifeCycleState;
 import org.onecx.document.management.test.AbstractTest;
 
+import gen.org.onecx.document.management.rs.v1.model.DocumentSearchCriteriaDTO;
+import gen.org.onecx.document.management.rs.v1.model.LifeCycleState;
 import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest

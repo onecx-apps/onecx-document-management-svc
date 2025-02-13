@@ -8,13 +8,20 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
+import gen.org.onecx.document.management.rs.v1.model.RFCProblemDetailDTO;
 import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class RFCProblemDetailDTOTest {
 
-    private static final String TO_STRING_RESULT = "RFCProblemDetailDTO(messageId=12345, code=105)";
+    private static final String TO_STRING_RESULT = """
+            class RFCProblemDetailDTO {
+                message: null
+                messageId: 12345
+                code: 105
+                messageType: test
+            }""";
 
     @Test
     @DisplayName("Get Code Get Message Type")

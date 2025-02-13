@@ -4,20 +4,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.annotation.Priority;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.Provider;
+import jakarta.annotation.Priority;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriInfo;
+import jakarta.ws.rs.ext.ExceptionMapper;
+import jakarta.ws.rs.ext.Provider;
 
 import org.onecx.document.management.rs.v1.models.RFCProblemDTO;
-import org.onecx.document.management.rs.v1.models.RFCProblemDetailDTO;
 import org.tkit.quarkus.jpa.exceptions.DAOException;
-import org.tkit.quarkus.rs.exceptions.RestException;
 
+import gen.org.onecx.document.management.rs.v1.model.RFCProblemDetailDTO;
 import lombok.extern.slf4j.Slf4j;
 
 /**

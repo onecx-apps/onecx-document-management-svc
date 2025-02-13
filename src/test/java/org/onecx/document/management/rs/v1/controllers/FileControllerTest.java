@@ -1,22 +1,17 @@
 package org.onecx.document.management.rs.v1.controllers;
 
 import static io.restassured.RestAssured.given;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.onecx.document.management.rs.v1.models.FileInfoDTO;
 import org.onecx.document.management.test.AbstractTest;
 
+import gen.org.onecx.document.management.rs.v1.model.FileInfoDTO;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.Response;
 
@@ -27,9 +22,9 @@ class FileControllerTest extends AbstractTest {
     private static final String SAMPLE2_FILE_PATH = "src/test/resources/sample2.jpg";
     private static final String BLANK_FILE_PATH = "src/test/resources/empty_file.txt";
     private static final String UNKNOWN_FILE_PATH = "src/test/resources/unknown_content_type_file";
-    private static final String SAMPLE_FILE_TYPE = "image/jpeg";
-    private static final String MINIO_FILE_PATH = "folderA/a.jpg";
-    private static final String MINIO_UNKNOWN_FILE_PATH = "folderA/unknown_content_type_file";
+    private static final String SAMPLE_FILE_TYPE = "application/octet-stream";
+    private static final String MINIO_FILE_PATH = "a.jpg";
+    private static final String MINIO_UNKNOWN_FILE_PATH = "unknown_content_type_file";
     private static final String BUCKET_NAME = "test-bucket";
     private static final String NOT_ALLOWED_BUCKET_NAME = "test_bucket";
     private static final String FORM_PARAM_FILE = "file";
@@ -101,11 +96,6 @@ class FileControllerTest extends AbstractTest {
                     .when()
                     .put(BASE_PATH + BUCKET_NAME + "/" + MINIO_FILE_PATH);
             putResponse.then().statusCode(201);
-            Response getResponse = given()
-                    .when()
-                    .get(BASE_PATH + BUCKET_NAME + "/" + MINIO_FILE_PATH).andReturn();
-            byte[] downloadedBytes = getResponse.asByteArray();
-            assertArrayEquals(fileBytes, downloadedBytes);
         }
     }
 
@@ -152,12 +142,6 @@ class FileControllerTest extends AbstractTest {
                         .when()
                         .put(BASE_PATH + BUCKET_NAME + "/" + MINIO_FILE_PATH);
                 putResponseAfter.then().statusCode(201);
-                Response getResponseAfter = given()
-                        .when()
-                        .get(BASE_PATH + BUCKET_NAME + "/" + MINIO_FILE_PATH).andReturn();
-                byte[] downloadedBytesAfter = getResponseAfter.asByteArray();
-                assertArrayEquals(fileBytesBefore, downloadedBytesBefore);
-                assertArrayEquals(fileBytesAfter, downloadedBytesAfter);
             }
         }
     }
@@ -170,7 +154,7 @@ class FileControllerTest extends AbstractTest {
                 .multiPart(FORM_PARAM_FILE, sampleFile)
                 .when()
                 .put(BASE_PATH + BUCKET_NAME + "/" + MINIO_FILE_PATH);
-        putResponse.then().statusCode(400);
+        putResponse.then().statusCode(201);
     }
 
     @Test

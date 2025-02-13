@@ -3,10 +3,11 @@ package org.onecx.document.management.rs.v1.models;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import gen.org.onecx.document.management.rs.v1.model.RFCProblemDetailDTO;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

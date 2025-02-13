@@ -1,27 +1,27 @@
 package org.onecx.document.management.rs.v1.controllers;
 
 import static io.restassured.RestAssured.given;
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
-import static javax.ws.rs.core.Response.Status.CREATED;
-import static javax.ws.rs.core.Response.Status.NOT_FOUND;
-import static javax.ws.rs.core.Response.Status.NO_CONTENT;
-import static javax.ws.rs.core.Response.Status.OK;
+import static jakarta.ws.rs.core.Response.Status.BAD_REQUEST;
+import static jakarta.ws.rs.core.Response.Status.CREATED;
+import static jakarta.ws.rs.core.Response.Status.NOT_FOUND;
+import static jakarta.ws.rs.core.Response.Status.NO_CONTENT;
+import static jakarta.ws.rs.core.Response.Status.OK;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.onecx.document.management.rs.v1.ExceptionToRFCProblemMapper;
 import org.onecx.document.management.rs.v1.ValidationExceptionToRFCProblemMapper;
 import org.onecx.document.management.rs.v1.models.RFCProblemDTO;
-import org.onecx.document.management.rs.v1.models.SupportedMimeTypeCreateUpdateDTO;
-import org.onecx.document.management.rs.v1.models.SupportedMimeTypeDTO;
 import org.onecx.document.management.test.AbstractTest;
 import org.tkit.quarkus.test.WithDBData;
 
+import gen.org.onecx.document.management.rs.v1.model.SupportedMimeTypeCreateUpdateDTO;
+import gen.org.onecx.document.management.rs.v1.model.SupportedMimeTypeDTO;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.response.Response;
@@ -97,7 +97,8 @@ class SupportedMimeTypeControllerTest extends AbstractTest {
 
         RFCProblemDTO rfcProblemDTO = postResponse.as(RFCProblemDTO.class);
         assertThat(rfcProblemDTO.getStatus()).isEqualTo(BAD_REQUEST.getStatusCode());
-        assertThat(rfcProblemDTO.getDetail()).isEqualTo("createSupportedMimeType.dto.name: must not be blank");
+        assertThat(rfcProblemDTO.getDetail())
+                .isEqualTo("createSupportedMimeType.supportedMimeTypeCreateUpdateDTO.name: must not be null");
         assertThat(rfcProblemDTO.getInstance()).isNull();
         assertThat(rfcProblemDTO.getTitle()).isEqualTo(ValidationExceptionToRFCProblemMapper.TECHNICAL_ERROR);
         assertThat(rfcProblemDTO.getType())

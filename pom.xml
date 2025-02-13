@@ -6,11 +6,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>io.github.onecx</groupId>
-        <artifactId>onecx-quarkus2-parent</artifactId>
-        <version>0.17.0</version>
+        <groupId>org.tkit.onecx</groupId>
+        <artifactId>onecx-quarkus3-parent</artifactId>
+        <version>0.72.0</version>
     </parent>
-
     <groupId>io.github.onecx-apps</groupId>
     <artifactId>onecx-document-management-svc</artifactId>
     <version>999-SNAPSHOT</version>
@@ -43,11 +42,11 @@
         <!-- QUARKUS -->
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-resteasy</artifactId>
+            <artifactId>quarkus-rest</artifactId>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-resteasy-jackson</artifactId>
+            <artifactId>quarkus-rest-jackson</artifactId>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
@@ -76,10 +75,10 @@
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-smallrye-health</artifactId>
-        </dependency>        
+        </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-resteasy-multipart</artifactId>
+            <artifactId>quarkus-resteasy-reactive</artifactId>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
@@ -94,7 +93,7 @@
         <dependency>
             <groupId>io.quarkiverse.minio</groupId>
             <artifactId>quarkus-minio</artifactId>
-            <version>2.10.3</version>
+            <version>3.7.7</version>
         </dependency>
 
         <!-- OTHERS-->
@@ -145,6 +144,56 @@
                             <schemaFilename>document-management-openapi-v1</schemaFilename>
                             <encoding>UTF-8</encoding>
                             <outputDirectory>target</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.openapitools</groupId>
+                <artifactId>openapi-generator-maven-plugin</artifactId>
+                <configuration>
+                    <generatorName>jaxrs-spec</generatorName>
+                    <generateApiTests>false</generateApiTests>
+                    <generateApiDocumentation>true</generateApiDocumentation>
+                    <generateModelTests>false</generateModelTests>
+                    <generateModelDocumentation>false</generateModelDocumentation>
+                    <generateSupportingFiles>false</generateSupportingFiles>
+                    <addCompileSourceRoot>true</addCompileSourceRoot>
+                    <library>quarkus</library>
+                    <additionalProperties>onecx-scopes=true</additionalProperties>
+                    <typeMappings>
+                        <typeMapping>MultipartFormDataInput=org.jboss.resteasy.reactive.server.multipart.MultipartFormDataInput</typeMapping>
+                        <typeMapping>File=java.io.File</typeMapping>
+                    </typeMappings>
+                    <importMappings>
+                        <importMapping>MultipartFormDataInput=org.jboss.resteasy.reactive.server.multipart.MultipartFormDataInput</importMapping>
+                    </importMappings>
+                    <configOptions>
+                        <sourceFolder>/</sourceFolder>
+                        <openApiNullable>false</openApiNullable>
+                        <returnResponse>true</returnResponse>
+                        <useTags>true</useTags>
+                        <interfaceOnly>true</interfaceOnly>
+                        <serializableModel>true</serializableModel>
+                        <singleContentTypes>true</singleContentTypes>
+                        <dateLibrary>java8</dateLibrary>
+                        <useMicroProfileOpenAPIAnnotations>true</useMicroProfileOpenAPIAnnotations>
+                        <useJakartaEe>true</useJakartaEe>
+                        <useSwaggerAnnotations>false</useSwaggerAnnotations>
+                        <java17>true</java17>
+                    </configOptions>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>v1</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>src/main/openapi/document-management-svc.yaml</inputSpec>
+                            <templateDirectory>src/main/resources/openapi-templates</templateDirectory>
+                            <apiPackage>gen.org.onecx.document.management.rs.v1</apiPackage>
+                            <modelPackage>gen.org.onecx.document.management.rs.v1.model</modelPackage>
                         </configuration>
                     </execution>
                 </executions>

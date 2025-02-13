@@ -13,12 +13,11 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Locale;
 import java.util.Objects;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.transaction.Transactional;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 
-import org.onecx.document.management.rs.v1.models.FileInfoDTO;
-
+import gen.org.onecx.document.management.rs.v1.model.FileInfoDTO;
 import io.minio.BucketExistsArgs;
 import io.minio.GetObjectArgs;
 import io.minio.GetObjectResponse;
@@ -59,7 +58,11 @@ public class FileService {
         uploadFileToObjectStorage(fileBytes, path, bucket.toLowerCase(Locale.ROOT), contentType);
         is.close();
         Log.info(CLASS_NAME, "Exited uploadFile method", null);
-        return new FileInfoDTO(contentType, path, bucket.toLowerCase(Locale.ROOT));
+        FileInfoDTO response = new FileInfoDTO();
+        response.setBucket(bucket.toLowerCase(Locale.ROOT));
+        response.setPath(path);
+        response.setContentType(contentType);
+        return response;
     }
 
     public GetObjectResponse downloadFile(String path, String bucket) throws ServerException, InsufficientDataException,
