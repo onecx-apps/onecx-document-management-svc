@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -114,7 +113,6 @@ public class DocumentController implements DocumentControllerV1Api {
     }
 
     @Override
-    @RolesAllowed({ "document-admin", "document-responsible", "document-user" })
     public Response getDocumentById(String id) {
         Log.info(CLASS_NAME, "Entered getDocumentById method", null);
         var document = documentDAO.findDocumentById(id);
@@ -129,7 +127,6 @@ public class DocumentController implements DocumentControllerV1Api {
 
     @Override
     @Transactional
-    @RolesAllowed({ "document-admin", "document-responsible", "document-user" })
     public Response getDocumentByCriteria(String channelName, String createdBy, String endDate, String id, String name,
             String objectReferenceId, String objectReferenceType, Integer page, Integer size, String startDate,
             List<LifeCycleState> state, List<String> typeId) {
@@ -164,7 +161,6 @@ public class DocumentController implements DocumentControllerV1Api {
     }
 
     @Override
-    @RolesAllowed({ "document-admin", "document-responsible" })
     @Transactional
     public Response deleteDocumentById(String id) {
         Log.info(CLASS_NAME, "Entered deleteDocumentById method", null);
@@ -181,7 +177,6 @@ public class DocumentController implements DocumentControllerV1Api {
     }
 
     @Override
-    @RolesAllowed({ "document-admin", "document-responsible" })
     public Response createDocument(DocumentCreateUpdateDTO documentCreateUpdateDTO) {
         Log.info(CLASS_NAME, "Entered createDocument method", null);
         var document = documentService.createDocument(documentCreateUpdateDTO);
@@ -209,7 +204,6 @@ public class DocumentController implements DocumentControllerV1Api {
     }
 
     @Override
-    @RolesAllowed({ "document-admin", "document-responsible", "document-user" })
     @Transactional
     public Response getFailedAttachmentData(String documentId) {
         Log.info(CLASS_NAME, "Entered getFailedAttachmentById method", null);
@@ -222,7 +216,6 @@ public class DocumentController implements DocumentControllerV1Api {
     }
 
     @Override
-    @RolesAllowed({ "document-admin", "document-responsible" })
     @Transactional
     public Response updateDocument(String id, DocumentCreateUpdateDTO documentCreateUpdateDTO) {
         Log.info(CLASS_NAME, "Entered updateDocument method", null);
@@ -277,7 +270,6 @@ public class DocumentController implements DocumentControllerV1Api {
     }
 
     @Override
-    @RolesAllowed({ "document-admin", "document-responsible", "document-user" })
     public Response getAllDocumentAttachmentsAsZip(String documentId, String clientTimezone) {
         Log.info(CLASS_NAME, "Entered getAllDocumentAttachmentsAsZip method", null);
         try {
@@ -376,7 +368,6 @@ public class DocumentController implements DocumentControllerV1Api {
     }
 
     @Override
-    @RolesAllowed({ "document-admin", "document-responsible" })
     @Transactional
     public Response deleteFilesInBulk(List<String> attachmentIds) {
         Log.info(CLASS_NAME, "Entered deleteFilesInBulk method", null);
@@ -387,7 +378,6 @@ public class DocumentController implements DocumentControllerV1Api {
     }
 
     @Override
-    @RolesAllowed("document-admin")
     @Transactional
     public Response bulkUpdateDocument(List<DocumentCreateUpdateDTO> documentCreateUpdateDTO) {
         Log.info(CLASS_NAME, "Entered bulkUpdateDocument method", null);
@@ -414,7 +404,6 @@ public class DocumentController implements DocumentControllerV1Api {
     }
 
     @Override
-    @RolesAllowed("document-admin")
     @Transactional
     public Response deleteBulkDocuments(List<String> requestBody) {
         Log.info(CLASS_NAME, "Entered deleteBulkDocuments method", null);
@@ -437,7 +426,6 @@ public class DocumentController implements DocumentControllerV1Api {
 
     @Override
     @Transactional
-    @RolesAllowed({ "document-admin", "document-responsible", "document-user" })
     public Response showAllDocumentsByCriteria(String channelName, String createdBy, String endDate, String id, String name,
             String objectReferenceId, String objectReferenceType, Integer page, Integer size, String startDate,
             List<LifeCycleState> state, List<String> typeId) {
