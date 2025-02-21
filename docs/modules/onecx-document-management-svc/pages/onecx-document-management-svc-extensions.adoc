@@ -135,6 +135,12 @@ h| Version
 | 3.15.1
 
 
+| onecx-security
+
+| 
+| 
+| 0.34.0
+
 | quarkus-scheduler
 
 | 

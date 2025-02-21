@@ -7,6 +7,8 @@ import static jakarta.ws.rs.core.Response.Status.NOT_FOUND;
 import static jakarta.ws.rs.core.Response.Status.NO_CONTENT;
 import static jakarta.ws.rs.core.Response.Status.OK;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.onecx.document.management.test.AbstractTest.USER;
+import static org.tkit.quarkus.security.test.SecurityTestUtils.getKeycloakClientToken;
 
 import java.io.File;
 import java.nio.file.Paths;
@@ -27,20 +29,19 @@ import org.onecx.document.management.domain.daos.MinioAuditLogDAO;
 import org.onecx.document.management.rs.v1.models.PageResultDTO;
 import org.onecx.document.management.rs.v1.models.RFCProblemDTO;
 import org.onecx.document.management.test.AbstractTest;
+import org.tkit.quarkus.security.test.GenerateKeycloakClient;
 import org.tkit.quarkus.test.WithDBData;
 
 import gen.org.onecx.document.management.rs.v1.model.*;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.keycloak.client.KeycloakTestClient;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.response.Response;
 
 @QuarkusTest
 @SuppressWarnings("java:S5961")
 @WithDBData(value = { "document-management-test-data.xml" }, deleteBeforeInsert = true, rinseAndRepeat = true)
+@GenerateKeycloakClient(clientName = USER, scopes = "ocx-doc:all")
 class DocumentControllerTest extends AbstractTest {
-
-    KeycloakTestClient keycloakClient = new KeycloakTestClient();
 
     private static final String BASE_PATH = "/v1/document";
     private static final String EXISTING_DOCUMENT_ID = "51";
@@ -106,7 +107,7 @@ class DocumentControllerTest extends AbstractTest {
     void testSuccessfulGetWithoutCriteria() {
         Response response = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .when()
                 .get(BASE_PATH);
@@ -121,7 +122,7 @@ class DocumentControllerTest extends AbstractTest {
     void testSuccessfulGetWithoutCriteriaWithPageSize() {
         Response response = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .queryParam("size", 1)
                 .when()
@@ -137,7 +138,7 @@ class DocumentControllerTest extends AbstractTest {
     void testSuccessfulGetWithoutCriteriaWithPageSizeAndPageNumber() {
         Response response = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .queryParam("size", 1)
                 .queryParam("page", 1)
@@ -164,7 +165,7 @@ class DocumentControllerTest extends AbstractTest {
         attachmentIds.add("102");
 
         Response response = given().auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .when()
                 .get(BASE_PATH + DIRECTORY_SEPERATOR + EXISTING_DOCUMENT_ID);
@@ -203,7 +204,7 @@ class DocumentControllerTest extends AbstractTest {
     void testFailedGetDocument() {
         Response response = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .when()
                 .get(BASE_PATH + DIRECTORY_SEPERATOR + NONEXISTENT_DOCUMENT_ID);
         response.then().statusCode(NOT_FOUND.getStatusCode());
@@ -221,7 +222,7 @@ class DocumentControllerTest extends AbstractTest {
     void testSuccessfulSearchCriteriaFindDocumentById() {
         Response response = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .queryParam("id", EXISTING_DOCUMENT_ID)
                 .when()
@@ -238,7 +239,7 @@ class DocumentControllerTest extends AbstractTest {
     void testSuccessfulSearchCriteriaFindAllDocumentsById() {
         Response response = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .queryParam("id", EXISTING_DOCUMENT_ID)
                 .when()
@@ -256,7 +257,7 @@ class DocumentControllerTest extends AbstractTest {
     void testSuccessfulSearchCriteriaFindDocumentsByNonExistentParam() {
         Response response = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .queryParam("id", NONEXISTENT_DOCUMENT_ID)
                 .when()
@@ -272,7 +273,7 @@ class DocumentControllerTest extends AbstractTest {
     void testSuccessfulSearchCriteriaFindAllDocumentsByNonExistentParam() {
         Response response = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .queryParam("id", NONEXISTENT_DOCUMENT_ID)
                 .when()
@@ -288,7 +289,7 @@ class DocumentControllerTest extends AbstractTest {
     void testSuccessfulSearchCriteriaFindDocumentsByName() {
         Response response = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .queryParam("name", NAME_OF_DOCUMENT_1)
                 .when()
@@ -305,7 +306,7 @@ class DocumentControllerTest extends AbstractTest {
     void testSuccessfulSearchCriteriaFindAllDocumentsByName() {
         Response response = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .queryParam("name", NAME_OF_DOCUMENT_1)
                 .when()
@@ -322,7 +323,7 @@ class DocumentControllerTest extends AbstractTest {
     void testSuccessfulSearchCriteriaFindDocumentsByBlankName() {
         Response response = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .queryParam("name", "")
                 .when()
@@ -338,7 +339,7 @@ class DocumentControllerTest extends AbstractTest {
     void testSuccessfulSearchCriteriaFindDocumentsByFirstLetterOfName() {
         Response response = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .queryParam("name", "docu")
                 .when()
@@ -355,7 +356,7 @@ class DocumentControllerTest extends AbstractTest {
     void testSuccessfulSearchCriteriaFindAllDocumentsByFirstLetterOfName() {
         Response response = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .queryParam("name", "docu")
                 .when()
@@ -372,7 +373,7 @@ class DocumentControllerTest extends AbstractTest {
     void testSuccessfulSearchCriteriaFindDocumentsByState() {
         Response response = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .queryParam("state", STATUS_OF_DOCUMENT_1)
                 .when()
@@ -390,7 +391,7 @@ class DocumentControllerTest extends AbstractTest {
     void testSuccessfulSearchCriteriaFindAllDocumentsByState() {
         Response response = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .queryParam("state", STATUS_OF_DOCUMENT_1)
                 .when()
@@ -407,7 +408,7 @@ class DocumentControllerTest extends AbstractTest {
     void testSuccessfulSearchCriteriaFindDocumentsByType() {
         Response response = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .queryParam("typeId", TYPE_ID_OF_DOCUMENT_1)
                 .when()
@@ -425,7 +426,7 @@ class DocumentControllerTest extends AbstractTest {
     void testSuccessfulSearchCriteriaFindAllDocumentsByType() {
         Response response = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .queryParam("typeId", TYPE_ID_OF_DOCUMENT_1)
                 .when()
@@ -442,7 +443,7 @@ class DocumentControllerTest extends AbstractTest {
     void testSuccessfulSearchCriteriaFindDocumentsByChannel() {
         Response response = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .queryParam("channelName", "channel_1")
                 .when()
@@ -460,7 +461,7 @@ class DocumentControllerTest extends AbstractTest {
     void testSuccessfulSearchCriteriaFindAllDocumentsByChannel() {
         Response response = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .queryParam("channelName", "channel_1")
                 .when()
@@ -478,7 +479,7 @@ class DocumentControllerTest extends AbstractTest {
     void testSuccessfulSearchCriteriaFindDocumentsByCreationUser() {
         Response response = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .queryParam("createdBy", DOCUMENT_CREATION_USER)
                 .when()
@@ -496,7 +497,7 @@ class DocumentControllerTest extends AbstractTest {
     void testSuccessfulSearchCriteriaFindAllDocumentsByCreationUser() {
         Response response = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .queryParam("createdBy", DOCUMENT_CREATION_USER)
                 .when()
@@ -514,7 +515,7 @@ class DocumentControllerTest extends AbstractTest {
     void testSuccessfulSearchCriteriaFindDocumentsByObjectRefId() {
         Response response = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .queryParam("objectReferenceId", RELATED_OBJECT_REF_ID_OF_DOCUMENT)
                 .when()
@@ -532,7 +533,7 @@ class DocumentControllerTest extends AbstractTest {
     void testSuccessfulSearchCriteriaFindAllDocumentsByObjectRefId() {
         Response response = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .queryParam("objectReferenceId", RELATED_OBJECT_REF_ID_OF_DOCUMENT)
                 .when()
@@ -550,7 +551,7 @@ class DocumentControllerTest extends AbstractTest {
     void testSuccessfulSearchCriteriaFindDocumentsByObjectRefType() {
         Response response = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .queryParam("objectReferenceType", RELATED_OBJECT_REF_TYPE_OF_DOCUMENT)
                 .when()
@@ -568,7 +569,7 @@ class DocumentControllerTest extends AbstractTest {
     void testSuccessfulSearchCriteriaFindAllDocumentsByObjectRefType() {
         Response response = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .queryParam("objectReferenceType", RELATED_OBJECT_REF_TYPE_OF_DOCUMENT)
                 .when()
@@ -586,7 +587,7 @@ class DocumentControllerTest extends AbstractTest {
     void testSuccessfulSearchCriteriaFindDocumentsByStartDate() {
         Response response = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .queryParam("startDate", "2023-05-14 00:00")
                 .when()
@@ -602,7 +603,7 @@ class DocumentControllerTest extends AbstractTest {
     void testSuccessfulSearchCriteriaFindAllDocumentsByStartDate() {
         Response response = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .queryParam("startDate", "2023-05-14 00:00")
                 .when()
@@ -618,7 +619,7 @@ class DocumentControllerTest extends AbstractTest {
     void testSuccessfulSearchCriteriaFindDocumentsByStartDateNull() {
         Response response = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .queryParam("startDate", (Object) null)
                 .when()
@@ -634,7 +635,7 @@ class DocumentControllerTest extends AbstractTest {
     void testSuccessfulSearchCriteriaFindAllDocumentsByStartDateNull() {
         Response response = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .queryParam("startDate", (Object) null)
                 .when()
@@ -650,7 +651,7 @@ class DocumentControllerTest extends AbstractTest {
     void testSuccessfulSearchCriteriaFindDocumentsByEndDate() {
         Response response = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .queryParam("endDate", "2023-05-14 00:00")
                 .when()
@@ -666,7 +667,7 @@ class DocumentControllerTest extends AbstractTest {
     void testSuccessfulSearchCriteriaFindAllDocumentsByEndDate() {
         Response response = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .queryParam("endDate", "2023-05-14 00:00")
                 .when()
@@ -682,7 +683,7 @@ class DocumentControllerTest extends AbstractTest {
     void testSuccessfulSearchCriteriaFindDocumentsByEndDateNull() {
         Response response = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .queryParam("startDate", "2023-05-14 00:00")
                 .queryParam("endDate", "2023-05-14 00:00")
@@ -700,7 +701,7 @@ class DocumentControllerTest extends AbstractTest {
     void testSuccessfulSearchCriteriaFindAllDocumentsByEndDateNull() {
         Response response = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .queryParam("startDate", "2023-05-14 00:00")
                 .queryParam("endDate", "2023-05-14 00:00")
@@ -718,7 +719,7 @@ class DocumentControllerTest extends AbstractTest {
     void testFailedGetDocumentById() {
         Response response = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .when()
                 .get(BASE_PATH + DIRECTORY_SEPERATOR + NONEXISTENT_DOCUMENT_ID);
@@ -737,7 +738,7 @@ class DocumentControllerTest extends AbstractTest {
     @DisplayName("Search criteria. Finds failed attachment by id.")
     void testSuccessfulGetFailedAttachmentById() {
         Response response = given().auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .queryParam("id", EXISTING_DOCUMENT_ID)
                 .when()
@@ -753,7 +754,7 @@ class DocumentControllerTest extends AbstractTest {
     void testSuccessfulDeleteDocumentById() {
         Response deleteResponse = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .when()
                 .delete(BASE_PATH + DIRECTORY_SEPERATOR + EXISTING_DOCUMENT_ID);
@@ -761,7 +762,7 @@ class DocumentControllerTest extends AbstractTest {
 
         Response getResponse = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .when()
                 .get(BASE_PATH);
@@ -775,7 +776,7 @@ class DocumentControllerTest extends AbstractTest {
     void testFailedDeleteDocumentById() {
         Response deleteResponse = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .when()
                 .delete(BASE_PATH + DIRECTORY_SEPERATOR + NONEXISTENT_DOCUMENT_ID);
@@ -813,7 +814,7 @@ class DocumentControllerTest extends AbstractTest {
 
         Response postResponse = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(documentCreateDTO)
                 .when()
@@ -851,7 +852,7 @@ class DocumentControllerTest extends AbstractTest {
 
         Response postResponse = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(documentCreateDTO)
                 .when()
@@ -900,7 +901,7 @@ class DocumentControllerTest extends AbstractTest {
 
         Response postResponse = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(documentCreateDTO)
                 .when()
@@ -996,7 +997,7 @@ class DocumentControllerTest extends AbstractTest {
 
         Response postResponse = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(documentCreateDTO)
                 .when()
@@ -1062,7 +1063,7 @@ class DocumentControllerTest extends AbstractTest {
 
         Response postResponse = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(documentCreateDTO)
                 .when()
@@ -1100,7 +1101,7 @@ class DocumentControllerTest extends AbstractTest {
 
         Response postResponse = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(documentCreateDTO)
                 .when()
@@ -1136,7 +1137,7 @@ class DocumentControllerTest extends AbstractTest {
 
         Response postResponse = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(documentCreateDTO)
                 .when()
@@ -1174,7 +1175,7 @@ class DocumentControllerTest extends AbstractTest {
 
         Response postResponse = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(documentCreateDTO)
                 .when()
@@ -1208,7 +1209,7 @@ class DocumentControllerTest extends AbstractTest {
 
         Response postResponse = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(documentCreateDTO)
                 .when()
@@ -1249,7 +1250,7 @@ class DocumentControllerTest extends AbstractTest {
 
         Response postResponse = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(documentCreateDTO)
                 .when()
@@ -1290,10 +1291,10 @@ class DocumentControllerTest extends AbstractTest {
         documentCreateDTO.setTypeId(documentTypeId);
         documentCreateDTO.setChannel(channelDTO);
         documentCreateDTO.setAttachments(attachments);
-
+        System.out.println("tokenw" + getKeycloakClientToken(USER));
         Response postResponse = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(documentCreateDTO)
                 .when()
@@ -1338,7 +1339,7 @@ class DocumentControllerTest extends AbstractTest {
 
         Response postResponse = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(documentCreateDTO)
                 .when()
@@ -1399,7 +1400,7 @@ class DocumentControllerTest extends AbstractTest {
     //
     //        Response putResponse = given()
     //                .auth()
-    //                .oauth2(keycloakClient.getAccessToken(USER))
+    //                .oauth2(getKeycloakClientToken(USER))
     //                .contentType(MediaType.APPLICATION_JSON)
     //                .body(documentCreateDTO)
     //                .when()
@@ -1438,7 +1439,7 @@ class DocumentControllerTest extends AbstractTest {
     //
     //        documentDetailDTO = given()
     //                .auth()
-    //                .oauth2(keycloakClient.getAccessToken(USER))
+    //                .oauth2(getKeycloakClientToken(USER))
     //                .accept(MediaType.APPLICATION_JSON)
     //                .when()
     //                .get(BASE_PATH + DIRECTORY_SEPERATOR + EXISTING_DOCUMENT_ID)
@@ -1528,7 +1529,7 @@ class DocumentControllerTest extends AbstractTest {
 
         Response putResponse = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(documentCreateDTO)
                 .when()
@@ -1538,7 +1539,7 @@ class DocumentControllerTest extends AbstractTest {
 
         DocumentDetailDTO documentDetailDTO = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .when()
                 .get(BASE_PATH + DIRECTORY_SEPERATOR + EXISTING_DOCUMENT_ID)
@@ -1639,7 +1640,7 @@ class DocumentControllerTest extends AbstractTest {
         documentCreateDTO.setAttachments(attachments);
         Response putResponse = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(documentCreateDTO)
                 .when()
@@ -1660,7 +1661,7 @@ class DocumentControllerTest extends AbstractTest {
     void testSuccessfulGetAllChannels() {
         Response getResponse = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .when()
                 .get(BASE_PATH + "/channels");
@@ -1675,7 +1676,7 @@ class DocumentControllerTest extends AbstractTest {
     void testSuccessfulMultipleFileUploads() {
         Response postResponse = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .multiPart(FORM_PARAM_FILE, Paths.get(SAMPLE_TEXT_FILE1).toFile())
                 .multiPart(FORM_PARAM_FILE, Paths.get(SAMPLE_JPG_FILE1).toFile())
@@ -1690,7 +1691,7 @@ class DocumentControllerTest extends AbstractTest {
     void testFailedMultipleFileUploads() {
         Response postResponse = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .multiPart(FORM_PARAM_FILE, Paths.get(SAMPLE_JPG_FILE1).toFile())
                 .multiPart(FORM_PARAM_FILE, Paths.get(SAMPLE_JPG_FILE2).toFile())
@@ -1705,7 +1706,7 @@ class DocumentControllerTest extends AbstractTest {
         File file1 = new File(SAMPLE_JPG_FILE1);
         File file2 = new File(SAMPLE_JPG_FILE2);
         Response postResponse = given().auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .multiPart(FORM_PARAM_FILE, file1)
                 .multiPart(FORM_PARAM_FILE, file2)
@@ -1720,7 +1721,7 @@ class DocumentControllerTest extends AbstractTest {
         File file1 = new File(SAMPLE_JPG_FILE1);
         File file2 = new File(SAMPLE_JPG_FILE2);
         Response postResponse = given().auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .multiPart(FORM_PARAM_FILE, Paths.get(SAMPLE_TEXT_FILE1).toFile(), ContentType.TEXT_PLAIN.getMimeType())
                 .multiPart(FORM_PARAM_FILE, file1)
@@ -1736,7 +1737,7 @@ class DocumentControllerTest extends AbstractTest {
         documentController.clearFailedFilesFromDBPeriodically();
         Response getResponse = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .accept(MediaType.APPLICATION_OCTET_STREAM)
                 .when()
                 .get(BASE_PATH + "/file/" + "57" + "/attachments");
@@ -1747,7 +1748,8 @@ class DocumentControllerTest extends AbstractTest {
     @DisplayName("Test method for cleanup of a Minio Audit Log record for which there is an attachment file in Minio.")
     void testSuccessfulDeleteOfMinioAuditLogRecordHavingFileinMinio() {
         File sampleFile = new File(SAMPLE_FILE_PATH);
-        Response putResponse = given()
+        Response putResponse = given().auth()
+                .oauth2(getKeycloakClientToken(USER))
                 .multiPart(FORM_PARAM_FILE, sampleFile)
                 .when()
                 .put(FILE_BASE_PATH + BUCKET_NAME + "/" + MINIO_FILE_PATH_3);
@@ -1795,13 +1797,15 @@ class DocumentControllerTest extends AbstractTest {
     void testSuccessfulGetFileById() {
         File sampleFile1 = new File(SAMPLE_FILE_PATH_1);
 
-        Response putResponse = given()
+        Response putResponse = given().auth()
+                .oauth2(getKeycloakClientToken(USER))
                 .multiPart(FORM_PARAM_FILE, sampleFile1)
                 .when()
                 .put(FILE_BASE_PATH + BUCKET_NAME + DIRECTORY_SEPERATOR + MINIO_FILE_PATH_1);
         putResponse.then().statusCode(201);
 
-        Response response = given()
+        Response response = given().auth()
+                .oauth2(getKeycloakClientToken(USER))
                 .accept(MediaType.APPLICATION_OCTET_STREAM)
                 .when()
                 .get(BASE_PATH + "/file/" + EXISTING_ATTACHMENT_ID);
@@ -1811,7 +1815,8 @@ class DocumentControllerTest extends AbstractTest {
     @Test
     @DisplayName("Get File By Non-Existing Id Failed")
     void testFailedGetFileById() {
-        Response response = given()
+        Response response = given().auth()
+                .oauth2(getKeycloakClientToken(USER))
                 .accept(MediaType.APPLICATION_OCTET_STREAM)
                 .when()
                 .get(BASE_PATH + "/file/" + NONEXISTENT_ATTACHMENT_ID);
@@ -1827,7 +1832,7 @@ class DocumentControllerTest extends AbstractTest {
 
         Response deleteResponse = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(ids)
@@ -1847,7 +1852,7 @@ class DocumentControllerTest extends AbstractTest {
 
         Response deleteResponse = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(ids)
@@ -1880,7 +1885,7 @@ class DocumentControllerTest extends AbstractTest {
         dtoList.add(doc2);
         Response postResponse = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(dtoList)
@@ -1905,7 +1910,7 @@ class DocumentControllerTest extends AbstractTest {
         dtoList.add(doc1);
         Response postResponse = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(dtoList)
@@ -1917,7 +1922,8 @@ class DocumentControllerTest extends AbstractTest {
     @Test
     @DisplayName("Bulk Delete of existing document's attachments")
     void testSuccessfulDeleteAttachmentFilesInBulk() {
-        given()
+        given().auth()
+                .oauth2(getKeycloakClientToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .when()
                 .post(FILE_BASE_PATH + "bucket/" + BUCKET_NAME)
@@ -1925,12 +1931,14 @@ class DocumentControllerTest extends AbstractTest {
 
         File sampleFile1 = new File(SAMPLE_FILE_PATH_1);
         File sampleFile2 = new File(SAMPLE_FILE_PATH_2);
-        Response putResponse1 = given()
+        Response putResponse1 = given().auth()
+                .oauth2(getKeycloakClientToken(USER))
                 .multiPart(FORM_PARAM_FILE, sampleFile1)
                 .when()
                 .put(FILE_BASE_PATH + BUCKET_NAME + DIRECTORY_SEPERATOR + MINIO_FILE_PATH_1);
         putResponse1.then().statusCode(201);
-        Response putResponse2 = given()
+        Response putResponse2 = given().auth()
+                .oauth2(getKeycloakClientToken(USER))
                 .multiPart(FORM_PARAM_FILE, sampleFile2)
                 .when()
                 .put(FILE_BASE_PATH + BUCKET_NAME + DIRECTORY_SEPERATOR + MINIO_FILE_PATH_2);
@@ -1942,7 +1950,7 @@ class DocumentControllerTest extends AbstractTest {
 
         Response deleteResponse = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(attachmentIds)
                 .when()
@@ -1969,7 +1977,7 @@ class DocumentControllerTest extends AbstractTest {
         attachmentIds.add(MINIO_FILE_PATH_1);
         attachmentIds.add(MINIO_FILE_PATH_2);
         Response deleteResponse = given().auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(attachmentIds)
                 .when()
@@ -1986,7 +1994,7 @@ class DocumentControllerTest extends AbstractTest {
 
         Response deleteResponse = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(attachmentIds)
                 .when()
@@ -1999,7 +2007,7 @@ class DocumentControllerTest extends AbstractTest {
     void testSuccessfulGetAllDocumentAttachmentsAsZip() {
         Response getResponse = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .accept(MediaType.APPLICATION_OCTET_STREAM)
                 .when()
                 .get(BASE_PATH + "/file/" + EXISTING_DOCUMENT_ID + "/attachments");
@@ -2012,7 +2020,7 @@ class DocumentControllerTest extends AbstractTest {
     void testSuccessfulGetAllDocumentAttachmentsAsZipWithClientTimezone() {
         Response getResponse = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .accept(MediaType.APPLICATION_OCTET_STREAM)
                 .header("client-timezone", "UTC")
                 .when()
@@ -2026,7 +2034,7 @@ class DocumentControllerTest extends AbstractTest {
     void testFailedGetAllDocumentAttachmentsAsZip() {
         Response getResponse = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .accept(MediaType.APPLICATION_OCTET_STREAM)
                 .when()
                 .get(BASE_PATH + "/file/" + NONEXISTENT_DOCUMENT_ID + "/attachments");
@@ -2044,7 +2052,7 @@ class DocumentControllerTest extends AbstractTest {
 
     //         Response getResponse = given()
     //                 .auth()
-    //                 .oauth2(keycloakClient.getAccessToken(USER))
+    //                 .oauth2(getKeycloakClientToken(USER))
     //                 .accept(MediaType.APPLICATION_OCTET_STREAM)
     //                 .when()
     //                 .get(BASE_PATH + "/file/" + EXISTING_DOCUMENT_ID + "/attachments");
@@ -2058,7 +2066,7 @@ class DocumentControllerTest extends AbstractTest {
     void testGetAllDocumentWithNoAttachmentsAsZip() {
         Response getResponse = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .accept(MediaType.APPLICATION_OCTET_STREAM)
                 .when()
                 .get(BASE_PATH + "/file/" + EXISTING_DOCUMENT_ID_WITHOUT_ATTACHMENTS + "/attachments");
@@ -2070,18 +2078,20 @@ class DocumentControllerTest extends AbstractTest {
     void testSuccessfulGetAllDocumentAttachmentsFromMinioAsZip() {
         File sampleFile1 = new File(SAMPLE_FILE_PATH_1);
         File sampleFile2 = new File(SAMPLE_FILE_PATH_2);
-        Response putResponse1 = given()
+        Response putResponse1 = given().auth()
+                .oauth2(getKeycloakClientToken(USER))
                 .multiPart(FORM_PARAM_FILE, sampleFile1)
                 .when()
                 .put(FILE_BASE_PATH + BUCKET_NAME + DIRECTORY_SEPERATOR + MINIO_FILE_PATH_1);
         putResponse1.then().statusCode(201);
-        Response putResponse2 = given()
+        Response putResponse2 = given().auth()
+                .oauth2(getKeycloakClientToken(USER))
                 .multiPart(FORM_PARAM_FILE, sampleFile2)
                 .when()
                 .put(FILE_BASE_PATH + BUCKET_NAME + DIRECTORY_SEPERATOR + MINIO_FILE_PATH_2);
         putResponse2.then().statusCode(201);
         Response getResponse = given().auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .accept(MediaType.APPLICATION_OCTET_STREAM)
                 .when()
                 .get(BASE_PATH + "/file/" + EXISTING_DOCUMENT_ID_5 + "/attachments");
@@ -2095,7 +2105,7 @@ class DocumentControllerTest extends AbstractTest {
 
         Response getResponse = given()
                 .auth()
-                .oauth2(keycloakClient.getAccessToken(USER))
+                .oauth2(getKeycloakClientToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .when()
                 .get(BASE_PATH + "/files/upload/failed/" + EXISTING_DOCUMENT_ID);

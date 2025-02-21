@@ -8,6 +8,10 @@ include::onecx-document-management-svc-attributes.adoc[opts=optional]
 ====
 [source,properties,subs=attributes+]
 ----
+quarkus.http.auth.permission.health.paths=/q/*
+quarkus.http.auth.permission.health.policy=permit
+quarkus.http.auth.permission.default.paths=/*
+quarkus.http.auth.permission.default.policy=authenticated
 quarkus.banner.enabled=false
 quarkus.http.limits.max-body-size=20240K
 quarkus.liquibase.migrate-at-start=true

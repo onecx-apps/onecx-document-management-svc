@@ -2,6 +2,8 @@ package org.onecx.document.management.rs.v1.controllers;
 
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.onecx.document.management.test.AbstractTest.USER;
+import static org.tkit.quarkus.security.test.SecurityTestUtils.getKeycloakClientToken;
 
 import java.io.*;
 
@@ -10,12 +12,14 @@ import jakarta.ws.rs.core.MediaType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.onecx.document.management.test.AbstractTest;
+import org.tkit.quarkus.security.test.GenerateKeycloakClient;
 
 import gen.org.onecx.document.management.rs.v1.model.FileInfoDTO;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.Response;
 
 @QuarkusTest
+@GenerateKeycloakClient(clientName = USER, scopes = "ocx-doc:read")
 class FileControllerTest extends AbstractTest {
 
     private static final String SAMPLE_FILE_PATH = "src/test/resources/sample.jpg";
@@ -36,7 +40,8 @@ class FileControllerTest extends AbstractTest {
     @DisplayName("Create bucket for given name.")
     void testSuccessfulCreateBucket() {
 
-        given()
+        given().auth()
+                .oauth2(getKeycloakClientToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .when()
                 .post(BASE_PATH + "bucket/" + BUCKET_NAME)
@@ -47,7 +52,8 @@ class FileControllerTest extends AbstractTest {
     @Test
     @DisplayName("Test createBucket method for Bad Request")
     void testCreateBucketForBadRequest() {
-        given()
+        given().auth()
+                .oauth2(getKeycloakClientToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .when()
                 .post(BASE_PATH + "bucket/" + NOT_ALLOWED_BUCKET_NAME)
@@ -59,7 +65,8 @@ class FileControllerTest extends AbstractTest {
     void testSuccessfulUploadJPGFile() {
 
         File sampleFile = new File(SAMPLE_FILE_PATH);
-        Response putResponse = given()
+        Response putResponse = given().auth()
+                .oauth2(getKeycloakClientToken(USER))
                 .multiPart(FORM_PARAM_FILE, sampleFile)
                 .when()
                 .put(BASE_PATH + BUCKET_NAME + "/" + MINIO_FILE_PATH);
@@ -74,7 +81,8 @@ class FileControllerTest extends AbstractTest {
     @DisplayName("Test upload of a file of an indeterminate content type and see if it defaults to application/octet-stream")
     void testSuccessfulUploadUnknownFile() {
         File unknownFile = new File(UNKNOWN_FILE_PATH);
-        Response putResponse = given()
+        Response putResponse = given().auth()
+                .oauth2(getKeycloakClientToken(USER))
                 .multiPart(FORM_PARAM_FILE, unknownFile)
                 .when()
                 .put(BASE_PATH + BUCKET_NAME + "/" + MINIO_UNKNOWN_FILE_PATH);
@@ -91,7 +99,8 @@ class FileControllerTest extends AbstractTest {
         File sampleFile = new File(SAMPLE_FILE_PATH);
         try (InputStream is = new BufferedInputStream(new FileInputStream(sampleFile))) {
             byte[] fileBytes = is.readAllBytes();
-            Response putResponse = given()
+            Response putResponse = given().auth()
+                    .oauth2(getKeycloakClientToken(USER))
                     .multiPart(FORM_PARAM_FILE, sampleFile)
                     .when()
                     .put(BASE_PATH + BUCKET_NAME + "/" + MINIO_FILE_PATH);
@@ -102,7 +111,8 @@ class FileControllerTest extends AbstractTest {
     @Test
     @DisplayName("Returns internal server error when downloading a file that does not exist")
     void testFailedDownloadJPGFile() {
-        Response getResponse = given()
+        Response getResponse = given().auth()
+                .oauth2(getKeycloakClientToken(USER))
                 .when()
                 .get(BASE_PATH + BUCKET_NAME + "/" + NONEXISTENT_FILE_PATH).andReturn();
         getResponse.then().statusCode(500);
@@ -112,7 +122,8 @@ class FileControllerTest extends AbstractTest {
     @DisplayName("Returns a bad request error when the bucket name contains unallowed characters")
     void testFailedUploadJPGFile() {
         File sampleFile = new File(SAMPLE_FILE_PATH);
-        Response putResponse = given()
+        Response putResponse = given().auth()
+                .oauth2(getKeycloakClientToken(USER))
                 .multiPart(FORM_PARAM_FILE, sampleFile)
                 .when()
                 .put(BASE_PATH + NOT_ALLOWED_BUCKET_NAME + "/" + MINIO_FILE_PATH);
@@ -128,16 +139,19 @@ class FileControllerTest extends AbstractTest {
             File sampleFile2 = new File(SAMPLE2_FILE_PATH);
             try (InputStream isAfter = new BufferedInputStream(new FileInputStream(sampleFile2))) {
                 byte[] fileBytesAfter = isAfter.readAllBytes();
-                Response putResponse = given()
+                Response putResponse = given().auth()
+                        .oauth2(getKeycloakClientToken(USER))
                         .multiPart(FORM_PARAM_FILE, sampleFile)
                         .when()
                         .put(BASE_PATH + BUCKET_NAME + "/" + MINIO_FILE_PATH);
                 putResponse.then().statusCode(201);
-                Response getResponseBefore = given()
+                Response getResponseBefore = given().auth()
+                        .oauth2(getKeycloakClientToken(USER))
                         .when()
                         .get(BASE_PATH + BUCKET_NAME + "/" + MINIO_FILE_PATH).andReturn();
                 byte[] downloadedBytesBefore = getResponseBefore.asByteArray();
-                Response putResponseAfter = given()
+                Response putResponseAfter = given().auth()
+                        .oauth2(getKeycloakClientToken(USER))
                         .multiPart(FORM_PARAM_FILE, sampleFile2)
                         .when()
                         .put(BASE_PATH + BUCKET_NAME + "/" + MINIO_FILE_PATH);
@@ -150,7 +164,8 @@ class FileControllerTest extends AbstractTest {
     @DisplayName("Returns a bad request error on attempting to upload a 0 bytes file")
     void testFailedUploadBlankFile() {
         File sampleFile = new File(BLANK_FILE_PATH);
-        Response putResponse = given()
+        Response putResponse = given().auth()
+                .oauth2(getKeycloakClientToken(USER))
                 .multiPart(FORM_PARAM_FILE, sampleFile)
                 .when()
                 .put(BASE_PATH + BUCKET_NAME + "/" + MINIO_FILE_PATH);
@@ -161,12 +176,14 @@ class FileControllerTest extends AbstractTest {
     @DisplayName("Deletes an already uploaded jpg file")
     void testSuccessfulDeleteJPGFile() throws IOException {
         File sampleFile = new File(SAMPLE_FILE_PATH);
-        Response putResponse = given()
+        Response putResponse = given().auth()
+                .oauth2(getKeycloakClientToken(USER))
                 .multiPart(FORM_PARAM_FILE, sampleFile)
                 .when()
                 .put(BASE_PATH + BUCKET_NAME + "/" + MINIO_FILE_PATH);
         putResponse.then().statusCode(201);
-        Response deleteResponse = given()
+        Response deleteResponse = given().auth()
+                .oauth2(getKeycloakClientToken(USER))
                 .when()
                 .delete(BASE_PATH + BUCKET_NAME + "/" + MINIO_FILE_PATH).andReturn();
         deleteResponse.then().statusCode(201);
@@ -175,7 +192,8 @@ class FileControllerTest extends AbstractTest {
     @Test
     @DisplayName("Returns a not found error on attempting to delete a nonexistent file")
     void testFailedDeleteNonexistentFile() throws IOException {
-        Response deleteResponse = given()
+        Response deleteResponse = given().auth()
+                .oauth2(getKeycloakClientToken(USER))
                 .when()
                 .delete(BASE_PATH + BUCKET_NAME + "/" + NONEXISTENT_FILE_PATH).andReturn();
         deleteResponse.then().statusCode(404);

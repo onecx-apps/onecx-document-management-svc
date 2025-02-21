@@ -81,6 +81,10 @@
             <artifactId>quarkus-resteasy-reactive</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.tkit.onecx.quarkus</groupId>
+            <artifactId>onecx-security</artifactId>
+        </dependency>
+        <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-oidc</artifactId>
         </dependency>
@@ -114,6 +118,11 @@
         <!-- TEST -->
         <dependency>
             <groupId>org.tkit.quarkus.lib</groupId>
+            <artifactId>tkit-quarkus-security-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.tkit.quarkus.lib</groupId>
             <artifactId>tkit-quarkus-test-db-import</artifactId>
             <scope>test</scope>
         </dependency>
@@ -125,29 +134,6 @@
     </dependencies>
     <build>
         <plugins>
-            <plugin>
-                <artifactId>smallrye-open-api-maven-plugin</artifactId>
-                <groupId>io.smallrye</groupId>
-                <executions>
-                    <execution>
-                        <id>v1</id>
-                        <goals>
-                            <goal>generate-schema</goal>
-                        </goals>
-                        <configuration>
-                            <scanPackages>
-                                org.onecx.document.management.rs.v1,
-                                org.tkit.quarkus.rs.models
-                            </scanPackages>
-                            <scanClasses>org.onecx.document.management.rs.v1.RestApplication</scanClasses>
-                            <infoTitle>Document Management API v1</infoTitle>
-                            <schemaFilename>document-management-openapi-v1</schemaFilename>
-                            <encoding>UTF-8</encoding>
-                            <outputDirectory>target</outputDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <groupId>org.openapitools</groupId>
                 <artifactId>openapi-generator-maven-plugin</artifactId>
