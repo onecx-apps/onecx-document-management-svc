@@ -1289,7 +1289,6 @@ class DocumentControllerTest extends AbstractTest {
         documentCreateDTO.setTypeId(documentTypeId);
         documentCreateDTO.setChannel(channelDTO);
         documentCreateDTO.setAttachments(attachments);
-        System.out.println("tokenw" + keycloakTestClient.getClientAccessToken(USER));
         Response postResponse = given()
                 .auth()
                 .oauth2(keycloakTestClient.getClientAccessToken(USER))
