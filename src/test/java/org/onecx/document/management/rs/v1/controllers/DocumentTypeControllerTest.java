@@ -8,7 +8,6 @@ import static jakarta.ws.rs.core.Response.Status.NO_CONTENT;
 import static jakarta.ws.rs.core.Response.Status.OK;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.onecx.document.management.test.AbstractTest.USER;
-import static org.tkit.quarkus.security.test.SecurityTestUtils.getKeycloakClientToken;
 
 import java.util.List;
 
@@ -51,7 +50,7 @@ class DocumentTypeControllerTest extends AbstractTest {
         documentTypeCreateDTO.setName(testDocumentTypeName);
 
         Response postResponse = given().auth()
-                .oauth2(getKeycloakClientToken(USER))
+                .oauth2(keycloakTestClient.getClientAccessToken(USER))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(documentTypeCreateDTO)
                 .when()
@@ -69,7 +68,7 @@ class DocumentTypeControllerTest extends AbstractTest {
         documentTypeCreateDTO.setName(null);
 
         Response postResponse = given().auth()
-                .oauth2(getKeycloakClientToken(USER))
+                .oauth2(keycloakTestClient.getClientAccessToken(USER))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(documentTypeCreateDTO)
                 .when()
@@ -90,14 +89,14 @@ class DocumentTypeControllerTest extends AbstractTest {
     @DisplayName("Deletes type of document by id")
     void testSuccessfulDeleteDocumentTypeById() {
         Response deleteResponse = given().auth()
-                .oauth2(getKeycloakClientToken(USER))
+                .oauth2(keycloakTestClient.getClientAccessToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .when()
                 .delete(BASE_PATH + "/" + EXISTING_DOCUMENT_TYPE_DELETE_ID);
         deleteResponse.then().statusCode(NO_CONTENT.getStatusCode());
 
         Response getResponse = given().auth()
-                .oauth2(getKeycloakClientToken(USER))
+                .oauth2(keycloakTestClient.getClientAccessToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .when()
                 .get(BASE_PATH);
@@ -111,7 +110,7 @@ class DocumentTypeControllerTest extends AbstractTest {
     @DisplayName("Returns exception when trying to delete type of document assigned to the document.")
     void testFailedDeleteDocumentTypeWithAssignedId() {
         Response deleteResponse = given().auth()
-                .oauth2(getKeycloakClientToken(USER))
+                .oauth2(keycloakTestClient.getClientAccessToken(USER))
                 .when()
                 .delete(BASE_PATH + "/" + EXISTING_DOCUMENT_TYPE_ID);
         deleteResponse.then().statusCode(BAD_REQUEST.getStatusCode());
@@ -130,7 +129,7 @@ class DocumentTypeControllerTest extends AbstractTest {
     @DisplayName("Returns exception when trying to delete type of document for a nonexistent id.")
     void testFailedDeleteDocumentTypeById() {
         Response deleteResponse = given().auth()
-                .oauth2(getKeycloakClientToken(USER))
+                .oauth2(keycloakTestClient.getClientAccessToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .when()
                 .delete(BASE_PATH + "/" + NONEXISTENT_DOCUMENT_TYPE_ID);
@@ -155,7 +154,7 @@ class DocumentTypeControllerTest extends AbstractTest {
         documentTypeUpdateDTO.setName(documentTypeName);
 
         Response putResponse = given().auth()
-                .oauth2(getKeycloakClientToken(USER))
+                .oauth2(keycloakTestClient.getClientAccessToken(USER))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(documentTypeUpdateDTO)
                 .when()
@@ -175,7 +174,7 @@ class DocumentTypeControllerTest extends AbstractTest {
         documentTypeUpdateDTO.setName(documentTypeName);
 
         Response putResponse = given().auth()
-                .oauth2(getKeycloakClientToken(USER))
+                .oauth2(keycloakTestClient.getClientAccessToken(USER))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(documentTypeUpdateDTO)
                 .when()
@@ -196,7 +195,7 @@ class DocumentTypeControllerTest extends AbstractTest {
     @DisplayName("Gets all types of document.")
     void testSuccessfulGetAllTypesOfDocument() {
         Response getResponse = given().auth()
-                .oauth2(getKeycloakClientToken(USER))
+                .oauth2(keycloakTestClient.getClientAccessToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .when()
                 .get(BASE_PATH);
@@ -216,7 +215,7 @@ class DocumentTypeControllerTest extends AbstractTest {
     @DisplayName("Returns document type by id.")
     void testSuccessfulGetDocumentTypeById() {
         Response response = given().auth()
-                .oauth2(getKeycloakClientToken(USER))
+                .oauth2(keycloakTestClient.getClientAccessToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .when()
                 .get(BASE_PATH + "/" + EXISTING_DOCUMENT_TYPE_ID);
@@ -232,7 +231,7 @@ class DocumentTypeControllerTest extends AbstractTest {
     @DisplayName("Returns exception when trying to get document type for a nonexistent id.")
     void testFailedGetDocumentTypeById() {
         Response response = given().auth()
-                .oauth2(getKeycloakClientToken(USER))
+                .oauth2(keycloakTestClient.getClientAccessToken(USER))
                 .when()
                 .get(BASE_PATH + "/" + NONEXISTENT_DOCUMENT_TYPE_ID);
 

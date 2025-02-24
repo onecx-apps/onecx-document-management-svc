@@ -8,7 +8,6 @@ import static jakarta.ws.rs.core.Response.Status.NO_CONTENT;
 import static jakarta.ws.rs.core.Response.Status.OK;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.onecx.document.management.test.AbstractTest.USER;
-import static org.tkit.quarkus.security.test.SecurityTestUtils.getKeycloakClientToken;
 
 import java.util.List;
 
@@ -51,7 +50,7 @@ class DocumentSpecificationControllerTest extends AbstractTest {
         documentSpecificationCreateDTO.setSpecificationVersion(documentSpecificationVersion);
 
         Response postResponse = given().auth()
-                .oauth2(getKeycloakClientToken(USER))
+                .oauth2(keycloakTestClient.getClientAccessToken(USER))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(documentSpecificationCreateDTO)
                 .when()
@@ -73,7 +72,7 @@ class DocumentSpecificationControllerTest extends AbstractTest {
         documentSpecificationCreateDTO.setSpecificationVersion(null);
 
         Response postResponse = given().auth()
-                .oauth2(getKeycloakClientToken(USER))
+                .oauth2(keycloakTestClient.getClientAccessToken(USER))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(documentSpecificationCreateDTO)
                 .when()
@@ -93,7 +92,7 @@ class DocumentSpecificationControllerTest extends AbstractTest {
         documentSpecificationCreateDTO.setSpecificationVersion(documentSpecificationVersion);
 
         Response postResponse = given().auth()
-                .oauth2(getKeycloakClientToken(USER))
+                .oauth2(keycloakTestClient.getClientAccessToken(USER))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(documentSpecificationCreateDTO)
                 .when()
@@ -115,14 +114,14 @@ class DocumentSpecificationControllerTest extends AbstractTest {
     @DisplayName("Deletes specification of document by id.")
     void testSuccessfulDeleteSupportedMimeTypeById() {
         Response deleteResponse = given().auth()
-                .oauth2(getKeycloakClientToken(USER))
+                .oauth2(keycloakTestClient.getClientAccessToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .when()
                 .delete(BASE_PATH + "/" + EXISTING_DOCUMENT_SPECIFICATION_DELETE_ID);
         deleteResponse.then().statusCode(NO_CONTENT.getStatusCode());
 
         Response getResponse = given().auth()
-                .oauth2(getKeycloakClientToken(USER))
+                .oauth2(keycloakTestClient.getClientAccessToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .when()
                 .get(BASE_PATH);
@@ -137,7 +136,7 @@ class DocumentSpecificationControllerTest extends AbstractTest {
     @DisplayName("Returns exception when trying to delete specification of document assigned to the document.")
     void testFailedDeleteDocumentSpecificationWithAssignedId() {
         Response deleteResponse = given().auth()
-                .oauth2(getKeycloakClientToken(USER))
+                .oauth2(keycloakTestClient.getClientAccessToken(USER))
                 .when()
                 .delete(BASE_PATH + "/" + EXISTING_DOCUMENT_SPECIFICATION_ID);
         deleteResponse.then().statusCode(BAD_REQUEST.getStatusCode());
@@ -156,7 +155,7 @@ class DocumentSpecificationControllerTest extends AbstractTest {
     @DisplayName("Returns exception when trying to delete specification of document for a nonexistent id.")
     void testFailedDeleteDocumentSpecificationById() {
         Response deleteResponse = given().auth()
-                .oauth2(getKeycloakClientToken(USER))
+                .oauth2(keycloakTestClient.getClientAccessToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .when()
                 .delete(BASE_PATH + "/" + NONEXISTENT_DOCUMENT_SPECIFICATION_ID);
@@ -182,7 +181,7 @@ class DocumentSpecificationControllerTest extends AbstractTest {
         documentSpecificationUpdateDTO.setSpecificationVersion(documentSpecificationVersion);
 
         Response putResponse = given().auth()
-                .oauth2(getKeycloakClientToken(USER))
+                .oauth2(keycloakTestClient.getClientAccessToken(USER))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(documentSpecificationUpdateDTO)
                 .when()
@@ -206,7 +205,7 @@ class DocumentSpecificationControllerTest extends AbstractTest {
         documentSpecificationUpdateDTO.setSpecificationVersion(documentSpecificationVersion);
 
         Response putResponse = given().auth()
-                .oauth2(getKeycloakClientToken(USER))
+                .oauth2(keycloakTestClient.getClientAccessToken(USER))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(documentSpecificationUpdateDTO)
                 .when()
@@ -227,7 +226,7 @@ class DocumentSpecificationControllerTest extends AbstractTest {
     @DisplayName("Gets all specifications of document.")
     void testSuccessfulGetAllDocumentSpecifications() {
         Response getResponse = given().auth()
-                .oauth2(getKeycloakClientToken(USER))
+                .oauth2(keycloakTestClient.getClientAccessToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .when()
                 .get(BASE_PATH);
@@ -246,7 +245,7 @@ class DocumentSpecificationControllerTest extends AbstractTest {
     @DisplayName("Returns document specification by id.")
     void testSuccessfulGetDocumentSpecification() {
         Response response = given().auth()
-                .oauth2(getKeycloakClientToken(USER))
+                .oauth2(keycloakTestClient.getClientAccessToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .when()
                 .get(BASE_PATH + "/" + EXISTING_DOCUMENT_SPECIFICATION_ID);
@@ -264,7 +263,7 @@ class DocumentSpecificationControllerTest extends AbstractTest {
     @DisplayName("Returns exception when trying to get document specification for a nonexistent id.")
     void testFailedGetDocumentSpecification() {
         Response response = given().auth()
-                .oauth2(getKeycloakClientToken(USER))
+                .oauth2(keycloakTestClient.getClientAccessToken(USER))
                 .when()
                 .get(BASE_PATH + "/" + NONEXISTENT_DOCUMENT_SPECIFICATION_ID);
 

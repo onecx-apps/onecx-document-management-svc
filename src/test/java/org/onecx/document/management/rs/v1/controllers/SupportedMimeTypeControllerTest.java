@@ -8,7 +8,6 @@ import static jakarta.ws.rs.core.Response.Status.NO_CONTENT;
 import static jakarta.ws.rs.core.Response.Status.OK;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.onecx.document.management.test.AbstractTest.USER;
-import static org.tkit.quarkus.security.test.SecurityTestUtils.getKeycloakClientToken;
 
 import java.util.List;
 
@@ -55,7 +54,7 @@ class SupportedMimeTypeControllerTest extends AbstractTest {
         supportedMimeTypeCreateDTO.setDescription(supportedMimeTypeDescription);
 
         Response postResponse = given().auth()
-                .oauth2(getKeycloakClientToken(USER))
+                .oauth2(keycloakTestClient.getClientAccessToken(USER))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(supportedMimeTypeCreateDTO)
                 .when()
@@ -76,7 +75,7 @@ class SupportedMimeTypeControllerTest extends AbstractTest {
         supportedMimeTypeCreateDTO.setDescription(null);
 
         Response postResponse = given().auth()
-                .oauth2(getKeycloakClientToken(USER))
+                .oauth2(keycloakTestClient.getClientAccessToken(USER))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(supportedMimeTypeCreateDTO)
                 .when()
@@ -96,7 +95,7 @@ class SupportedMimeTypeControllerTest extends AbstractTest {
         supportedMimeTypeCreateDTO.setDescription(supportedMimeTypeDescription);
 
         Response postResponse = given().auth()
-                .oauth2(getKeycloakClientToken(USER))
+                .oauth2(keycloakTestClient.getClientAccessToken(USER))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(supportedMimeTypeCreateDTO)
                 .when()
@@ -118,14 +117,14 @@ class SupportedMimeTypeControllerTest extends AbstractTest {
     @DisplayName("Deletes supported mime-type by id.")
     void testSuccessfulDeleteSupportedMimeTypeById() {
         Response deleteResponse = given().auth()
-                .oauth2(getKeycloakClientToken(USER))
+                .oauth2(keycloakTestClient.getClientAccessToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .when()
                 .delete(BASE_PATH + "/" + EXISTING_SUPPORTED_MIME_TYPE_DELETE_ID);
         deleteResponse.then().statusCode(NO_CONTENT.getStatusCode());
 
         Response getResponse = given().auth()
-                .oauth2(getKeycloakClientToken(USER))
+                .oauth2(keycloakTestClient.getClientAccessToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .when()
                 .get(BASE_PATH);
@@ -139,7 +138,7 @@ class SupportedMimeTypeControllerTest extends AbstractTest {
     @DisplayName("Returns exception when trying to delete supported mime-type assigned to the attachment.")
     void testFailedDeleteSupportedMimeTypeWithAssignedId() {
         Response deleteResponse = given().auth()
-                .oauth2(getKeycloakClientToken(USER))
+                .oauth2(keycloakTestClient.getClientAccessToken(USER))
                 .when()
                 .delete(BASE_PATH + "/" + EXISTING_SUPPORTED_MIME_TYPE_ID);
         deleteResponse.then().statusCode(BAD_REQUEST.getStatusCode());
@@ -158,7 +157,7 @@ class SupportedMimeTypeControllerTest extends AbstractTest {
     @DisplayName("Returns exception when trying to delete supported mime-type for a nonexistent id.")
     void testFailedDeleteSupportedMimeTypeById() {
         Response deleteResponse = given().auth()
-                .oauth2(getKeycloakClientToken(USER))
+                .oauth2(keycloakTestClient.getClientAccessToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .when()
                 .delete(BASE_PATH + "/" + NONEXISTENT_SUPPORTED_MIME_TYPE_ID);
@@ -184,7 +183,7 @@ class SupportedMimeTypeControllerTest extends AbstractTest {
         supportedMimeTypeUpdateDTO.setDescription(supportedMimeTypeDescription);
 
         Response putResponse = given().auth()
-                .oauth2(getKeycloakClientToken(USER))
+                .oauth2(keycloakTestClient.getClientAccessToken(USER))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(supportedMimeTypeUpdateDTO)
                 .when()
@@ -207,7 +206,7 @@ class SupportedMimeTypeControllerTest extends AbstractTest {
         supportedMimeTypeUpdateDTO.setDescription(supportedMimeTypeDescription);
 
         Response putResponse = given().auth()
-                .oauth2(getKeycloakClientToken(USER))
+                .oauth2(keycloakTestClient.getClientAccessToken(USER))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(supportedMimeTypeUpdateDTO)
                 .when()
@@ -228,7 +227,7 @@ class SupportedMimeTypeControllerTest extends AbstractTest {
     @DisplayName("Gets all supported mime-types.")
     void testSuccessfulGetAllSupportedMimeTypes() {
         Response getResponse = given().auth()
-                .oauth2(getKeycloakClientToken(USER))
+                .oauth2(keycloakTestClient.getClientAccessToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .when()
                 .get(BASE_PATH);
@@ -248,7 +247,7 @@ class SupportedMimeTypeControllerTest extends AbstractTest {
     @DisplayName("Returns supported mime type by id.")
     void testSuccessfulGetSupportedMimeType() {
         Response response = given().auth()
-                .oauth2(getKeycloakClientToken(USER))
+                .oauth2(keycloakTestClient.getClientAccessToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .when()
                 .get(BASE_PATH + "/" + EXISTING_SUPPORTED_MIME_TYPE_ID);
@@ -265,7 +264,7 @@ class SupportedMimeTypeControllerTest extends AbstractTest {
     @DisplayName("Returns exception when trying to get supported mime type for a nonexistent id.")
     void testFailedGetSupportedMimeType() {
         Response response = given().auth()
-                .oauth2(getKeycloakClientToken(USER))
+                .oauth2(keycloakTestClient.getClientAccessToken(USER))
                 .when()
                 .get(BASE_PATH + "/" + NONEXISTENT_SUPPORTED_MIME_TYPE_ID);
 
