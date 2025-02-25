@@ -39,7 +39,6 @@ public class FileController implements FileControllerV1Api {
     @Override
     public Response uploadFile(String bucket, String path, File file) {
         Log.info(CLASS_NAME, "Entered uploadFile method", null);
-        Log.info("lengthwew" + file.getAbsoluteFile().length());
         if (file.length() == 0) {
             return Response.status(Response.Status.BAD_REQUEST).entity("File has not been provided").build();
         }
