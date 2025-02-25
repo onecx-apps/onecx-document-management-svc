@@ -7,13 +7,18 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.onecx.document.management.test.AbstractTest;
 
+import gen.org.onecx.document.management.rs.v1.model.FileInfoDTO;
 import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class FileInfoDTOTest extends AbstractTest {
 
-    private static final String TO_STRING_RESULT = "FileInfoDTO(contentType=test, path=src/resources/105, bucket=test-bucket)";
+    private static final String TO_STRING_RESULT = "class FileInfoDTO {\n" +
+            "    contentType: test\n" +
+            "    path: src/resources/105\n" +
+            "    bucket: test-bucket\n" +
+            "}";
 
     @Test
     @DisplayName("FileInfoDTO toString() test")

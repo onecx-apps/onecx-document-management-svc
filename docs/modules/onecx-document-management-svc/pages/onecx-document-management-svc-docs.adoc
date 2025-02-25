@@ -1,62 +1,67 @@
+
+include::onecx-document-management-svc-attributes.adoc[opts=optional]
+
+=== Default properties
+
+.{properties-file}
+[%collapsible%open]
+====
+[source,properties,subs=attributes+]
+----
 quarkus.http.auth.permission.health.paths=/q/*
 quarkus.http.auth.permission.health.policy=permit
 quarkus.http.auth.permission.default.paths=/*
 quarkus.http.auth.permission.default.policy=authenticated
 quarkus.banner.enabled=false
-
 quarkus.http.limits.max-body-size=20240K
-
 quarkus.liquibase.migrate-at-start=true
-
-# datasource
 quarkus.datasource.db-kind=postgresql
 quarkus.datasource.jdbc.max-size=8
 quarkus.datasource.jdbc.min-size=2
 quarkus.datasource.metrics.enabled=true
-
 quarkus.hibernate-orm.metrics.enabled=true
-# values: (none, create, drop-and-create, drop, update).
 quarkus.hibernate-orm.database.generation=none
-# whether we should stop on the first error when applying the schema.
 quarkus.hibernate-orm.database.generation.halt-on-error=true
-# timezone for the date time
 quarkus.hibernate-orm.jdbc.timezone=UTC
-# disable hibernate statistic logs
 quarkus.log.category."org.hibernate.engine.internal.StatisticalLoggingSessionEventListener".level=WARNING
-
-#Exclude config classes and interfaces implemented with Mapstruct from the Jacoco report
 quarkus.jacoco.excludes=**/mappers/*,**/minio/*
-
-# json log
 tkit.log.json.enabled=true
 tkit.log.json.keys.type=rs-time=double,time=double,rs-response-status=int
 tkit.log.json.keys.mdc=traceId=X-B3-TraceId,spanId=X-B3-SpanId
 tkit.log.json.keys.ignore=loggerClassName,ndc
 tkit.log.json.keys.override=timestamp=@timestamp,threadName=thread,loggerName=source
 tkit.log.json.keys.env=service_domain=SERVICE_DOMAIN
-
 minio.bucket.folder=test-bucket
-
-#Exclude interfaces implemented with Mapstruct from the Jacoco report
 quarkus.jacoco.excludes=**/mappers/*
-
-# DEV
-%dev.quarkus.hibernate-orm.log.sql=true
-%dev.tkit.log.json.enabled=false
-%dev.quarkus.http.host=0.0.0.0
-%dev.quarkus.http.port=8080
-%dev.quarkus.datasource.metrics.enabled=false
-%dev.quarkus.hibernate-orm.metrics.enabled=false
-%dev.quarkus.keycloak.devservices.roles.bob=document-admin,document-responsible,document-user
-#remote development
-%dev.quarkus.package.type=mutable-jar
-%dev.quarkus.live-reload.password=changeit
-%dev.quarkus.live-reload.url=http://onecx-document-management-svc:80
-
-
 ## TEST
-%test.quarkus.hibernate-orm.log.sql=false
-%test.tkit.log.json.enabled=false
-%test.quarkus.datasource.metrics.enabled=false
-%test.quarkus.hibernate-orm.metrics.enabled=false
 quarkus.minio.secure=false
+----
+====
+
+=== Extensions
+
+include::onecx-document-management-svc-extensions.adoc[opts=optional]
+
+=== Container
+
+{docker-registry}[Docker registry]
+
+
+=== Helm
+
+{helm-registry}[Helm registry]
+
+Default values
+
+.{helm-file}
+[source,yaml]
+----
+app:
+  image:
+    repository: "onecx-apps/onecx-document-management-svc"
+  db:
+    enabled: true
+  product: false
+
+----
+

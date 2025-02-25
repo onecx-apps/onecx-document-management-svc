@@ -2,11 +2,11 @@ package org.onecx.document.management.domain.daos;
 
 import java.util.List;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaDelete;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaDelete;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 
 import org.onecx.document.management.domain.models.entities.Attachment;
 import org.onecx.document.management.domain.models.entities.Attachment_;

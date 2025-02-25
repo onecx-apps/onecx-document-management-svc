@@ -4,10 +4,10 @@ import static org.onecx.document.management.domain.models.entities.StorageUpload
 
 import java.util.List;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 
 import org.onecx.document.management.domain.models.entities.StorageUploadAudit;
 import org.tkit.quarkus.jpa.daos.AbstractDAO;

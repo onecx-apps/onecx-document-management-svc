@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.onecx.document.management.test.AbstractTest;
 
+import gen.org.onecx.document.management.rs.v1.model.RFCProblemDetailDTO;
 import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest

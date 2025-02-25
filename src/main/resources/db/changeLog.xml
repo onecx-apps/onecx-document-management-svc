@@ -7,5 +7,5 @@
     <include relativeToChangelogFile="true" file="create-tables.xml" />
     <include relativeToChangelogFile="true" file="insert-master.xml" />
     <include relativeToChangelogFile="true" file="alter-table.xml" />
-
+    <include relativeToChangelogFile="true" file="2025-02-25-alter-table.xml"/>
 </databaseChangeLog>

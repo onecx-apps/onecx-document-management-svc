@@ -1,7 +1,11 @@
-== OneCX Document-Management-Service
-image:https://github.com/onecx-apps/onecx-document-management-svc/actions/workflows/build.yml/badge.svg[OneCX Document Management SVC]
+include::onecx-document-management-svc-attributes.adoc[opts=optional]
 
-=== What is Document Management
+== onecx-document-management-svc
+
+include::docs.adoc[opts=optional]
+
+
+include::onecx-document-management-svc-docs.adoc[opts=optional]
 
 Document management refers to the systematic process of capturing,
 organizing, storing, and retrieving documents within an organization. It

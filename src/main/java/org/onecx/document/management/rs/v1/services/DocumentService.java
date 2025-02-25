@@ -7,31 +7,20 @@ import java.math.BigDecimal;
 import java.net.URLConnection;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.regex.Pattern;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.transaction.Transactional;
-import javax.validation.Valid;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 import org.apache.commons.io.IOUtils;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.jboss.resteasy.plugins.providers.multipart.InputPart;
-import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
+import org.jboss.resteasy.reactive.server.multipart.FormValue;
+import org.jboss.resteasy.reactive.server.multipart.MultipartFormDataInput;
 import org.onecx.document.management.domain.daos.AttachmentDAO;
 import org.onecx.document.management.domain.daos.DocumentDAO;
 import org.onecx.document.management.domain.daos.DocumentTypeDAO;
@@ -53,14 +42,13 @@ import org.onecx.document.management.domain.models.entities.StorageUploadAudit;
 import org.onecx.document.management.domain.models.entities.SupportedMimeType;
 import org.onecx.document.management.domain.models.enums.AttachmentUnit;
 import org.onecx.document.management.rs.v1.CustomException;
+import org.onecx.document.management.rs.v1.RestException;
 import org.onecx.document.management.rs.v1.mappers.DocumentMapper;
 import org.onecx.document.management.rs.v1.mappers.DocumentSpecificationMapper;
-import org.onecx.document.management.rs.v1.models.AttachmentCreateUpdateDTO;
-import org.onecx.document.management.rs.v1.models.DocumentCreateUpdateDTO;
-import org.onecx.document.management.rs.v1.models.DocumentSpecificationCreateUpdateDTO;
 import org.tkit.quarkus.jpa.models.TraceableEntity;
-import org.tkit.quarkus.rs.exceptions.RestException;
 
+import gen.org.onecx.document.management.rs.v1.model.AttachmentCreateUpdateDTO;
+import gen.org.onecx.document.management.rs.v1.model.DocumentCreateUpdateDTO;
 import io.minio.GetObjectArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
@@ -130,7 +118,7 @@ public class DocumentService {
 
     private static final String CLASS_NAME = "DocumentService";
 
-    public Document createDocument(@Valid DocumentCreateUpdateDTO dto) {
+    public Document createDocument(DocumentCreateUpdateDTO dto) {
         Log.info(CLASS_NAME, "Entered createDocument method", null);
         var document = documentMapper.map(dto);
         setType(dto, document);
@@ -138,18 +126,6 @@ public class DocumentService {
         setAttachments(dto, document);
         Log.info(CLASS_NAME, "Exited createDocument method", null);
         return documentDAO.create(document);
-    }
-
-    private String extractFileName(InputPart inputPart) {
-        Log.info(CLASS_NAME, "Entered extractFileName method", null);
-        MultivaluedMap<String, String> headers = inputPart.getHeaders();
-        var matcher = FILENAME_PATTERN.matcher(headers.getFirst(HEADER_KEY));
-        String filename = null;
-        if (matcher.find()) {
-            filename = matcher.group(1);
-        }
-        Log.info(CLASS_NAME, "Exited extractFileName method", null);
-        return filename;
     }
 
     @Transactional
@@ -163,20 +139,26 @@ public class DocumentService {
             throw new RestException(Response.Status.NOT_FOUND, Response.Status.NOT_FOUND,
                     getDocumentNotFoundMsg(documentId));
         }
-        Map<String, List<InputPart>> uploadForm = input.getFormDataMap();
-        List<InputPart> inputParts = uploadForm.get(FORM_DATA_MAP_KEY);
-        if (String.valueOf(MediaType.valueOf(inputParts.get(0).getMediaType().toString()).getType() + SLASH
-                + MediaType.valueOf(inputParts.get(0).getMediaType().toString()).getSubtype())
+        String mediaType = "";
+        for (Map.Entry<String, Collection<FormValue>> attribute : input.getValues().entrySet()) {
+            for (FormValue fv : attribute.getValue()) {
+                if (fv.isFileItem()) {
+                    mediaType = fv.getHeaders().getFirst(HttpHeaders.CONTENT_TYPE);
+                }
+            }
+        }
+        Map<String, Collection<FormValue>> uploadForm = input.getValues();
+
+        Collection<FormValue> inputParts = uploadForm.get(FORM_DATA_MAP_KEY);
+        if (String.valueOf(MediaType.valueOf(mediaType))
                 .equals(ATTACHMENT_ID_LIST_MEDIA_TYPE)) {
-            List<String> attachmentIdList = getAttachmentIdList(inputParts);
+            List<String> attachmentIdList = getAttachmentIdList(inputParts.stream().toList());
             inputParts.remove(0);
             if (!attachmentIdList.isEmpty()) {
                 attachmentIdList.stream().forEach(attachmentId -> {
                     Optional<Attachment> matchedAttachment = document.getAttachments().stream()
                             .filter(attachment -> attachmentId.equals(attachment.getId())).findFirst();
-                    if (matchedAttachment.isPresent()) {
-                        newAttachmentSet.add(matchedAttachment.get());
-                    }
+                    matchedAttachment.ifPresent(newAttachmentSet::add);
                 });
             }
         } else {
@@ -185,19 +167,21 @@ public class DocumentService {
         if (!newAttachmentSet.isEmpty()) {
             newAttachmentSet.stream()
                     .forEach(attachment -> {
-                        Optional<InputPart> matchedInputPart = inputParts.stream().filter(inputPart -> {
-                            String filename = extractFileName(inputPart);
+                        Optional<FormValue> matchedInputPart = inputParts.stream().filter(inputPart -> {
+                            String filename = inputPart.getFileName();
                             return attachment.getFileName().equals(filename);
                         }).findFirst();
                         String strFilenameFileId = attachment.getId() + SLASH + attachment.getName();
                         try {
-                            InputStream inputPartBody = matchedInputPart.get().getBody(InputStream.class, null);
-                            byte[] fileBytes = IOUtils.toByteArray(inputPartBody);
-                            InputStream fileByteArrayInputStream = new ByteArrayInputStream(fileBytes);
-                            String contentType = URLConnection.guessContentTypeFromStream(fileByteArrayInputStream);
-                            uploadFileToObjectStorage(fileBytes, attachment.getId());
-                            map.put(strFilenameFileId, Response.Status.CREATED.getStatusCode());
-                            updateAttachmentAfterUpload(attachment, new BigDecimal(fileBytes.length), contentType);
+                            if (matchedInputPart.isPresent()) {
+                                InputStream inputPartBody = matchedInputPart.get().getFileItem().getInputStream();
+                                byte[] fileBytes = IOUtils.toByteArray(inputPartBody);
+                                InputStream fileByteArrayInputStream = new ByteArrayInputStream(fileBytes);
+                                String contentType = URLConnection.guessContentTypeFromStream(fileByteArrayInputStream);
+                                uploadFileToObjectStorage(fileBytes, attachment.getId());
+                                map.put(strFilenameFileId, Response.Status.CREATED.getStatusCode());
+                                updateAttachmentAfterUpload(attachment, new BigDecimal(fileBytes.length), contentType);
+                            }
                         } catch (Exception e) {
                             map.put(strFilenameFileId, Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
                             createStorageUploadAuditRecords(documentId, document, attachment);
@@ -212,9 +196,9 @@ public class DocumentService {
         return map;
     }
 
-    private List<String> getAttachmentIdList(List<InputPart> inputPartList) throws IOException {
+    private List<String> getAttachmentIdList(List<FormValue> inputPartList) throws IOException {
         List<String> attachmentIdList = new ArrayList<>();
-        var stringTokenizer = new StringTokenizer(String.valueOf(inputPartList.get(0).getBodyAsString()),
+        var stringTokenizer = new StringTokenizer(String.valueOf(inputPartList.get(0).getFileItem()),
                 STRING_TOKEN_DELIMITER);
         while (stringTokenizer.hasMoreTokens()) {
             attachmentIdList.add(stringTokenizer.nextToken());
@@ -266,7 +250,7 @@ public class DocumentService {
      * @return a {@link Document}
      */
     @Transactional
-    public Document updateDocument(@Valid Document document, DocumentCreateUpdateDTO dto) {
+    public Document updateDocument(Document document, DocumentCreateUpdateDTO dto) {
         Log.info(CLASS_NAME, "Entered updateDocument method", null);
         documentMapper.update(dto, document);
         setType(dto, document);
@@ -352,7 +336,7 @@ public class DocumentService {
      * @param dto a {@link DocumentCreateUpdateDTO}
      * @param document a {@link Document}
      */
-    private void setType(@Valid DocumentCreateUpdateDTO dto, Document document) {
+    private void setType(DocumentCreateUpdateDTO dto, Document document) {
 
         Log.info(CLASS_NAME, "Entered setType method", null);
         var documentType = typeDAO.findById(dto.getTypeId());
@@ -373,12 +357,13 @@ public class DocumentService {
      * @param dto a {@link DocumentCreateUpdateDTO}
      * @param document a {@link Document}
      */
-    private void setSpecification(@Valid DocumentCreateUpdateDTO dto, Document document) {
+    private void setSpecification(DocumentCreateUpdateDTO dto, Document document) {
         Log.info(CLASS_NAME, "Entered setSpecification method", null);
         if (Objects.isNull(dto.getSpecification())) {
             document.setSpecification(null);
         } else {
-            DocumentSpecificationCreateUpdateDTO docSpecDto = dto.getSpecification();
+            gen.org.onecx.document.management.rs.v1.model.DocumentSpecificationCreateUpdateDTO docSpecDto = dto
+                    .getSpecification();
             var documentSpecification = documentSpecificationMapper.map(docSpecDto);
             document.setSpecification(documentSpecification);
         }
@@ -413,7 +398,7 @@ public class DocumentService {
      * @param dto a {@link DocumentCreateUpdateDTO}
      * @param document a {@link Document}
      */
-    private void setAttachments(@Valid DocumentCreateUpdateDTO dto, Document document) {
+    private void setAttachments(DocumentCreateUpdateDTO dto, Document document) {
         Log.info(CLASS_NAME, "Entered setAttachments method", null);
         if (Objects.isNull(dto.getAttachments())) {
             document.setAttachments(null);
