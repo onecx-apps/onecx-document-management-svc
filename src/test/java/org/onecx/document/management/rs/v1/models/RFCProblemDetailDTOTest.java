@@ -8,7 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
-import gen.org.onecx.document.management.rs.v1.model.RFCProblemDetailDTO;
+import gen.org.onecx.document.management.rs.v1.model.RFCProblemDetail;
 import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
@@ -27,7 +27,7 @@ class RFCProblemDetailDTOTest {
     @DisplayName("Get Code Get Message Type")
     void testSuccessfulGetCodeShouldReturnCode() {
 
-        RFCProblemDetailDTO rfcProblemDetailDTO = new RFCProblemDetailDTO();
+        RFCProblemDetail rfcProblemDetailDTO = new RFCProblemDetail();
         rfcProblemDetailDTO.setMessageType("");
         rfcProblemDetailDTO.setCode("");
 
@@ -42,7 +42,7 @@ class RFCProblemDetailDTOTest {
     @DisplayName("RFCProblemDetailDTO toString() test")
     void RFCProblemDetailDTOToStringTest() {
 
-        RFCProblemDetailDTO rfcProblemDetailDTO = new RFCProblemDetailDTO();
+        RFCProblemDetail rfcProblemDetailDTO = new RFCProblemDetail();
         rfcProblemDetailDTO.setMessageType("test");
         rfcProblemDetailDTO.setMessageId("12345");
         rfcProblemDetailDTO.setCode("105");

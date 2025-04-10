@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.onecx.document.management.test.AbstractTest;
 import org.tkit.quarkus.security.test.GenerateKeycloakClient;
 
-import gen.org.onecx.document.management.rs.v1.model.FileInfoDTO;
+import gen.org.onecx.document.management.rs.v1.model.FileInfo;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.Response;
 
@@ -70,7 +70,7 @@ class FileControllerTest extends AbstractTest {
                 .when()
                 .put(BASE_PATH + BUCKET_NAME + "/" + MINIO_FILE_PATH);
         putResponse.then().statusCode(201);
-        FileInfoDTO file = putResponse.as(FileInfoDTO.class);
+        FileInfo file = putResponse.as(FileInfo.class);
         assertEquals(MINIO_FILE_PATH, file.getPath());
         assertEquals(SAMPLE_FILE_TYPE, file.getContentType());
         assertEquals(BUCKET_NAME, file.getBucket());
@@ -86,7 +86,7 @@ class FileControllerTest extends AbstractTest {
                 .when()
                 .put(BASE_PATH + BUCKET_NAME + "/" + MINIO_UNKNOWN_FILE_PATH);
         putResponse.then().statusCode(201);
-        FileInfoDTO file = putResponse.as(FileInfoDTO.class);
+        FileInfo file = putResponse.as(FileInfo.class);
         assertEquals(MINIO_UNKNOWN_FILE_PATH, file.getPath());
         assertEquals(APPLICATION_OCTET_STREAM_CONTENT_TYPE, file.getContentType());
         assertEquals(BUCKET_NAME, file.getBucket());

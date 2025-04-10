@@ -22,8 +22,8 @@ import org.onecx.document.management.test.AbstractTest;
 import org.tkit.quarkus.security.test.GenerateKeycloakClient;
 import org.tkit.quarkus.test.WithDBData;
 
-import gen.org.onecx.document.management.rs.v1.model.DocumentSpecificationCreateUpdateDTO;
-import gen.org.onecx.document.management.rs.v1.model.DocumentSpecificationDTO;
+import gen.org.onecx.document.management.rs.v1.model.DocumentSpecification;
+import gen.org.onecx.document.management.rs.v1.model.DocumentSpecificationCreateUpdate;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.response.Response;
@@ -45,7 +45,7 @@ class DocumentSpecificationControllerTest extends AbstractTest {
     void testSuccessfulCreateDocumentSpecification() {
         final String documentSpecificationName = "DOCUMENT_SPECIFICATION_NAME";
         final String documentSpecificationVersion = "DOCUMENT_SPECIFICATION_VERSION";
-        DocumentSpecificationCreateUpdateDTO documentSpecificationCreateDTO = new DocumentSpecificationCreateUpdateDTO();
+        DocumentSpecificationCreateUpdate documentSpecificationCreateDTO = new DocumentSpecificationCreateUpdate();
         documentSpecificationCreateDTO.setName(documentSpecificationName);
         documentSpecificationCreateDTO.setSpecificationVersion(documentSpecificationVersion);
 
@@ -57,7 +57,7 @@ class DocumentSpecificationControllerTest extends AbstractTest {
                 .post(BASE_PATH);
         postResponse.then().statusCode(CREATED.getStatusCode());
 
-        DocumentSpecificationDTO dto = postResponse.as(DocumentSpecificationDTO.class);
+        DocumentSpecification dto = postResponse.as(DocumentSpecification.class);
         assertThat(dto.getName()).isEqualTo(documentSpecificationCreateDTO.getName());
         assertThat(dto.getSpecificationVersion())
                 .isEqualTo(documentSpecificationCreateDTO.getSpecificationVersion());
@@ -67,7 +67,7 @@ class DocumentSpecificationControllerTest extends AbstractTest {
     @DisplayName("Saves specification of document without version.")
     void testSuccessfulCreateDocumentSpecificationWithoutVersion() {
         final String documentSpecificationName = "DOCUMENT_SPECIFICATION_NAME";
-        DocumentSpecificationCreateUpdateDTO documentSpecificationCreateDTO = new DocumentSpecificationCreateUpdateDTO();
+        DocumentSpecificationCreateUpdate documentSpecificationCreateDTO = new DocumentSpecificationCreateUpdate();
         documentSpecificationCreateDTO.setName(documentSpecificationName);
         documentSpecificationCreateDTO.setSpecificationVersion(null);
 
@@ -79,7 +79,7 @@ class DocumentSpecificationControllerTest extends AbstractTest {
                 .post(BASE_PATH);
         postResponse.then().statusCode(CREATED.getStatusCode());
 
-        DocumentSpecificationDTO dto = postResponse.as(DocumentSpecificationDTO.class);
+        DocumentSpecification dto = postResponse.as(DocumentSpecification.class);
         assertThat(dto.getName()).isEqualTo(documentSpecificationCreateDTO.getName());
     }
 
@@ -87,7 +87,7 @@ class DocumentSpecificationControllerTest extends AbstractTest {
     @DisplayName("Saves specification of document without name.")
     void testFailedCreateDocumentSpecificationWithoutName() {
         final String documentSpecificationVersion = "DOCUMENT_SPECIFICATION_VERSION";
-        DocumentSpecificationCreateUpdateDTO documentSpecificationCreateDTO = new DocumentSpecificationCreateUpdateDTO();
+        DocumentSpecificationCreateUpdate documentSpecificationCreateDTO = new DocumentSpecificationCreateUpdate();
         documentSpecificationCreateDTO.setName(null);
         documentSpecificationCreateDTO.setSpecificationVersion(documentSpecificationVersion);
 
@@ -127,7 +127,7 @@ class DocumentSpecificationControllerTest extends AbstractTest {
                 .get(BASE_PATH);
         getResponse.then().statusCode(OK.getStatusCode());
 
-        List<DocumentSpecificationDTO> documentSpecificationDTOS = getResponse
+        List<DocumentSpecification> documentSpecificationDTOS = getResponse
                 .as(getDocumentSpecificationDTOTypeRef());
         assertThat(documentSpecificationDTOS).hasSize(2);
     }
@@ -176,7 +176,7 @@ class DocumentSpecificationControllerTest extends AbstractTest {
     void testSuccessfulUpdateDocumentSpecification() {
         final String documentSpecificationName = "TEST_UPDATE_SUPPORTED_MIME_TYPE_NAME";
         final String documentSpecificationVersion = "TEST_UPDATE_SUPPORTED_MIME_TYPE_DESCRIPTION";
-        DocumentSpecificationCreateUpdateDTO documentSpecificationUpdateDTO = new DocumentSpecificationCreateUpdateDTO();
+        DocumentSpecificationCreateUpdate documentSpecificationUpdateDTO = new DocumentSpecificationCreateUpdate();
         documentSpecificationUpdateDTO.setName(documentSpecificationName);
         documentSpecificationUpdateDTO.setSpecificationVersion(documentSpecificationVersion);
 
@@ -188,7 +188,7 @@ class DocumentSpecificationControllerTest extends AbstractTest {
                 .put(BASE_PATH + "/" + EXISTING_DOCUMENT_SPECIFICATION_ID);
         putResponse.then().statusCode(OK.getStatusCode());
 
-        DocumentSpecificationDTO dto = putResponse.as(DocumentSpecificationDTO.class);
+        DocumentSpecification dto = putResponse.as(DocumentSpecification.class);
         assertThat(dto.getId()).isEqualTo(EXISTING_DOCUMENT_SPECIFICATION_ID);
         assertThat(dto.getName()).isEqualTo(documentSpecificationUpdateDTO.getName());
         assertThat(dto.getSpecificationVersion())
@@ -200,7 +200,7 @@ class DocumentSpecificationControllerTest extends AbstractTest {
     void testFailedUpdateDocumentSpecificationById() {
         final String documentSpecificationName = "TEST_UPDATE_SUPPORTED_MIME_TYPE_NAME";
         final String documentSpecificationVersion = "TEST_UPDATE_SUPPORTED_MIME_TYPE_DESCRIPTION";
-        DocumentSpecificationCreateUpdateDTO documentSpecificationUpdateDTO = new DocumentSpecificationCreateUpdateDTO();
+        DocumentSpecificationCreateUpdate documentSpecificationUpdateDTO = new DocumentSpecificationCreateUpdate();
         documentSpecificationUpdateDTO.setName(documentSpecificationName);
         documentSpecificationUpdateDTO.setSpecificationVersion(documentSpecificationVersion);
 
@@ -232,7 +232,7 @@ class DocumentSpecificationControllerTest extends AbstractTest {
                 .get(BASE_PATH);
         getResponse.then().statusCode(OK.getStatusCode());
 
-        List<DocumentSpecificationDTO> documentSpecificationDTOS = getResponse
+        List<DocumentSpecification> documentSpecificationDTOS = getResponse
                 .as(getDocumentSpecificationDTOTypeRef());
         assertThat(documentSpecificationDTOS).hasSize(3);
         assertThat(documentSpecificationDTOS.get(0).getId()).isEqualTo(EXISTING_DOCUMENT_SPECIFICATION_ID);
@@ -251,7 +251,7 @@ class DocumentSpecificationControllerTest extends AbstractTest {
                 .get(BASE_PATH + "/" + EXISTING_DOCUMENT_SPECIFICATION_ID);
 
         response.then().statusCode(200);
-        DocumentSpecificationDTO documentSpecificationDTO = response.as(DocumentSpecificationDTO.class);
+        DocumentSpecification documentSpecificationDTO = response.as(DocumentSpecification.class);
 
         assertThat(documentSpecificationDTO.getId()).isEqualTo(EXISTING_DOCUMENT_SPECIFICATION_ID);
         assertThat(documentSpecificationDTO.getName()).isEqualTo(NAME_OF_DOCUMENT_SPECIFICATION_1);
@@ -279,7 +279,7 @@ class DocumentSpecificationControllerTest extends AbstractTest {
         assertThat(rfcProblemDTO.getType()).isEqualTo("REST_EXCEPTION");
     }
 
-    private TypeRef<List<DocumentSpecificationDTO>> getDocumentSpecificationDTOTypeRef() {
+    private TypeRef<List<DocumentSpecification>> getDocumentSpecificationDTOTypeRef() {
         return new TypeRef<>() {
         };
     }

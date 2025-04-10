@@ -6,11 +6,11 @@ import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-import org.onecx.document.management.domain.models.entities.SupportedMimeType;
+import org.onecx.document.management.domain.models.entities.SupportedMimeTypes;
 import org.tkit.quarkus.rs.mappers.OffsetDateTimeMapper;
 
-import gen.org.onecx.document.management.rs.v1.model.SupportedMimeTypeCreateUpdateDTO;
-import gen.org.onecx.document.management.rs.v1.model.SupportedMimeTypeDTO;
+import gen.org.onecx.document.management.rs.v1.model.SupportedMimeType;
+import gen.org.onecx.document.management.rs.v1.model.SupportedMimeTypeCreateUpdate;
 
 @Mapper(componentModel = "cdi", uses = OffsetDateTimeMapper.class, injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface SupportedMimeTypeMapper {
@@ -23,9 +23,9 @@ public interface SupportedMimeTypeMapper {
     @Mapping(target = "modificationCount", ignore = true)
     @Mapping(target = "persisted", ignore = true)
     @Mapping(target = "id", ignore = true)
-    SupportedMimeType map(SupportedMimeTypeCreateUpdateDTO dto);
+    SupportedMimeTypes map(SupportedMimeTypeCreateUpdate dto);
 
-    SupportedMimeTypeDTO mapToDTO(SupportedMimeType supportedMimeType);
+    SupportedMimeType mapToDTO(SupportedMimeTypes supportedMimeType);
 
     @Mapping(target = "creationDate", ignore = true)
     @Mapping(target = "creationUser", ignore = true)
@@ -35,7 +35,7 @@ public interface SupportedMimeTypeMapper {
     @Mapping(target = "modificationCount", ignore = true)
     @Mapping(target = "persisted", ignore = true)
     @Mapping(target = "id", ignore = true)
-    void update(SupportedMimeTypeCreateUpdateDTO dto, @MappingTarget SupportedMimeType supportedMimeType);
+    void update(SupportedMimeTypeCreateUpdate dto, @MappingTarget SupportedMimeTypes supportedMimeType);
 
-    List<SupportedMimeTypeDTO> findAllSupportedMimeTypes(List<SupportedMimeType> supportedMimeTypes);
+    List<SupportedMimeType> findAllSupportedMimeTypes(List<SupportedMimeTypes> supportedMimeTypes);
 }

@@ -13,7 +13,7 @@ import org.onecx.document.management.rs.v1.RestException;
 import org.onecx.document.management.rs.v1.services.FileService;
 
 import gen.org.onecx.document.management.rs.v1.FileControllerV1Api;
-import gen.org.onecx.document.management.rs.v1.model.FileInfoDTO;
+import gen.org.onecx.document.management.rs.v1.model.FileInfo;
 import io.minio.GetObjectResponse;
 import io.quarkus.logging.Log;
 
@@ -42,7 +42,7 @@ public class FileController implements FileControllerV1Api {
         if (file.length() == 0) {
             return Response.status(Response.Status.BAD_REQUEST).entity("File has not been provided").build();
         }
-        FileInfoDTO fileInfoDTO;
+        FileInfo fileInfoDTO;
         try {
             fileInfoDTO = fileService.uploadFile(path, file, bucket);
         } catch (Exception e) {

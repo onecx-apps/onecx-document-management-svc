@@ -11,13 +11,9 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
-import org.onecx.document.management.domain.criteria.DocumentSearchCriteria;
-import org.onecx.document.management.domain.models.entities.Channel_;
-import org.onecx.document.management.domain.models.entities.Document;
-import org.onecx.document.management.domain.models.entities.DocumentSpecification;
-import org.onecx.document.management.domain.models.entities.DocumentType;
-import org.onecx.document.management.domain.models.entities.Document_;
-import org.onecx.document.management.domain.models.entities.RelatedObjectRef_;
+import org.onecx.document.management.domain.criteria.DocumentSearchCriterias;
+import org.onecx.document.management.domain.models.entities.*;
+import org.onecx.document.management.domain.models.entities.DocumentSpecifications;
 import org.tkit.quarkus.jpa.daos.AbstractDAO;
 import org.tkit.quarkus.jpa.daos.Page;
 import org.tkit.quarkus.jpa.daos.PageResult;
@@ -38,12 +34,12 @@ public class DocumentDAO extends AbstractDAO<Document> {
 
     /**
      * Finds a {@link PageResult} of {@link Document} matching the given
-     * {@link DocumentSearchCriteria}.
+     * {@link DocumentSearchCriterias}.
      *
-     * @param criteria the {@link DocumentSearchCriteria}
+     * @param criteria the {@link DocumentSearchCriterias}
      * @return the {@link PageResult} of {@link Document}
      */
-    public PageResult<Document> findBySearchCriteria(DocumentSearchCriteria criteria) {
+    public PageResult<Document> findBySearchCriteria(DocumentSearchCriterias criteria) {
         if (criteria == null) {
             throw new DAOException(ErrorKeys.ERROR_FIND_DOCUMENT_SEARCH_CRITERIA_REQUIRED, new NullPointerException());
         }
@@ -70,7 +66,7 @@ public class DocumentDAO extends AbstractDAO<Document> {
     /**
      *
      * @param id the String
-     * @return a {@link List<Document>} contains given {@link DocumentType} id
+     * @return a {@link List<Document>} contains given {@link DocumentTypes} id
      */
     public List<Document> findDocumentsWithDocumentTypeId(String id) {
         var criteriaBuilder = this.getEntityManager().getCriteriaBuilder();
@@ -85,7 +81,7 @@ public class DocumentDAO extends AbstractDAO<Document> {
     /**
      *
      * @param id the String
-     * @return a {@link List<Document>} contains given {@link DocumentSpecification}
+     * @return a {@link List<Document>} contains given {@link DocumentSpecifications}
      *         id
      */
     public List<Document> findDocumentsWithDocumentSpecificationId(String id) {
@@ -116,7 +112,7 @@ public class DocumentDAO extends AbstractDAO<Document> {
         return (value.toLowerCase() + "%");
     }
 
-    private CriteriaQuery<Document> createSearchCriteriaQuery(DocumentSearchCriteria criteria) {
+    private CriteriaQuery<Document> createSearchCriteriaQuery(DocumentSearchCriterias criteria) {
 
         var entityManager = getEntityManager();
         var cb = entityManager.getCriteriaBuilder();
@@ -171,7 +167,7 @@ public class DocumentDAO extends AbstractDAO<Document> {
 
     }
 
-    public List<Document> findAllDocumentsBySearchCriteria(DocumentSearchCriteria criteria) {
+    public List<Document> findAllDocumentsBySearchCriteria(DocumentSearchCriterias criteria) {
         if (criteria == null) {
             throw new DAOException(ErrorKeys.ERROR_FIND_DOCUMENT_SEARCH_CRITERIA_REQUIRED, new NullPointerException());
         }

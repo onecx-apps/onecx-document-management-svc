@@ -14,7 +14,7 @@ import org.onecx.document.management.rs.v1.RestException;
 import org.onecx.document.management.rs.v1.mappers.DocumentSpecificationMapper;
 
 import gen.org.onecx.document.management.rs.v1.DocumentSpecificationControllerV1Api;
-import gen.org.onecx.document.management.rs.v1.model.DocumentSpecificationCreateUpdateDTO;
+import gen.org.onecx.document.management.rs.v1.model.DocumentSpecificationCreateUpdate;
 import io.quarkus.logging.Log;
 
 @ApplicationScoped
@@ -36,7 +36,7 @@ public class DocumentSpecificationController implements DocumentSpecificationCon
 
     @Override
     @Transactional
-    public Response createDocumentSpecification(DocumentSpecificationCreateUpdateDTO documentSpecificationCreateUpdateDTO) {
+    public Response createDocumentSpecification(DocumentSpecificationCreateUpdate documentSpecificationCreateUpdateDTO) {
         Log.info(CLASS_NAME, "Entered createDocumentSpecification method", null);
         if (Objects.isNull(documentSpecificationCreateUpdateDTO.getName())
                 || Objects.equals(documentSpecificationCreateUpdateDTO.getName().trim(), "")) {
@@ -99,7 +99,7 @@ public class DocumentSpecificationController implements DocumentSpecificationCon
     @Override
     @Transactional
     public Response updateDocumentSpecificationById(String id,
-            DocumentSpecificationCreateUpdateDTO documentSpecificationCreateUpdateDTO) {
+            DocumentSpecificationCreateUpdate documentSpecificationCreateUpdateDTO) {
         Log.info(CLASS_NAME, "Entered updateDocumentSpecificationById method", null);
         var documentSpecification = documentSpecificationDAO.findById(id);
         if (Objects.isNull(documentSpecification)) {

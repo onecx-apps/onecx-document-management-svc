@@ -6,11 +6,11 @@ import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-import org.onecx.document.management.domain.models.entities.DocumentType;
+import org.onecx.document.management.domain.models.entities.DocumentTypes;
 import org.tkit.quarkus.rs.mappers.OffsetDateTimeMapper;
 
-import gen.org.onecx.document.management.rs.v1.model.DocumentTypeCreateUpdateDTO;
-import gen.org.onecx.document.management.rs.v1.model.DocumentTypeDTO;
+import gen.org.onecx.document.management.rs.v1.model.DocumentType;
+import gen.org.onecx.document.management.rs.v1.model.DocumentTypeCreateUpdate;
 
 @Mapper(componentModel = "cdi", uses = OffsetDateTimeMapper.class, injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface DocumentTypeMapper {
@@ -24,9 +24,9 @@ public interface DocumentTypeMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "description", ignore = true)
     @Mapping(target = "activeStatus", ignore = true)
-    DocumentType map(DocumentTypeCreateUpdateDTO createUpdateDTO);
+    DocumentTypes map(DocumentTypeCreateUpdate createUpdateDTO);
 
-    DocumentTypeDTO mapDocumentType(DocumentType documentType);
+    DocumentType mapDocumentType(DocumentTypes documentTypes);
 
     @Mapping(target = "creationDate", ignore = true)
     @Mapping(target = "creationUser", ignore = true)
@@ -38,7 +38,7 @@ public interface DocumentTypeMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "description", ignore = true)
     @Mapping(target = "activeStatus", ignore = true)
-    void update(DocumentTypeCreateUpdateDTO dto, @MappingTarget DocumentType documentType);
+    void update(DocumentTypeCreateUpdate dto, @MappingTarget DocumentTypes documentTypes);
 
-    List<DocumentTypeDTO> findAllDocumentType(List<DocumentType> documents);
+    List<DocumentType> findAllDocumentType(List<DocumentTypes> documents);
 }

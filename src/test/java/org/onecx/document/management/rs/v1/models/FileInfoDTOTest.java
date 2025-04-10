@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.onecx.document.management.test.AbstractTest;
 
-import gen.org.onecx.document.management.rs.v1.model.FileInfoDTO;
+import gen.org.onecx.document.management.rs.v1.model.FileInfo;
 import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
@@ -24,7 +24,7 @@ class FileInfoDTOTest extends AbstractTest {
     @DisplayName("FileInfoDTO toString() test")
     void fileInfoDTOToStringTest() {
 
-        FileInfoDTO fileInfoDTO = new FileInfoDTO();
+        FileInfo fileInfoDTO = new FileInfo();
         fileInfoDTO.setContentType("test");
         fileInfoDTO.setBucket("test-bucket");
         fileInfoDTO.setPath("src/resources/105");

@@ -15,7 +15,7 @@ import jakarta.ws.rs.ext.Provider;
 
 import org.onecx.document.management.rs.v1.models.RFCProblemDTO;
 
-import gen.org.onecx.document.management.rs.v1.model.RFCProblemDetailDTO;
+import gen.org.onecx.document.management.rs.v1.model.RFCProblemDetail;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -71,7 +71,7 @@ public class ValidationExceptionToRFCProblemMapper implements ExceptionMapper<Va
                 .build();
     }
 
-    private List<RFCProblemDetailDTO> createRfcProblemDetailDTOs(Throwable cause) {
+    private List<RFCProblemDetail> createRfcProblemDetailDTOs(Throwable cause) {
         if (cause == null) {
             return new ArrayList<>();
         }
@@ -80,8 +80,8 @@ public class ValidationExceptionToRFCProblemMapper implements ExceptionMapper<Va
                 .toList();
     }
 
-    private RFCProblemDetailDTO mapStackTraceElement(StackTraceElement stackTraceElement) {
-        var problemDetail = new RFCProblemDetailDTO();
+    private RFCProblemDetail mapStackTraceElement(StackTraceElement stackTraceElement) {
+        var problemDetail = new RFCProblemDetail();
         problemDetail.setMessage(
                 "An error occured in " + stackTraceElement.getMethodName() + " at line "
                         + stackTraceElement.getLineNumber());

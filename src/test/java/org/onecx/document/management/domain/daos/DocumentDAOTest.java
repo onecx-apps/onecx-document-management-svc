@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.onecx.document.management.domain.criteria.DocumentSearchCriteria;
+import org.onecx.document.management.domain.criteria.DocumentSearchCriterias;
 import org.tkit.quarkus.jpa.exceptions.DAOException;
 
 import io.quarkus.test.junit.QuarkusTest;
@@ -30,7 +30,7 @@ class DocumentDAOTest {
                 return null;
             }
         };
-        DocumentSearchCriteria searchCriteria = null;
+        DocumentSearchCriterias searchCriteria = null;
         // when
         DAOException thrownException = Assertions.assertThrows(DAOException.class, () -> {
             documentDAO.findBySearchCriteria(searchCriteria);
@@ -49,7 +49,7 @@ class DocumentDAOTest {
                 return null;
             }
         };
-        DocumentSearchCriteria searchCriteria = new DocumentSearchCriteria();
+        DocumentSearchCriterias searchCriteria = new DocumentSearchCriterias();
         // when
         DAOException thrownException = Assertions.assertThrows(DAOException.class, () -> {
             documentDAO.findBySearchCriteria(searchCriteria);
@@ -67,7 +67,7 @@ class DocumentDAOTest {
                 return null;
             }
         };
-        DocumentSearchCriteria criteria = null;
+        DocumentSearchCriterias criteria = null;
         DAOException exception = assertThrows(DAOException.class,
                 () -> documentDAO.findBySearchCriteria(criteria));
         assertEquals(DocumentDAO.ErrorKeys.ERROR_FIND_DOCUMENT_SEARCH_CRITERIA_REQUIRED, exception.getMessageKey());
@@ -82,7 +82,7 @@ class DocumentDAOTest {
                 return null;
             }
         };
-        DocumentSearchCriteria criteria = null;
+        DocumentSearchCriterias criteria = null;
         DAOException exception = assertThrows(DAOException.class,
                 () -> documentDAO.findAllDocumentsBySearchCriteria(criteria));
         assertEquals(DocumentDAO.ErrorKeys.ERROR_FIND_DOCUMENT_SEARCH_CRITERIA_REQUIRED, exception.getMessageKey());
@@ -97,7 +97,7 @@ class DocumentDAOTest {
                 return null;
             }
         };
-        DocumentSearchCriteria criteria = new DocumentSearchCriteria();
+        DocumentSearchCriterias criteria = new DocumentSearchCriterias();
 
         EntityManager entityManagerMock = Mockito.mock(EntityManager.class);
         Mockito.when(entityManagerMock.getCriteriaBuilder()).thenThrow(new RuntimeException());
@@ -119,7 +119,7 @@ class DocumentDAOTest {
                 return null;
             }
         };
-        DocumentSearchCriteria criteria = new DocumentSearchCriteria();
+        DocumentSearchCriterias criteria = new DocumentSearchCriterias();
 
         EntityManager entityManagerMock = Mockito.mock(EntityManager.class);
         Mockito.when(entityManagerMock.getCriteriaBuilder()).thenThrow(new RuntimeException());

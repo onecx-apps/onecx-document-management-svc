@@ -10,7 +10,7 @@ import jakarta.persistence.criteria.Root;
 
 import org.onecx.document.management.domain.models.entities.Attachment;
 import org.onecx.document.management.domain.models.entities.Attachment_;
-import org.onecx.document.management.domain.models.entities.SupportedMimeType;
+import org.onecx.document.management.domain.models.entities.SupportedMimeTypes;
 import org.tkit.quarkus.jpa.daos.AbstractDAO;
 import org.tkit.quarkus.jpa.models.TraceableEntity_;
 
@@ -23,7 +23,7 @@ public class AttachmentDAO extends AbstractDAO<Attachment> {
     /**
      *
      * @param id the String
-     * @return a {@link List<Attachment>} contains given {@link SupportedMimeType}
+     * @return a {@link List<Attachment>} contains given {@link SupportedMimeTypes}
      *         id
      */
     public List<Attachment> findAttachmentsWithSupportedMimeTypeId(String id) {

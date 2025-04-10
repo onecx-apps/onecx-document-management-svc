@@ -10,22 +10,28 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * The SupportedMimeType entity.
+ * The DocumentType entity.
  */
 @Getter
 @Setter
 @Entity
-@Table(name = "DM_SUPPORTED_MIME_TYPE")
-public class SupportedMimeType extends TraceableEntity {
+@Table(name = "DM_DOCUMENT_TYPE")
+public class DocumentTypes extends TraceableEntity {
     /**
-     * Name of the supported mime-type.
+     * Name of the document type.
      */
     @Column(name = "NAME")
     private String name;
+
     /**
-     * Description of the supported mime-type.
+     * Description of the document type
      */
     @Column(name = "DESCRIPTION")
     private String description;
 
+    /**
+     * Document type active status
+     */
+    @Column(name = "ACTIVE_STATUS")
+    private Boolean activeStatus;
 }

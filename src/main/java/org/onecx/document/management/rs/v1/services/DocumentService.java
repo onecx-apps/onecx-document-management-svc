@@ -33,13 +33,13 @@ import org.onecx.document.management.domain.models.entities.Channel;
 import org.onecx.document.management.domain.models.entities.Document;
 import org.onecx.document.management.domain.models.entities.DocumentCharacteristic;
 import org.onecx.document.management.domain.models.entities.DocumentRelationship;
-import org.onecx.document.management.domain.models.entities.DocumentSpecification;
-import org.onecx.document.management.domain.models.entities.DocumentType;
+import org.onecx.document.management.domain.models.entities.DocumentSpecifications;
+import org.onecx.document.management.domain.models.entities.DocumentTypes;
 import org.onecx.document.management.domain.models.entities.MinioAuditLog;
 import org.onecx.document.management.domain.models.entities.RelatedObjectRef;
 import org.onecx.document.management.domain.models.entities.RelatedPartyRef;
 import org.onecx.document.management.domain.models.entities.StorageUploadAudit;
-import org.onecx.document.management.domain.models.entities.SupportedMimeType;
+import org.onecx.document.management.domain.models.entities.SupportedMimeTypes;
 import org.onecx.document.management.domain.models.enums.AttachmentUnit;
 import org.onecx.document.management.rs.v1.CustomException;
 import org.onecx.document.management.rs.v1.RestException;
@@ -47,8 +47,8 @@ import org.onecx.document.management.rs.v1.mappers.DocumentMapper;
 import org.onecx.document.management.rs.v1.mappers.DocumentSpecificationMapper;
 import org.tkit.quarkus.jpa.models.TraceableEntity;
 
-import gen.org.onecx.document.management.rs.v1.model.AttachmentCreateUpdateDTO;
-import gen.org.onecx.document.management.rs.v1.model.DocumentCreateUpdateDTO;
+import gen.org.onecx.document.management.rs.v1.model.AttachmentCreateUpdate;
+import gen.org.onecx.document.management.rs.v1.model.DocumentCreateUpdate;
 import io.minio.GetObjectArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
@@ -118,7 +118,7 @@ public class DocumentService {
 
     private static final String CLASS_NAME = "DocumentService";
 
-    public Document createDocument(DocumentCreateUpdateDTO dto) {
+    public Document createDocument(DocumentCreateUpdate dto) {
         Log.info(CLASS_NAME, "Entered createDocument method", null);
         var document = documentMapper.map(dto);
         setType(dto, document);
@@ -243,14 +243,14 @@ public class DocumentService {
      * {@link DocumentCharacteristic}, {@link DocumentRelationship},
      * {@link RelatedPartyRef}, {@link Category},
      * updates objects: {@link Channel}, {@link RelatedObjectRef} and sets
-     * {@link DocumentType}
-     * and {@link DocumentSpecification}.
+     * {@link DocumentTypes}
+     * and {@link DocumentSpecifications}.
      *
-     * @param dto a {@link DocumentCreateUpdateDTO}
+     * @param dto a {@link DocumentCreateUpdate}
      * @return a {@link Document}
      */
     @Transactional
-    public Document updateDocument(Document document, DocumentCreateUpdateDTO dto) {
+    public Document updateDocument(Document document, DocumentCreateUpdate dto) {
         Log.info(CLASS_NAME, "Entered updateDocument method", null);
         documentMapper.update(dto, document);
         setType(dto, document);
@@ -330,13 +330,13 @@ public class DocumentService {
     }
 
     /**
-     * Finds the type {@link DocumentType} by id and sets the type in the document
+     * Finds the type {@link DocumentTypes} by id and sets the type in the document
      * entity {@link Document}.
      *
-     * @param dto a {@link DocumentCreateUpdateDTO}
+     * @param dto a {@link DocumentCreateUpdate}
      * @param document a {@link Document}
      */
-    private void setType(DocumentCreateUpdateDTO dto, Document document) {
+    private void setType(DocumentCreateUpdate dto, Document document) {
 
         Log.info(CLASS_NAME, "Entered setType method", null);
         var documentType = typeDAO.findById(dto.getTypeId());
@@ -354,15 +354,15 @@ public class DocumentService {
      * specification
      * in the document entity {@link Document}.
      *
-     * @param dto a {@link DocumentCreateUpdateDTO}
+     * @param dto a {@link DocumentCreateUpdate}
      * @param document a {@link Document}
      */
-    private void setSpecification(DocumentCreateUpdateDTO dto, Document document) {
+    private void setSpecification(DocumentCreateUpdate dto, Document document) {
         Log.info(CLASS_NAME, "Entered setSpecification method", null);
         if (Objects.isNull(dto.getSpecification())) {
             document.setSpecification(null);
         } else {
-            gen.org.onecx.document.management.rs.v1.model.DocumentSpecificationCreateUpdateDTO docSpecDto = dto
+            gen.org.onecx.document.management.rs.v1.model.DocumentSpecificationCreateUpdate docSpecDto = dto
                     .getSpecification();
             var documentSpecification = documentSpecificationMapper.map(docSpecDto);
             document.setSpecification(documentSpecification);
@@ -371,16 +371,16 @@ public class DocumentService {
     }
 
     /**
-     * Finds the {@link SupportedMimeType} by the given id.
+     * Finds the {@link SupportedMimeTypes} by the given id.
      *
-     * @param dto a {@link AttachmentCreateUpdateDTO}
-     * @return a {@link SupportedMimeType}
-     *         or it throws an error if it can't find a {@link SupportedMimeType}
+     * @param dto a {@link AttachmentCreateUpdate}
+     * @return a {@link SupportedMimeTypes}
+     *         or it throws an error if it can't find a {@link SupportedMimeTypes}
      *         given id.
      */
-    private SupportedMimeType getSupportedMimeType(AttachmentCreateUpdateDTO dto) {
+    private SupportedMimeTypes getSupportedMimeType(AttachmentCreateUpdate dto) {
         Log.info(CLASS_NAME, "Entered getSupportedMimeType method", null);
-        SupportedMimeType mimeType = mimeTypeDAO.findById(dto.getMimeTypeId());
+        SupportedMimeTypes mimeType = mimeTypeDAO.findById(dto.getMimeTypeId());
         if (Objects.isNull(mimeType)) {
             throw new RestException(Response.Status.NOT_FOUND, Response.Status.NOT_FOUND,
                     getSupportedMimeTypeNotFoundMsg(dto.getMimeTypeId()));
@@ -390,20 +390,20 @@ public class DocumentService {
     }
 
     /**
-     * Finds attachment's mimeType {@link SupportedMimeType} by id
+     * Finds attachment's mimeType {@link SupportedMimeTypes} by id
      * and sets it in the attachment entity {@link Attachment}, then add
      * {@link Attachment}
      * in document entity {@link Document}.
      *
-     * @param dto a {@link DocumentCreateUpdateDTO}
+     * @param dto a {@link DocumentCreateUpdate}
      * @param document a {@link Document}
      */
-    private void setAttachments(DocumentCreateUpdateDTO dto, Document document) {
+    private void setAttachments(DocumentCreateUpdate dto, Document document) {
         Log.info(CLASS_NAME, "Entered setAttachments method", null);
         if (Objects.isNull(dto.getAttachments())) {
             document.setAttachments(null);
         } else {
-            for (AttachmentCreateUpdateDTO attachmentDTO : dto.getAttachments()) {
+            for (AttachmentCreateUpdate attachmentDTO : dto.getAttachments()) {
                 if (Objects.isNull(attachmentDTO.getId()) || attachmentDTO.getId().isEmpty()) {
                     var mimeType = getSupportedMimeType(attachmentDTO);
                     var attachment = documentMapper.mapAttachment(attachmentDTO);
@@ -421,9 +421,9 @@ public class DocumentService {
      * and sets in {@link Document}.
      *
      * @param document a {@link Document}
-     * @param updateDTO a {@link DocumentCreateUpdateDTO}
+     * @param updateDTO a {@link DocumentCreateUpdate}
      */
-    private void updateChannelInDocument(Document document, DocumentCreateUpdateDTO updateDTO) {
+    private void updateChannelInDocument(Document document, DocumentCreateUpdate updateDTO) {
         Log.info(CLASS_NAME, "Entered updateChannelInDocument method", null);
         if (Objects.isNull(updateDTO.getChannel().getId()) || updateDTO.getChannel().getId().isEmpty()) {
             var channel = documentMapper.mapChannel(updateDTO.getChannel());
@@ -439,9 +439,9 @@ public class DocumentService {
      * {@link RelatedObjectRef} and sets in {@link Document}.
      *
      * @param document a {@link Document}
-     * @param updateDTO a {@link DocumentCreateUpdateDTO}
+     * @param updateDTO a {@link DocumentCreateUpdate}
      */
-    private void updateRelatedObjectRefInDocument(Document document, DocumentCreateUpdateDTO updateDTO) {
+    private void updateRelatedObjectRefInDocument(Document document, DocumentCreateUpdate updateDTO) {
         Log.info(CLASS_NAME, "Entered updateRelatedObjectRefInDocument method", null);
         if (Objects.isNull(updateDTO.getRelatedObject())) {
             document.setRelatedObject(null);
@@ -459,19 +459,19 @@ public class DocumentService {
 
     /**
      * Updates {@link Attachment} in collection in {@link Document}
-     * or creates {@link Attachment} sets {@link SupportedMimeType} in
+     * or creates {@link Attachment} sets {@link SupportedMimeTypes} in
      * {@link Attachment}
      * and add to collection or remove {@link Attachment} from collection.
      *
      * @param document a {@link Document}
-     * @param updateDTO a {@link DocumentCreateUpdateDTO}
+     * @param updateDTO a {@link DocumentCreateUpdate}
      */
-    private void updateAttachmentsInDocument(Document document, DocumentCreateUpdateDTO updateDTO) {
+    private void updateAttachmentsInDocument(Document document, DocumentCreateUpdate updateDTO) {
         Log.info(CLASS_NAME, "Entered updateAttachmentsInDocument method", null);
         if (Objects.nonNull(updateDTO.getAttachments())) {
             for (Iterator<Attachment> i = document.getAttachments().iterator(); i.hasNext();) {
                 Attachment entity = i.next();
-                Optional<AttachmentCreateUpdateDTO> dtoOptional = updateDTO.getAttachments().stream()
+                Optional<AttachmentCreateUpdate> dtoOptional = updateDTO.getAttachments().stream()
                         .filter(dto -> dto.getId() != null)
                         .filter(dto -> entity.getId().equals(dto.getId()))
                         .findFirst();

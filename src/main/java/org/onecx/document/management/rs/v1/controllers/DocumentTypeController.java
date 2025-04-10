@@ -13,7 +13,7 @@ import org.onecx.document.management.rs.v1.RestException;
 import org.onecx.document.management.rs.v1.mappers.DocumentTypeMapper;
 
 import gen.org.onecx.document.management.rs.v1.DocumentTypeControllerV1Api;
-import gen.org.onecx.document.management.rs.v1.model.DocumentTypeCreateUpdateDTO;
+import gen.org.onecx.document.management.rs.v1.model.DocumentTypeCreateUpdate;
 import io.quarkus.logging.Log;
 
 @ApplicationScoped
@@ -32,7 +32,7 @@ public class DocumentTypeController implements DocumentTypeControllerV1Api {
 
     @Override
     @Transactional
-    public Response createDocumentType(DocumentTypeCreateUpdateDTO documentTypeCreateUpdateDTO) {
+    public Response createDocumentType(DocumentTypeCreateUpdate documentTypeCreateUpdateDTO) {
         Log.info(CLASS_NAME, "Entered createDocumentType method", null);
         var documentType = documentTypeDAO.create(documentTypeMapper.map(documentTypeCreateUpdateDTO));
         Log.info(CLASS_NAME, "Exited createDocumentType method", null);
@@ -85,7 +85,7 @@ public class DocumentTypeController implements DocumentTypeControllerV1Api {
 
     @Override
     @Transactional
-    public Response updateDocumentTypeById(String id, DocumentTypeCreateUpdateDTO documentTypeCreateUpdateDTO) {
+    public Response updateDocumentTypeById(String id, DocumentTypeCreateUpdate documentTypeCreateUpdateDTO) {
         Log.info(CLASS_NAME, "Entered updateDocumentTypeById method", null);
         var documentType = documentTypeDAO.findById(id);
         if (Objects.isNull(documentType)) {

@@ -16,7 +16,7 @@ class DocumentTypeTest {
     @DisplayName("Getter and Setters for Document Type")
     void testDocumentTypeSetters() {
 
-        DocumentType documentType = new DocumentType();
+        DocumentTypes documentType = new DocumentTypes();
         documentType.setDescription("The Document has been created");
         documentType.setActiveStatus(true);
 
