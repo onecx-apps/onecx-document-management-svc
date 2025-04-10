@@ -13,7 +13,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class DocumentSearchCriteria {
+public class DocumentSearchCriterias {
     /**
      * The document id.
      */

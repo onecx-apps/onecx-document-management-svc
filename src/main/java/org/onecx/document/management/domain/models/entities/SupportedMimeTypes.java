@@ -10,22 +10,22 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * The DocumentSpecification entity.
+ * The SupportedMimeType entity.
  */
 @Getter
 @Setter
 @Entity
-@Table(name = "DM_DOCUMENT_SPECIFICATION")
-public class DocumentSpecification extends TraceableEntity {
+@Table(name = "DM_SUPPORTED_MIME_TYPE")
+public class SupportedMimeTypes extends TraceableEntity {
     /**
-     * Name of the document specification.
+     * Name of the supported mime-type.
      */
     @Column(name = "NAME")
     private String name;
     /**
-     * Service specification version.
+     * Description of the supported mime-type.
      */
-    @Column(name = "VERSION")
-    private String specificationVersion;
+    @Column(name = "DESCRIPTION")
+    private String description;
 
 }

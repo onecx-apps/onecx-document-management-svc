@@ -17,7 +17,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
-import gen.org.onecx.document.management.rs.v1.model.FileInfoDTO;
+import gen.org.onecx.document.management.rs.v1.model.FileInfo;
 import io.minio.BucketExistsArgs;
 import io.minio.GetObjectArgs;
 import io.minio.GetObjectResponse;
@@ -44,7 +44,7 @@ public class FileService {
     private static final String CLASS_NAME = "FileService";
 
     @Transactional
-    public FileInfoDTO uploadFile(String path, File file, String bucket)
+    public FileInfo uploadFile(String path, File file, String bucket)
             throws IOException, ServerException, InsufficientDataException, NoSuchAlgorithmException, InternalException,
             InvalidResponseException, XmlParserException, InvalidKeyException, ErrorResponseException {
         Log.info(CLASS_NAME, "Entered uploadFile method", null);
@@ -58,7 +58,7 @@ public class FileService {
         uploadFileToObjectStorage(fileBytes, path, bucket.toLowerCase(Locale.ROOT), contentType);
         is.close();
         Log.info(CLASS_NAME, "Exited uploadFile method", null);
-        FileInfoDTO response = new FileInfoDTO();
+        FileInfo response = new FileInfo();
         response.setBucket(bucket.toLowerCase(Locale.ROOT));
         response.setPath(path);
         response.setContentType(contentType);

@@ -9,14 +9,14 @@ import java.util.List;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @RegisterForReflection
-public class PageResultDTO<T> {
+public class PageResults<T> {
     private long totalElements;
     private int number;
     private int size;
     private long totalPages;
     private List<T> stream;
 
-    public PageResultDTO() {
+    public PageResults() {
     }
 
     public long getTotalElements() {

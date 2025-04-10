@@ -13,7 +13,7 @@ import org.onecx.document.management.rs.v1.RestException;
 import org.onecx.document.management.rs.v1.mappers.SupportedMimeTypeMapper;
 
 import gen.org.onecx.document.management.rs.v1.SupportedMimeTypeControllerV1Api;
-import gen.org.onecx.document.management.rs.v1.model.SupportedMimeTypeCreateUpdateDTO;
+import gen.org.onecx.document.management.rs.v1.model.SupportedMimeTypeCreateUpdate;
 import io.quarkus.logging.Log;
 
 @ApplicationScoped
@@ -32,7 +32,7 @@ public class SupportedMimeTypeController implements SupportedMimeTypeControllerV
 
     @Override
     @Transactional
-    public Response createSupportedMimeType(SupportedMimeTypeCreateUpdateDTO supportedMimeTypeCreateUpdateDTO) {
+    public Response createSupportedMimeType(SupportedMimeTypeCreateUpdate supportedMimeTypeCreateUpdateDTO) {
         Log.info(CLASS_NAME, "Entered createSupportedMimeType method", null);
         var supportedMimeType = supportedMimeTypeDAO.create(supportedMimeTypeMapper.map(supportedMimeTypeCreateUpdateDTO));
         Log.info(CLASS_NAME, "Exited createSupportedMimeType method", null);
@@ -86,7 +86,7 @@ public class SupportedMimeTypeController implements SupportedMimeTypeControllerV
 
     @Override
     @Transactional
-    public Response updateSupportedMimeTypeById(String id, SupportedMimeTypeCreateUpdateDTO supportedMimeTypeCreateUpdateDTO) {
+    public Response updateSupportedMimeTypeById(String id, SupportedMimeTypeCreateUpdate supportedMimeTypeCreateUpdateDTO) {
         Log.info(CLASS_NAME, "Entered updateSupportedMimeTypeById method", null);
         var supportedMimeType = supportedMimeTypeDAO.findById(id);
         if (Objects.isNull(supportedMimeType)) {

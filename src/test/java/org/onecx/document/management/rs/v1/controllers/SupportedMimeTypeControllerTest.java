@@ -22,8 +22,8 @@ import org.onecx.document.management.test.AbstractTest;
 import org.tkit.quarkus.security.test.GenerateKeycloakClient;
 import org.tkit.quarkus.test.WithDBData;
 
-import gen.org.onecx.document.management.rs.v1.model.SupportedMimeTypeCreateUpdateDTO;
-import gen.org.onecx.document.management.rs.v1.model.SupportedMimeTypeDTO;
+import gen.org.onecx.document.management.rs.v1.model.SupportedMimeType;
+import gen.org.onecx.document.management.rs.v1.model.SupportedMimeTypeCreateUpdate;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.response.Response;
@@ -49,7 +49,7 @@ class SupportedMimeTypeControllerTest extends AbstractTest {
     void testSuccessfulCreateSupportedMimeType() {
         final String supportedMimeTypeName = "SUPPORTED_MIME_TYPE_NAME";
         final String supportedMimeTypeDescription = "SUPPORTED_MIME_TYPE_DESCRIPTION";
-        SupportedMimeTypeCreateUpdateDTO supportedMimeTypeCreateDTO = new SupportedMimeTypeCreateUpdateDTO();
+        SupportedMimeTypeCreateUpdate supportedMimeTypeCreateDTO = new SupportedMimeTypeCreateUpdate();
         supportedMimeTypeCreateDTO.setName(supportedMimeTypeName);
         supportedMimeTypeCreateDTO.setDescription(supportedMimeTypeDescription);
 
@@ -61,7 +61,7 @@ class SupportedMimeTypeControllerTest extends AbstractTest {
                 .post(BASE_PATH);
         postResponse.then().statusCode(CREATED.getStatusCode());
 
-        SupportedMimeTypeDTO dto = postResponse.as(SupportedMimeTypeDTO.class);
+        SupportedMimeType dto = postResponse.as(SupportedMimeType.class);
         assertThat(dto.getName()).isEqualTo(supportedMimeTypeCreateDTO.getName());
         assertThat(dto.getDescription()).isEqualTo(supportedMimeTypeCreateDTO.getDescription());
     }
@@ -70,7 +70,7 @@ class SupportedMimeTypeControllerTest extends AbstractTest {
     @DisplayName("Saves supported mime-type without description.")
     void testSuccessfulCreateSupportedMimeTypeWithoutDescription() {
         final String supportedMimeTypeName = "SUPPORTED_MIME_TYPE_NAME";
-        SupportedMimeTypeCreateUpdateDTO supportedMimeTypeCreateDTO = new SupportedMimeTypeCreateUpdateDTO();
+        SupportedMimeTypeCreateUpdate supportedMimeTypeCreateDTO = new SupportedMimeTypeCreateUpdate();
         supportedMimeTypeCreateDTO.setName(supportedMimeTypeName);
         supportedMimeTypeCreateDTO.setDescription(null);
 
@@ -82,7 +82,7 @@ class SupportedMimeTypeControllerTest extends AbstractTest {
                 .post(BASE_PATH);
         postResponse.then().statusCode(CREATED.getStatusCode());
 
-        SupportedMimeTypeDTO dto = postResponse.as(SupportedMimeTypeDTO.class);
+        SupportedMimeType dto = postResponse.as(SupportedMimeType.class);
         assertThat(dto.getName()).isEqualTo(supportedMimeTypeCreateDTO.getName());
     }
 
@@ -90,7 +90,7 @@ class SupportedMimeTypeControllerTest extends AbstractTest {
     @DisplayName("Saves supported mime-type without name.")
     void testFailedCreateSupportedMimeTypeWithoutName() {
         final String supportedMimeTypeDescription = "SUPPORTED_MIME_TYPE_DESCRIPTION";
-        SupportedMimeTypeCreateUpdateDTO supportedMimeTypeCreateDTO = new SupportedMimeTypeCreateUpdateDTO();
+        SupportedMimeTypeCreateUpdate supportedMimeTypeCreateDTO = new SupportedMimeTypeCreateUpdate();
         supportedMimeTypeCreateDTO.setName(null);
         supportedMimeTypeCreateDTO.setDescription(supportedMimeTypeDescription);
 
@@ -130,7 +130,7 @@ class SupportedMimeTypeControllerTest extends AbstractTest {
                 .get(BASE_PATH);
         getResponse.then().statusCode(OK.getStatusCode());
 
-        List<SupportedMimeTypeDTO> supportedMimeTypeDTOS = getResponse.as(getSupportedMimeTypeDTOTypeRef());
+        List<SupportedMimeType> supportedMimeTypeDTOS = getResponse.as(getSupportedMimeTypeDTOTypeRef());
         assertThat(supportedMimeTypeDTOS).hasSize(2);
     }
 
@@ -178,7 +178,7 @@ class SupportedMimeTypeControllerTest extends AbstractTest {
     void testSuccessfulUpdateSupportedMimeType() {
         final String supportedMimeTypeName = "TEST_UPDATE_SUPPORTED_MIME_TYPE_NAME";
         final String supportedMimeTypeDescription = "TEST_UPDATE_SUPPORTED_MIME_TYPE_DESCRIPTION";
-        SupportedMimeTypeCreateUpdateDTO supportedMimeTypeUpdateDTO = new SupportedMimeTypeCreateUpdateDTO();
+        SupportedMimeTypeCreateUpdate supportedMimeTypeUpdateDTO = new SupportedMimeTypeCreateUpdate();
         supportedMimeTypeUpdateDTO.setName(supportedMimeTypeName);
         supportedMimeTypeUpdateDTO.setDescription(supportedMimeTypeDescription);
 
@@ -190,7 +190,7 @@ class SupportedMimeTypeControllerTest extends AbstractTest {
                 .put(BASE_PATH + "/" + EXISTING_SUPPORTED_MIME_TYPE_ID);
         putResponse.then().statusCode(OK.getStatusCode());
 
-        SupportedMimeTypeDTO dto = putResponse.as(SupportedMimeTypeDTO.class);
+        SupportedMimeType dto = putResponse.as(SupportedMimeType.class);
         assertThat(dto.getId()).isEqualTo(EXISTING_SUPPORTED_MIME_TYPE_ID);
         assertThat(dto.getName()).isEqualTo(supportedMimeTypeName);
         assertThat(dto.getDescription()).isEqualTo(supportedMimeTypeDescription);
@@ -201,7 +201,7 @@ class SupportedMimeTypeControllerTest extends AbstractTest {
     void testFailedUpdateSupportedMimeTypeById() {
         final String supportedMimeTypeName = "TEST_UPDATE_SUPPORTED_MIME_TYPE_NAME";
         final String supportedMimeTypeDescription = "TEST_UPDATE_SUPPORTED_MIME_TYPE_DESCRIPTION";
-        SupportedMimeTypeCreateUpdateDTO supportedMimeTypeUpdateDTO = new SupportedMimeTypeCreateUpdateDTO();
+        SupportedMimeTypeCreateUpdate supportedMimeTypeUpdateDTO = new SupportedMimeTypeCreateUpdate();
         supportedMimeTypeUpdateDTO.setName(supportedMimeTypeName);
         supportedMimeTypeUpdateDTO.setDescription(supportedMimeTypeDescription);
 
@@ -233,7 +233,7 @@ class SupportedMimeTypeControllerTest extends AbstractTest {
                 .get(BASE_PATH);
         getResponse.then().statusCode(OK.getStatusCode());
 
-        List<SupportedMimeTypeDTO> typesOfDocuments = getResponse.as(getSupportedMimeTypeDTOTypeRef());
+        List<SupportedMimeType> typesOfDocuments = getResponse.as(getSupportedMimeTypeDTOTypeRef());
         assertThat(typesOfDocuments).hasSize(3);
         assertThat(typesOfDocuments.get(0).getId()).isIn(EXISTING_SUPPORTED_MIME_TYPE_IDS);
         assertThat(typesOfDocuments.get(0).getName()).isIn(EXISTING_SUPPORTED_MIME_TYPE_NAMES);
@@ -253,7 +253,7 @@ class SupportedMimeTypeControllerTest extends AbstractTest {
                 .get(BASE_PATH + "/" + EXISTING_SUPPORTED_MIME_TYPE_ID);
 
         response.then().statusCode(200);
-        SupportedMimeTypeDTO supportedMimeTypeDTO = response.as(SupportedMimeTypeDTO.class);
+        SupportedMimeType supportedMimeTypeDTO = response.as(SupportedMimeType.class);
 
         assertThat(supportedMimeTypeDTO.getId()).isEqualTo(EXISTING_SUPPORTED_MIME_TYPE_ID);
         assertThat(supportedMimeTypeDTO.getName()).isEqualTo(NAME_OF_SUPPORTED_MIME_TYPE_1);
@@ -280,7 +280,7 @@ class SupportedMimeTypeControllerTest extends AbstractTest {
         assertThat(rfcProblemDTO.getType()).isEqualTo("REST_EXCEPTION");
     }
 
-    private TypeRef<List<SupportedMimeTypeDTO>> getSupportedMimeTypeDTOTypeRef() {
+    private TypeRef<List<SupportedMimeType>> getSupportedMimeTypeDTOTypeRef() {
         return new TypeRef<>() {
         };
     }

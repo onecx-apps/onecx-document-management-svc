@@ -27,7 +27,7 @@ import jakarta.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.io.IOUtils;
 import org.jboss.resteasy.reactive.server.multipart.MultipartFormDataInput;
-import org.onecx.document.management.domain.criteria.DocumentSearchCriteria;
+import org.onecx.document.management.domain.criteria.DocumentSearchCriterias;
 import org.onecx.document.management.domain.daos.AttachmentDAO;
 import org.onecx.document.management.domain.daos.ChannelDAO;
 import org.onecx.document.management.domain.daos.DocumentDAO;
@@ -40,9 +40,9 @@ import org.onecx.document.management.rs.v1.services.DocumentService;
 import org.tkit.quarkus.jpa.daos.PageResult;
 
 import gen.org.onecx.document.management.rs.v1.DocumentControllerV1Api;
-import gen.org.onecx.document.management.rs.v1.model.DocumentCreateUpdateDTO;
-import gen.org.onecx.document.management.rs.v1.model.DocumentResponseDTO;
-import gen.org.onecx.document.management.rs.v1.model.DocumentSearchCriteriaDTO;
+import gen.org.onecx.document.management.rs.v1.model.DocumentCreateUpdate;
+import gen.org.onecx.document.management.rs.v1.model.DocumentResponse;
+import gen.org.onecx.document.management.rs.v1.model.DocumentSearchCriteria;
 import gen.org.onecx.document.management.rs.v1.model.LifeCycleState;
 import io.minio.errors.*;
 import io.quarkus.logging.Log;
@@ -131,7 +131,7 @@ public class DocumentController implements DocumentControllerV1Api {
             String objectReferenceId, String objectReferenceType, Integer page, Integer size, String startDate,
             List<LifeCycleState> state, List<String> typeId) {
         Log.info(CLASS_NAME, "Entered getDocumentByCriteria method", null);
-        DocumentSearchCriteriaDTO criteriaDTO = new DocumentSearchCriteriaDTO();
+        DocumentSearchCriteria criteriaDTO = new DocumentSearchCriteria();
         criteriaDTO.setChannelName(channelName);
         criteriaDTO.setCreateBy(createdBy);
         criteriaDTO.setEndDate(endDate);
@@ -144,7 +144,7 @@ public class DocumentController implements DocumentControllerV1Api {
         criteriaDTO.setStartDate(startDate);
         criteriaDTO.setLifeCycleState(state);
         criteriaDTO.setDocumentTypeId(typeId);
-        DocumentSearchCriteria criteria = documentMapper.map(criteriaDTO);
+        DocumentSearchCriterias criteria = documentMapper.map(criteriaDTO);
         if (Objects.nonNull(criteriaDTO.getStartDate()) && !criteriaDTO.getStartDate().isEmpty()) { // added this for
                                                                                                     // date search
 
@@ -177,7 +177,7 @@ public class DocumentController implements DocumentControllerV1Api {
     }
 
     @Override
-    public Response createDocument(DocumentCreateUpdateDTO documentCreateUpdateDTO) {
+    public Response createDocument(DocumentCreateUpdate documentCreateUpdateDTO) {
         Log.info(CLASS_NAME, "Entered createDocument method", null);
         var document = documentService.createDocument(documentCreateUpdateDTO);
         Log.info(CLASS_NAME, "Exited createDocument method", null);
@@ -195,7 +195,7 @@ public class DocumentController implements DocumentControllerV1Api {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        var responseDTO = new DocumentResponseDTO();
+        var responseDTO = new DocumentResponse();
         responseDTO.setAttachmentResponse(map);
         Log.info(CLASS_NAME, "Exited multipleFileUploads method", null);
         return Response.status(Response.Status.CREATED)
@@ -217,7 +217,7 @@ public class DocumentController implements DocumentControllerV1Api {
 
     @Override
     @Transactional
-    public Response updateDocument(String id, DocumentCreateUpdateDTO documentCreateUpdateDTO) {
+    public Response updateDocument(String id, DocumentCreateUpdate documentCreateUpdateDTO) {
         Log.info(CLASS_NAME, "Entered updateDocument method", null);
         var document = documentDAO.findDocumentById(id);
         if (Objects.isNull(document)) {
@@ -379,12 +379,12 @@ public class DocumentController implements DocumentControllerV1Api {
 
     @Override
     @Transactional
-    public Response bulkUpdateDocument(List<DocumentCreateUpdateDTO> documentCreateUpdateDTO) {
+    public Response bulkUpdateDocument(List<DocumentCreateUpdate> documentCreateUpdateDTO) {
         Log.info(CLASS_NAME, "Entered bulkUpdateDocument method", null);
-        Iterator<DocumentCreateUpdateDTO> it = documentCreateUpdateDTO.listIterator();
+        Iterator<DocumentCreateUpdate> it = documentCreateUpdateDTO.listIterator();
         List<Document> document1 = new ArrayList<>();
         while (it.hasNext()) {
-            DocumentCreateUpdateDTO dto1 = it.next();
+            DocumentCreateUpdate dto1 = it.next();
             var document = documentDAO.findDocumentById(dto1.getId());
             if (Objects.isNull(document)) {
                 throw new RestException(Response.Status.NOT_FOUND, Response.Status.NOT_FOUND,
@@ -430,7 +430,7 @@ public class DocumentController implements DocumentControllerV1Api {
             String objectReferenceId, String objectReferenceType, Integer page, Integer size, String startDate,
             List<LifeCycleState> state, List<String> typeId) {
         Log.info(CLASS_NAME, "Entered showAllDocumentsByCriteria method", null);
-        DocumentSearchCriteriaDTO criteriaDTO = new DocumentSearchCriteriaDTO();
+        DocumentSearchCriteria criteriaDTO = new DocumentSearchCriteria();
         criteriaDTO.setChannelName(channelName);
         criteriaDTO.setCreateBy(createdBy);
         criteriaDTO.setEndDate(endDate);
@@ -443,7 +443,7 @@ public class DocumentController implements DocumentControllerV1Api {
         criteriaDTO.setStartDate(startDate);
         criteriaDTO.setLifeCycleState(state);
         criteriaDTO.setDocumentTypeId(typeId);
-        DocumentSearchCriteria criteria = documentMapper.map(criteriaDTO);
+        DocumentSearchCriterias criteria = documentMapper.map(criteriaDTO);
         if (Objects.nonNull(criteriaDTO.getStartDate()) && !criteriaDTO.getStartDate().isEmpty()) {
 
             criteria.setStartDate(LocalDateTime.parse(criteriaDTO.getStartDate(), CUSTOM_DATE_TIME_FORMATTER));

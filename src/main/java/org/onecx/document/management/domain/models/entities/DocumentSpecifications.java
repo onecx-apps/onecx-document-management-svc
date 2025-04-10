@@ -10,28 +10,22 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * The DocumentType entity.
+ * The DocumentSpecification entity.
  */
 @Getter
 @Setter
 @Entity
-@Table(name = "DM_DOCUMENT_TYPE")
-public class DocumentType extends TraceableEntity {
+@Table(name = "DM_DOCUMENT_SPECIFICATION")
+public class DocumentSpecifications extends TraceableEntity {
     /**
-     * Name of the document type.
+     * Name of the document specification.
      */
     @Column(name = "NAME")
     private String name;
-
     /**
-     * Description of the document type
+     * Service specification version.
      */
-    @Column(name = "DESCRIPTION")
-    private String description;
+    @Column(name = "VERSION")
+    private String specificationVersion;
 
-    /**
-     * Document type active status
-     */
-    @Column(name = "ACTIVE_STATUS")
-    private Boolean activeStatus;
 }

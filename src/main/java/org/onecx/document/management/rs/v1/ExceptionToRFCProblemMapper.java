@@ -16,7 +16,7 @@ import jakarta.ws.rs.ext.Provider;
 import org.onecx.document.management.rs.v1.models.RFCProblemDTO;
 import org.tkit.quarkus.jpa.exceptions.DAOException;
 
-import gen.org.onecx.document.management.rs.v1.model.RFCProblemDetailDTO;
+import gen.org.onecx.document.management.rs.v1.model.RFCProblemDetail;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -109,7 +109,7 @@ public class ExceptionToRFCProblemMapper implements ExceptionMapper<Exception> {
                 .build();
     }
 
-    private List<RFCProblemDetailDTO> createRfcProblemDetailDTOs(Throwable cause) {
+    private List<RFCProblemDetail> createRfcProblemDetailDTOs(Throwable cause) {
         if (cause == null) {
             return new ArrayList<>();
         }
@@ -118,8 +118,8 @@ public class ExceptionToRFCProblemMapper implements ExceptionMapper<Exception> {
                 .toList();
     }
 
-    private RFCProblemDetailDTO mapStackTraceElement(StackTraceElement stackTraceElement) {
-        var problemDetail = new RFCProblemDetailDTO();
+    private RFCProblemDetail mapStackTraceElement(StackTraceElement stackTraceElement) {
+        var problemDetail = new RFCProblemDetail();
         problemDetail.setMessage(
                 "An error occured in " + stackTraceElement.getMethodName() + " at line "
                         + stackTraceElement.getLineNumber());

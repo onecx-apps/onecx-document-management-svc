@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.onecx.document.management.test.AbstractTest;
 
-import gen.org.onecx.document.management.rs.v1.model.RFCProblemDetailDTO;
+import gen.org.onecx.document.management.rs.v1.model.RFCProblemDetail;
 import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
@@ -47,7 +47,7 @@ class RFCProblemDTOTest extends AbstractTest {
         Integer status = 400;
         String detail = "test-detail";
         String instance = "test-instance";
-        List<RFCProblemDetailDTO> problems = new ArrayList<>();
+        List<RFCProblemDetail> problems = new ArrayList<>();
 
         RFCProblemDTO dto = RFCProblemDTO.builder()
                 .type(type)

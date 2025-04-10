@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.onecx.document.management.test.AbstractTest;
 
-import gen.org.onecx.document.management.rs.v1.model.DocumentSearchCriteriaDTO;
+import gen.org.onecx.document.management.rs.v1.model.DocumentSearchCriteria;
 import gen.org.onecx.document.management.rs.v1.model.LifeCycleState;
 import io.quarkus.test.junit.QuarkusTest;
 
@@ -23,7 +23,7 @@ class DocumentSearchCriteriaDTOTest extends AbstractTest {
     @DisplayName("Get criteria Should Return criteria value")
     void testSuccessfulGettingValues() {
 
-        DocumentSearchCriteriaDTO criteria = new DocumentSearchCriteriaDTO();
+        DocumentSearchCriteria criteria = new DocumentSearchCriteria();
         criteria.setId("001");
         criteria.setName("Important_Document");
         criteria.setLifeCycleState(List.of(LifeCycleState.DRAFT, LifeCycleState.REVIEW));

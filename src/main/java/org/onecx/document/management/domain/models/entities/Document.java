@@ -73,13 +73,13 @@ public class Document extends TraceableEntity {
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "TYPE_GUID")
-    private DocumentType type;
+    private DocumentTypes type;
     /**
      * The document specification reference.
      */
     @ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinColumn(name = "SPECIFICATION_GUID")
-    private DocumentSpecification specification;
+    private DocumentSpecifications specification;
     /**
      * The related object reference.
      */

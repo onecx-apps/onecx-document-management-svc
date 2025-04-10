@@ -6,11 +6,11 @@ import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-import org.onecx.document.management.domain.models.entities.DocumentSpecification;
+import org.onecx.document.management.domain.models.entities.DocumentSpecifications;
 import org.tkit.quarkus.rs.mappers.OffsetDateTimeMapper;
 
-import gen.org.onecx.document.management.rs.v1.model.DocumentSpecificationCreateUpdateDTO;
-import gen.org.onecx.document.management.rs.v1.model.DocumentSpecificationDTO;
+import gen.org.onecx.document.management.rs.v1.model.DocumentSpecification;
+import gen.org.onecx.document.management.rs.v1.model.DocumentSpecificationCreateUpdate;
 
 @Mapper(componentModel = "cdi", uses = OffsetDateTimeMapper.class, injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface DocumentSpecificationMapper {
@@ -22,9 +22,9 @@ public interface DocumentSpecificationMapper {
     @Mapping(target = "modificationCount", ignore = true)
     @Mapping(target = "persisted", ignore = true)
     @Mapping(target = "id", ignore = true)
-    DocumentSpecification map(DocumentSpecificationCreateUpdateDTO dto);
+    DocumentSpecifications map(DocumentSpecificationCreateUpdate dto);
 
-    DocumentSpecificationDTO mapToDTO(DocumentSpecification documentSpecification);
+    DocumentSpecification mapToDTO(DocumentSpecifications documentSpecifications);
 
     @Mapping(target = "creationDate", ignore = true)
     @Mapping(target = "creationUser", ignore = true)
@@ -34,7 +34,7 @@ public interface DocumentSpecificationMapper {
     @Mapping(target = "modificationCount", ignore = true)
     @Mapping(target = "persisted", ignore = true)
     @Mapping(target = "id", ignore = true)
-    void update(DocumentSpecificationCreateUpdateDTO dto, @MappingTarget DocumentSpecification documentSpecification);
+    void update(DocumentSpecificationCreateUpdate dto, @MappingTarget DocumentSpecifications documentSpecifications);
 
-    List<DocumentSpecificationDTO> findAllDocumentSpecifications(List<DocumentSpecification> documentSpecifications);
+    List<DocumentSpecification> findAllDocumentSpecifications(List<DocumentSpecifications> documentSpecifications);
 }

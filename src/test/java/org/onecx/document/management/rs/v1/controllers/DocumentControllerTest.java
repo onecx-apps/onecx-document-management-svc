@@ -25,7 +25,7 @@ import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.onecx.document.management.domain.daos.MinioAuditLogDAO;
-import org.onecx.document.management.rs.v1.models.PageResultDTO;
+import org.onecx.document.management.rs.v1.models.PageResults;
 import org.onecx.document.management.rs.v1.models.RFCProblemDTO;
 import org.onecx.document.management.test.AbstractTest;
 import org.tkit.quarkus.security.test.GenerateKeycloakClient;
@@ -111,7 +111,7 @@ class DocumentControllerTest extends AbstractTest {
                 .get(BASE_PATH);
 
         response.then().statusCode(200);
-        PageResultDTO<DocumentDetailDTO> documents = response.as(getDocumentDetailDTOTypeRef());
+        PageResults<DocumentDetail> documents = response.as(getDocumentDetailDTOTypeRef());
         assertThat(documents.getStream()).hasSize(8);
     }
 
@@ -127,7 +127,7 @@ class DocumentControllerTest extends AbstractTest {
                 .get(BASE_PATH);
 
         response.then().statusCode(200);
-        PageResultDTO<DocumentDetailDTO> documents = response.as(getDocumentDetailDTOTypeRef());
+        PageResults<DocumentDetail> documents = response.as(getDocumentDetailDTOTypeRef());
         assertThat(documents.getStream()).hasSize(1);
     }
 
@@ -144,7 +144,7 @@ class DocumentControllerTest extends AbstractTest {
                 .get(BASE_PATH);
 
         response.then().statusCode(200);
-        PageResultDTO<DocumentDetailDTO> documents = response.as(getDocumentDetailDTOTypeRef());
+        PageResults<DocumentDetail> documents = response.as(getDocumentDetailDTOTypeRef());
         assertThat(documents.getStream()).hasSize(1);
     }
 
@@ -169,7 +169,7 @@ class DocumentControllerTest extends AbstractTest {
                 .get(BASE_PATH + DIRECTORY_SEPERATOR + EXISTING_DOCUMENT_ID);
 
         response.then().statusCode(200);
-        DocumentDetailDTO document = response.as(DocumentDetailDTO.class);
+        DocumentDetail document = response.as(DocumentDetail.class);
 
         assertThat(document.getName()).isEqualTo(NAME_OF_DOCUMENT_1);
         assertThat(document.getDescription()).isEqualTo(DESCRIPTION_OF_DOCUMENT_1);
@@ -190,10 +190,10 @@ class DocumentControllerTest extends AbstractTest {
         assertThat(document.getRelatedParties()).hasSize(NUMBER_OF_RELATED_PARTIES_OF_DOCUMENT_1);
         assertThat(document.getRelatedParties().stream().findFirst().get().getId()).isEqualTo(RELATED_PARTY_ID);
         assertThat(document.getCategories()).hasSize(NUMBER_OF_CATEGORIES_RELATIONSHIPS_OF_DOCUMENT_1);
-        assertThat(document.getCategories().stream().map(CategoryDTO::getId).toList())
+        assertThat(document.getCategories().stream().map(Category::getId).toList())
                 .isEqualTo(categoryIds);
         assertThat(document.getAttachments()).hasSize(NUMBER_OF_ATTACHMENTS_RELATIONSHIPS_OF_DOCUMENT_1);
-        assertThat(document.getAttachments().stream().map(AttachmentDTO::getId).toList())
+        assertThat(document.getAttachments().stream().map(Attachment::getId).toList())
                 .containsAll(attachmentIds);
     }
 
@@ -227,7 +227,7 @@ class DocumentControllerTest extends AbstractTest {
                 .get(BASE_PATH);
 
         response.then().statusCode(200);
-        PageResultDTO<DocumentDetailDTO> documents = response.as(getDocumentDetailDTOTypeRef());
+        PageResults<DocumentDetail> documents = response.as(getDocumentDetailDTOTypeRef());
         assertThat(documents.getStream()).hasSize(1);
         assertThat(documents.getStream().stream()).allMatch(el -> el.getId().equals(EXISTING_DOCUMENT_ID));
     }
@@ -245,7 +245,7 @@ class DocumentControllerTest extends AbstractTest {
 
         response.then().statusCode(200);
         // List<DocumentDetailDTO> documents = response.as(List);
-        List<DocumentDetailDTO> documentList = Arrays.asList(response.getBody().as(DocumentDetailDTO[].class));
+        List<DocumentDetail> documentList = Arrays.asList(response.getBody().as(DocumentDetail[].class));
         assertThat(documentList).hasSize(1);
         assertThat(documentList.stream()).allMatch(el -> el.getId().equals(EXISTING_DOCUMENT_ID));
     }
@@ -262,7 +262,7 @@ class DocumentControllerTest extends AbstractTest {
                 .get(BASE_PATH);
 
         response.then().statusCode(200);
-        PageResultDTO<DocumentDetailDTO> documents = response.as(getDocumentDetailDTOTypeRef());
+        PageResults<DocumentDetail> documents = response.as(getDocumentDetailDTOTypeRef());
         assertThat(documents.getStream()).isEmpty();
     }
 
@@ -278,7 +278,7 @@ class DocumentControllerTest extends AbstractTest {
                 .get(BASE_PATH + "/show-all-documents");
 
         response.then().statusCode(200);
-        List<DocumentDetailDTO> documentList = Arrays.asList(response.getBody().as(DocumentDetailDTO[].class));
+        List<DocumentDetail> documentList = Arrays.asList(response.getBody().as(DocumentDetail[].class));
         assertThat(documentList).isEmpty();
     }
 
@@ -294,7 +294,7 @@ class DocumentControllerTest extends AbstractTest {
                 .get(BASE_PATH);
 
         response.then().statusCode(200);
-        PageResultDTO<DocumentDetailDTO> documents = response.as(getDocumentDetailDTOTypeRef());
+        PageResults<DocumentDetail> documents = response.as(getDocumentDetailDTOTypeRef());
         assertThat(documents.getStream()).hasSize(1);
         assertThat(documents.getStream().stream()).allMatch(el -> el.getName().equals(NAME_OF_DOCUMENT_1));
     }
@@ -311,7 +311,7 @@ class DocumentControllerTest extends AbstractTest {
                 .get(BASE_PATH + "/show-all-documents");
 
         response.then().statusCode(200);
-        List<DocumentDetailDTO> documentList = Arrays.asList(response.getBody().as(DocumentDetailDTO[].class));
+        List<DocumentDetail> documentList = Arrays.asList(response.getBody().as(DocumentDetail[].class));
         assertThat(documentList).hasSize(1);
         assertThat(documentList.stream()).allMatch(el -> el.getName().equals(NAME_OF_DOCUMENT_1));
     }
@@ -328,7 +328,7 @@ class DocumentControllerTest extends AbstractTest {
                 .get(BASE_PATH);
 
         response.then().statusCode(200);
-        PageResultDTO<DocumentDetailDTO> documents = response.as(getDocumentDetailDTOTypeRef());
+        PageResults<DocumentDetail> documents = response.as(getDocumentDetailDTOTypeRef());
         assertThat(documents.getStream()).hasSize(8);
     }
 
@@ -344,7 +344,7 @@ class DocumentControllerTest extends AbstractTest {
                 .get(BASE_PATH);
 
         response.then().statusCode(200);
-        PageResultDTO<DocumentDetailDTO> documents = response.as(getDocumentDetailDTOTypeRef());
+        PageResults<DocumentDetail> documents = response.as(getDocumentDetailDTOTypeRef());
         assertThat(documents.getStream()).hasSize(8);
         assertThat(documents.getStream().stream()).allMatch(el -> el.getName().startsWith("docu"));
     }
@@ -361,7 +361,7 @@ class DocumentControllerTest extends AbstractTest {
                 .get(BASE_PATH + "/show-all-documents");
 
         response.then().statusCode(200);
-        List<DocumentDetailDTO> documentList = Arrays.asList(response.getBody().as(DocumentDetailDTO[].class));
+        List<DocumentDetail> documentList = Arrays.asList(response.getBody().as(DocumentDetail[].class));
         assertThat(documentList).hasSize(8);
         assertThat(documentList.stream()).allMatch(el -> el.getName().startsWith("docu"));
     }
@@ -378,7 +378,7 @@ class DocumentControllerTest extends AbstractTest {
                 .get(BASE_PATH);
 
         response.then().statusCode(200);
-        PageResultDTO<DocumentDetailDTO> documents = response.as(getDocumentDetailDTOTypeRef());
+        PageResults<DocumentDetail> documents = response.as(getDocumentDetailDTOTypeRef());
         assertThat(documents.getStream()).hasSize(1);
         assertThat(documents.getStream().stream())
                 .allMatch(el -> el.getLifeCycleState().equals(STATUS_OF_DOCUMENT_1));
@@ -396,7 +396,7 @@ class DocumentControllerTest extends AbstractTest {
                 .get(BASE_PATH + "/show-all-documents");
 
         response.then().statusCode(200);
-        List<DocumentDetailDTO> documentList = Arrays.asList(response.getBody().as(DocumentDetailDTO[].class));
+        List<DocumentDetail> documentList = Arrays.asList(response.getBody().as(DocumentDetail[].class));
         assertThat(documentList).hasSize(1);
         assertThat(documentList.stream()).allMatch(el -> el.getLifeCycleState().equals(STATUS_OF_DOCUMENT_1));
     }
@@ -413,7 +413,7 @@ class DocumentControllerTest extends AbstractTest {
                 .get(BASE_PATH);
 
         response.then().statusCode(200);
-        PageResultDTO<DocumentDetailDTO> documents = response.as(getDocumentDetailDTOTypeRef());
+        PageResults<DocumentDetail> documents = response.as(getDocumentDetailDTOTypeRef());
         assertThat(documents.getStream()).hasSize(1);
         assertThat(documents.getStream().stream())
                 .allMatch(el -> el.getType().getId().equals(TYPE_ID_OF_DOCUMENT_1));
@@ -431,7 +431,7 @@ class DocumentControllerTest extends AbstractTest {
                 .get(BASE_PATH + "/show-all-documents");
 
         response.then().statusCode(200);
-        List<DocumentDetailDTO> documentList = Arrays.asList(response.getBody().as(DocumentDetailDTO[].class));
+        List<DocumentDetail> documentList = Arrays.asList(response.getBody().as(DocumentDetail[].class));
         assertThat(documentList).hasSize(1);
         assertThat(documentList.stream()).allMatch(el -> el.getType().getId().equals(TYPE_ID_OF_DOCUMENT_1));
     }
@@ -448,7 +448,7 @@ class DocumentControllerTest extends AbstractTest {
                 .get(BASE_PATH);
 
         response.then().statusCode(200);
-        PageResultDTO<DocumentDetailDTO> documents = response.as(getDocumentDetailDTOTypeRef());
+        PageResults<DocumentDetail> documents = response.as(getDocumentDetailDTOTypeRef());
         assertThat(documents.getStream()).hasSize(1);
         assertThat(documents.getStream().stream())
                 .allMatch(el -> el.getChannel().getId().equals(CHANNEL_ID_OF_DOCUMENT_1));
@@ -466,7 +466,7 @@ class DocumentControllerTest extends AbstractTest {
                 .get(BASE_PATH + "/show-all-documents");
 
         response.then().statusCode(200);
-        List<DocumentDetailDTO> documentList = Arrays.asList(response.getBody().as(DocumentDetailDTO[].class));
+        List<DocumentDetail> documentList = Arrays.asList(response.getBody().as(DocumentDetail[].class));
         assertThat(documentList).hasSize(1);
         assertThat(documentList.stream())
                 .allMatch(el -> el.getChannel().getId().equals(CHANNEL_ID_OF_DOCUMENT_1));
@@ -484,7 +484,7 @@ class DocumentControllerTest extends AbstractTest {
                 .get(BASE_PATH);
 
         response.then().statusCode(200);
-        PageResultDTO<DocumentDetailDTO> documents = response.as(getDocumentDetailDTOTypeRef());
+        PageResults<DocumentDetail> documents = response.as(getDocumentDetailDTOTypeRef());
         assertThat(documents.getStream()).hasSize(1);
         assertThat(documents.getStream().stream())
                 .allMatch(el -> el.getCreationUser().equals(DOCUMENT_CREATION_USER));
@@ -502,7 +502,7 @@ class DocumentControllerTest extends AbstractTest {
                 .get(BASE_PATH + "/show-all-documents");
 
         response.then().statusCode(200);
-        List<DocumentDetailDTO> documentList = Arrays.asList(response.getBody().as(DocumentDetailDTO[].class));
+        List<DocumentDetail> documentList = Arrays.asList(response.getBody().as(DocumentDetail[].class));
         assertThat(documentList).hasSize(1);
         assertThat(documentList.stream())
                 .allMatch(el -> el.getCreationUser().equals(DOCUMENT_CREATION_USER));
@@ -520,7 +520,7 @@ class DocumentControllerTest extends AbstractTest {
                 .get(BASE_PATH);
 
         response.then().statusCode(200);
-        PageResultDTO<DocumentDetailDTO> documents = response.as(getDocumentDetailDTOTypeRef());
+        PageResults<DocumentDetail> documents = response.as(getDocumentDetailDTOTypeRef());
         assertThat(documents.getStream()).hasSize(5);
         assertThat(documents.getStream().stream()).allMatch(el -> el.getRelatedObject().getObjectReferenceId()
                 .equals(RELATED_OBJECT_REF_ID_OF_DOCUMENT));
@@ -538,7 +538,7 @@ class DocumentControllerTest extends AbstractTest {
                 .get(BASE_PATH + "/show-all-documents");
 
         response.then().statusCode(200);
-        List<DocumentDetailDTO> documentList = Arrays.asList(response.getBody().as(DocumentDetailDTO[].class));
+        List<DocumentDetail> documentList = Arrays.asList(response.getBody().as(DocumentDetail[].class));
         assertThat(documentList).hasSize(5);
         assertThat(documentList.stream()).allMatch(el -> el.getRelatedObject().getObjectReferenceId()
                 .equals(RELATED_OBJECT_REF_ID_OF_DOCUMENT));
@@ -556,7 +556,7 @@ class DocumentControllerTest extends AbstractTest {
                 .get(BASE_PATH);
 
         response.then().statusCode(200);
-        PageResultDTO<DocumentDetailDTO> documents = response.as(getDocumentDetailDTOTypeRef());
+        PageResults<DocumentDetail> documents = response.as(getDocumentDetailDTOTypeRef());
         assertThat(documents.getStream()).hasSize(6);
         assertThat(documents.getStream().stream()).allMatch(el -> el.getRelatedObject().getObjectReferenceType()
                 .equals(RELATED_OBJECT_REF_TYPE_OF_DOCUMENT));
@@ -574,7 +574,7 @@ class DocumentControllerTest extends AbstractTest {
                 .get(BASE_PATH + "/show-all-documents");
 
         response.then().statusCode(200);
-        List<DocumentDetailDTO> documentList = Arrays.asList(response.getBody().as(DocumentDetailDTO[].class));
+        List<DocumentDetail> documentList = Arrays.asList(response.getBody().as(DocumentDetail[].class));
         assertThat(documentList).hasSize(6);
         assertThat(documentList.stream()).allMatch(el -> el.getRelatedObject().getObjectReferenceType()
                 .equals(RELATED_OBJECT_REF_TYPE_OF_DOCUMENT));
@@ -592,7 +592,7 @@ class DocumentControllerTest extends AbstractTest {
                 .get(BASE_PATH);
 
         response.then().statusCode(200);
-        PageResultDTO<DocumentDetailDTO> documents = response.as(getDocumentDetailDTOTypeRef());
+        PageResults<DocumentDetail> documents = response.as(getDocumentDetailDTOTypeRef());
         assertThat(documents.getStream()).isEmpty();
     }
 
@@ -608,7 +608,7 @@ class DocumentControllerTest extends AbstractTest {
                 .get(BASE_PATH + "/show-all-documents");
 
         response.then().statusCode(200);
-        List<DocumentDetailDTO> documentList = Arrays.asList(response.getBody().as(DocumentDetailDTO[].class));
+        List<DocumentDetail> documentList = Arrays.asList(response.getBody().as(DocumentDetail[].class));
         assertThat(documentList).isEmpty();
     }
 
@@ -624,7 +624,7 @@ class DocumentControllerTest extends AbstractTest {
                 .get(BASE_PATH);
 
         response.then().statusCode(200);
-        PageResultDTO<DocumentDetailDTO> documents = response.as(getDocumentDetailDTOTypeRef());
+        PageResults<DocumentDetail> documents = response.as(getDocumentDetailDTOTypeRef());
         assertThat(documents.getStream().size()).isNotNegative();
     }
 
@@ -640,7 +640,7 @@ class DocumentControllerTest extends AbstractTest {
                 .get(BASE_PATH + "/show-all-documents");
 
         response.then().statusCode(200);
-        List<DocumentDetailDTO> documentList = Arrays.asList(response.getBody().as(DocumentDetailDTO[].class));
+        List<DocumentDetail> documentList = Arrays.asList(response.getBody().as(DocumentDetail[].class));
         assertThat(documentList.size()).isNotNegative();
     }
 
@@ -656,7 +656,7 @@ class DocumentControllerTest extends AbstractTest {
                 .get(BASE_PATH);
 
         response.then().statusCode(200);
-        PageResultDTO<DocumentDetailDTO> documents = response.as(getDocumentDetailDTOTypeRef());
+        PageResults<DocumentDetail> documents = response.as(getDocumentDetailDTOTypeRef());
         assertThat(documents.getStream()).isEmpty();
     }
 
@@ -672,7 +672,7 @@ class DocumentControllerTest extends AbstractTest {
                 .get(BASE_PATH + "/show-all-documents");
 
         response.then().statusCode(200);
-        List<DocumentDetailDTO> documentList = Arrays.asList(response.getBody().as(DocumentDetailDTO[].class));
+        List<DocumentDetail> documentList = Arrays.asList(response.getBody().as(DocumentDetail[].class));
         assertThat(documentList).isEmpty();
     }
 
@@ -690,7 +690,7 @@ class DocumentControllerTest extends AbstractTest {
                 .get(BASE_PATH);
 
         response.then().statusCode(200);
-        PageResultDTO<DocumentDetailDTO> documents = response.as(getDocumentDetailDTOTypeRef());
+        PageResults<DocumentDetail> documents = response.as(getDocumentDetailDTOTypeRef());
         assertThat(documents.getStream().size()).isNotNegative();
     }
 
@@ -708,7 +708,7 @@ class DocumentControllerTest extends AbstractTest {
                 .get(BASE_PATH + "/show-all-documents");
 
         response.then().statusCode(200);
-        List<DocumentDetailDTO> documentList = Arrays.asList(response.getBody().as(DocumentDetailDTO[].class));
+        List<DocumentDetail> documentList = Arrays.asList(response.getBody().as(DocumentDetail[].class));
         assertThat(documentList.size()).isNotNegative();
     }
 
@@ -743,7 +743,7 @@ class DocumentControllerTest extends AbstractTest {
                 .get(BASE_PATH);
 
         response.then().statusCode(200);
-        PageResultDTO<DocumentDetailDTO> documents = response.as(getDocumentDetailDTOTypeRef());
+        PageResults<DocumentDetail> documents = response.as(getDocumentDetailDTOTypeRef());
         assertThat(documents.getStream()).isNotEmpty();
     }
 
@@ -765,7 +765,7 @@ class DocumentControllerTest extends AbstractTest {
                 .when()
                 .get(BASE_PATH);
         getResponse.then().statusCode(200);
-        PageResultDTO<DocumentDetailDTO> documents = getResponse.as(getDocumentDetailDTOTypeRef());
+        PageResults<DocumentDetail> documents = getResponse.as(getDocumentDetailDTOTypeRef());
         assertThat(documents.getStream()).hasSize(7);
     }
 
@@ -796,15 +796,15 @@ class DocumentControllerTest extends AbstractTest {
         final String channelName = "TEST_CHANNEL_NAME";
         final String documentTypeId = "202";
         final String attachmentMimeTypeId = "152";
-        ChannelCreateUpdateDTO channelDTO = new ChannelCreateUpdateDTO();
+        ChannelCreateUpdate channelDTO = new ChannelCreateUpdate();
         channelDTO.setName(channelName);
-        AttachmentCreateUpdateDTO attachment = new AttachmentCreateUpdateDTO();
+        AttachmentCreateUpdate attachment = new AttachmentCreateUpdate();
         attachment.setName(attachmentName);
         attachment.setMimeTypeId(attachmentMimeTypeId);
-        List<AttachmentCreateUpdateDTO> attachments = new ArrayList<>();
+        List<AttachmentCreateUpdate> attachments = new ArrayList<>();
         attachments.add(attachment);
 
-        DocumentCreateUpdateDTO documentCreateDTO = new DocumentCreateUpdateDTO();
+        DocumentCreateUpdate documentCreateDTO = new DocumentCreateUpdate();
         documentCreateDTO.setName(documentName);
         documentCreateDTO.setTypeId(documentTypeId);
         documentCreateDTO.setChannel(channelDTO);
@@ -819,7 +819,7 @@ class DocumentControllerTest extends AbstractTest {
                 .post(BASE_PATH);
 
         postResponse.then().statusCode(201);
-        DocumentDetailDTO documentDTO = postResponse.as(DocumentDetailDTO.class);
+        DocumentDetail documentDTO = postResponse.as(DocumentDetail.class);
 
         assertThat(documentDTO.getId()).isNotNull();
         assertThat(documentDTO.getName()).isEqualTo(documentName);
@@ -840,9 +840,9 @@ class DocumentControllerTest extends AbstractTest {
         final String channelName = "TEST_CHANNEL_NAME";
         final String documentTypeId = "202";
 
-        ChannelCreateUpdateDTO channelDTO = new ChannelCreateUpdateDTO();
+        ChannelCreateUpdate channelDTO = new ChannelCreateUpdate();
         channelDTO.setName(channelName);
-        DocumentCreateUpdateDTO documentCreateDTO = new DocumentCreateUpdateDTO();
+        DocumentCreateUpdate documentCreateDTO = new DocumentCreateUpdate();
         documentCreateDTO.setName(documentName);
         documentCreateDTO.setTypeId(documentTypeId);
         documentCreateDTO.setChannel(channelDTO);
@@ -857,7 +857,7 @@ class DocumentControllerTest extends AbstractTest {
                 .post(BASE_PATH);
 
         postResponse.then().statusCode(201);
-        DocumentDetailDTO documentDetailDTO = postResponse.as(DocumentDetailDTO.class);
+        DocumentDetail documentDetailDTO = postResponse.as(DocumentDetail.class);
 
         assertThat(documentDetailDTO.getId()).isNotNull();
         assertThat(documentDetailDTO.getName()).isEqualTo(documentName);
@@ -877,21 +877,21 @@ class DocumentControllerTest extends AbstractTest {
         final String attachmentNamePrefix = "TEST_ATTACHMENT_NAME";
         final String attachmentMimeTypeId = "152";
 
-        ChannelCreateUpdateDTO channelDTO = new ChannelCreateUpdateDTO();
+        ChannelCreateUpdate channelDTO = new ChannelCreateUpdate();
         channelDTO.setName(channelName);
-        AttachmentCreateUpdateDTO attachment1 = new AttachmentCreateUpdateDTO();
+        AttachmentCreateUpdate attachment1 = new AttachmentCreateUpdate();
         attachment1.setId(null);
         attachment1.setName(attachmentNamePrefix + "1");
         attachment1.setMimeTypeId(attachmentMimeTypeId);
-        AttachmentCreateUpdateDTO attachment2 = new AttachmentCreateUpdateDTO();
+        AttachmentCreateUpdate attachment2 = new AttachmentCreateUpdate();
         attachment2.setId("");
         attachment2.setName(attachmentNamePrefix + "2");
         attachment2.setMimeTypeId(attachmentMimeTypeId);
-        List<AttachmentCreateUpdateDTO> attachments = new ArrayList<>();
+        List<AttachmentCreateUpdate> attachments = new ArrayList<>();
         attachments.add(attachment1);
         attachments.add(attachment2);
 
-        DocumentCreateUpdateDTO documentCreateDTO = new DocumentCreateUpdateDTO();
+        DocumentCreateUpdate documentCreateDTO = new DocumentCreateUpdate();
         documentCreateDTO.setName(documentName);
         documentCreateDTO.setTypeId(documentTypeId);
         documentCreateDTO.setChannel(channelDTO);
@@ -906,7 +906,7 @@ class DocumentControllerTest extends AbstractTest {
                 .post(BASE_PATH);
 
         postResponse.then().statusCode(201);
-        DocumentDetailDTO documentDetailDTO = postResponse.as(DocumentDetailDTO.class);
+        DocumentDetail documentDetailDTO = postResponse.as(DocumentDetail.class);
 
         assertThat(documentDetailDTO.getId()).isNotNull();
         assertThat(documentDetailDTO.getName()).isEqualTo(documentName);
@@ -929,51 +929,51 @@ class DocumentControllerTest extends AbstractTest {
         final String documentTypeId = "202";
 
         final String documentSpecificationName = "TEST_SPECIFICATION_NAME";
-        DocumentSpecificationCreateUpdateDTO documentSpecificationCreateUpdateDTO = new DocumentSpecificationCreateUpdateDTO();
+        DocumentSpecificationCreateUpdate documentSpecificationCreateUpdateDTO = new DocumentSpecificationCreateUpdate();
         documentSpecificationCreateUpdateDTO.setName(documentSpecificationName);
 
-        ChannelCreateUpdateDTO channelDTO = new ChannelCreateUpdateDTO();
+        ChannelCreateUpdate channelDTO = new ChannelCreateUpdate();
         final String channelName = "TEST_CHANNEL_NAME";
         channelDTO.setName(channelName);
 
-        RelatedObjectRefCreateUpdateDTO relatedObjectDTO = new RelatedObjectRefCreateUpdateDTO();
+        RelatedObjectRefCreateUpdate relatedObjectDTO = new RelatedObjectRefCreateUpdate();
         final String relatedObjInvolvement = "TEST_INVOLVEMENT";
         relatedObjectDTO.setInvolvement(relatedObjInvolvement);
 
-        Set<DocumentRelationshipCreateUpdateDTO> documentRelationshipDTOs = new HashSet<>();
-        DocumentRelationshipCreateUpdateDTO documentRelationshipDTO = new DocumentRelationshipCreateUpdateDTO();
+        Set<DocumentRelationshipCreateUpdate> documentRelationshipDTOs = new HashSet<>();
+        DocumentRelationshipCreateUpdate documentRelationshipDTO = new DocumentRelationshipCreateUpdate();
         final String documentRelationshipType = "TEST_RELATIONSHIP_TYPE";
         documentRelationshipDTO.setType(documentRelationshipType);
         documentRelationshipDTOs.add(documentRelationshipDTO);
 
-        Set<DocumentCharacteristicCreateUpdateDTO> documentCharacteristicDTOs = new HashSet<>();
-        DocumentCharacteristicCreateUpdateDTO documentCharacteristicDTO = new DocumentCharacteristicCreateUpdateDTO();
+        Set<DocumentCharacteristicCreateUpdate> documentCharacteristicDTOs = new HashSet<>();
+        DocumentCharacteristicCreateUpdate documentCharacteristicDTO = new DocumentCharacteristicCreateUpdate();
         final String characteristicName = "TEST_CHARACTERISTIC_NAME";
         documentCharacteristicDTO.setName(characteristicName);
         documentCharacteristicDTOs.add(documentCharacteristicDTO);
 
-        Set<RelatedPartyRefCreateUpdateDTO> documentRelatedPartyDTOs = new HashSet<>();
-        RelatedPartyRefCreateUpdateDTO documentRelatedPartyDTO = new RelatedPartyRefCreateUpdateDTO();
+        Set<RelatedPartyRefCreateUpdate> documentRelatedPartyDTOs = new HashSet<>();
+        RelatedPartyRefCreateUpdate documentRelatedPartyDTO = new RelatedPartyRefCreateUpdate();
         final String relatedPartyName = "TEST_RELATED_PARTY_NAME";
         documentRelatedPartyDTO.setName(relatedPartyName);
         documentRelatedPartyDTOs.add(documentRelatedPartyDTO);
 
-        Set<CategoryCreateUpdateDTO> documentCategoryDTOs = new HashSet<>();
-        CategoryCreateUpdateDTO documentCategoryDTO = new CategoryCreateUpdateDTO();
+        Set<CategoryCreateUpdate> documentCategoryDTOs = new HashSet<>();
+        CategoryCreateUpdate documentCategoryDTO = new CategoryCreateUpdate();
         final String categoryName = "TEST_CATEGORY_NAME";
         documentCategoryDTO.setName(categoryName);
         documentCategoryDTOs.add(documentCategoryDTO);
 
         final String attachmentMimeTypeId = "151";
 
-        List<AttachmentCreateUpdateDTO> attachments = new ArrayList<>();
-        AttachmentCreateUpdateDTO attachment = new AttachmentCreateUpdateDTO();
+        List<AttachmentCreateUpdate> attachments = new ArrayList<>();
+        AttachmentCreateUpdate attachment = new AttachmentCreateUpdate();
         final String attachmentName = "TEST_ATTACHMENT_NAME";
         attachment.setName(attachmentName);
         attachment.setMimeTypeId(attachmentMimeTypeId);
         attachments.add(attachment);
 
-        DocumentCreateUpdateDTO documentCreateDTO = new DocumentCreateUpdateDTO();
+        DocumentCreateUpdate documentCreateDTO = new DocumentCreateUpdate();
         final String documentName = "TEST_DOCUMENT_NAME";
         final String documentDescription = "TEST_DOCUMENT_DESCRIPTION";
         final LifeCycleState documentState = LifeCycleState.ARCHIVED;
@@ -1002,7 +1002,7 @@ class DocumentControllerTest extends AbstractTest {
                 .post(BASE_PATH);
 
         postResponse.then().statusCode(201);
-        DocumentDetailDTO documentDTO = postResponse.as(DocumentDetailDTO.class);
+        DocumentDetail documentDTO = postResponse.as(DocumentDetail.class);
 
         assertThat(documentDTO.getId()).isNotNull();
         assertThat(documentDTO.getName()).isEqualTo(documentName);
@@ -1045,15 +1045,15 @@ class DocumentControllerTest extends AbstractTest {
         final String attachmentName = "TEST_ATTACHMENT_NAME";
         final String documentTypeId = "2";
         final String attachmentMimeTypeId = "2";
-        ChannelCreateUpdateDTO channelDTO = new ChannelCreateUpdateDTO();
+        ChannelCreateUpdate channelDTO = new ChannelCreateUpdate();
         channelDTO.setName(channelName);
-        AttachmentCreateUpdateDTO attachment = new AttachmentCreateUpdateDTO();
+        AttachmentCreateUpdate attachment = new AttachmentCreateUpdate();
         attachment.setName(attachmentName);
         attachment.setMimeTypeId(attachmentMimeTypeId);
-        List<AttachmentCreateUpdateDTO> attachments = new ArrayList<>();
+        List<AttachmentCreateUpdate> attachments = new ArrayList<>();
         attachments.add(attachment);
 
-        DocumentCreateUpdateDTO documentCreateDTO = new DocumentCreateUpdateDTO();
+        DocumentCreateUpdate documentCreateDTO = new DocumentCreateUpdate();
         documentCreateDTO.setName(null);
         documentCreateDTO.setTypeId(documentTypeId);
         documentCreateDTO.setChannel(channelDTO);
@@ -1083,15 +1083,15 @@ class DocumentControllerTest extends AbstractTest {
         final String attachmentName = "TEST_ATTACHMENT_NAME";
         final String channelName = "TEST_CHANNEL_NAME";
         final String attachmentMimeTypeId = "2";
-        ChannelCreateUpdateDTO channelDTO = new ChannelCreateUpdateDTO();
+        ChannelCreateUpdate channelDTO = new ChannelCreateUpdate();
         channelDTO.setName(channelName);
-        AttachmentCreateUpdateDTO attachment = new AttachmentCreateUpdateDTO();
+        AttachmentCreateUpdate attachment = new AttachmentCreateUpdate();
         attachment.setName(attachmentName);
         attachment.setMimeTypeId(attachmentMimeTypeId);
-        List<AttachmentCreateUpdateDTO> attachments = new ArrayList<>();
+        List<AttachmentCreateUpdate> attachments = new ArrayList<>();
         attachments.add(attachment);
 
-        DocumentCreateUpdateDTO documentCreateDTO = new DocumentCreateUpdateDTO();
+        DocumentCreateUpdate documentCreateDTO = new DocumentCreateUpdate();
         documentCreateDTO.setName(documentName);
         documentCreateDTO.setTypeId(null);
         documentCreateDTO.setChannel(channelDTO);
@@ -1121,13 +1121,13 @@ class DocumentControllerTest extends AbstractTest {
         final String attachmentName = "TEST_ATTACHMENT_NAME";
         final String documentTypeId = "2";
         final String attachmentMimeTypeId = "2";
-        AttachmentCreateUpdateDTO attachment = new AttachmentCreateUpdateDTO();
+        AttachmentCreateUpdate attachment = new AttachmentCreateUpdate();
         attachment.setName(attachmentName);
         attachment.setMimeTypeId(attachmentMimeTypeId);
-        List<AttachmentCreateUpdateDTO> attachments = new ArrayList<>();
+        List<AttachmentCreateUpdate> attachments = new ArrayList<>();
         attachments.add(attachment);
 
-        DocumentCreateUpdateDTO documentCreateDTO = new DocumentCreateUpdateDTO();
+        DocumentCreateUpdate documentCreateDTO = new DocumentCreateUpdate();
         documentCreateDTO.setName(documentName);
         documentCreateDTO.setTypeId(documentTypeId);
         documentCreateDTO.setChannel(null);
@@ -1157,15 +1157,15 @@ class DocumentControllerTest extends AbstractTest {
         final String attachmentName = "TEST_ATTACHMENT_NAME";
         final String channelName = "TEST_CHANNEL_NAME";
         final String documentTypeId = "202";
-        ChannelCreateUpdateDTO channelDTO = new ChannelCreateUpdateDTO();
+        ChannelCreateUpdate channelDTO = new ChannelCreateUpdate();
         channelDTO.setName(channelName);
-        AttachmentCreateUpdateDTO attachment = new AttachmentCreateUpdateDTO();
+        AttachmentCreateUpdate attachment = new AttachmentCreateUpdate();
         attachment.setName(attachmentName);
         attachment.setMimeTypeId(null);
-        List<AttachmentCreateUpdateDTO> attachments = new ArrayList<>();
+        List<AttachmentCreateUpdate> attachments = new ArrayList<>();
         attachments.add(attachment);
 
-        DocumentCreateUpdateDTO documentCreateDTO = new DocumentCreateUpdateDTO();
+        DocumentCreateUpdate documentCreateDTO = new DocumentCreateUpdate();
         documentCreateDTO.setName(documentName);
         documentCreateDTO.setTypeId(documentTypeId);
         documentCreateDTO.setChannel(channelDTO);
@@ -1191,15 +1191,15 @@ class DocumentControllerTest extends AbstractTest {
         final String channelName = "TEST_CHANNEL_NAME";
         final String documentTypeId = "200";
         final String attachmentMimeTypeId = "2";
-        ChannelCreateUpdateDTO channelDTO = new ChannelCreateUpdateDTO();
+        ChannelCreateUpdate channelDTO = new ChannelCreateUpdate();
         channelDTO.setName(channelName);
-        AttachmentCreateUpdateDTO attachment = new AttachmentCreateUpdateDTO();
+        AttachmentCreateUpdate attachment = new AttachmentCreateUpdate();
         attachment.setName(attachmentName);
         attachment.setMimeTypeId(attachmentMimeTypeId);
-        List<AttachmentCreateUpdateDTO> attachments = new ArrayList<>();
+        List<AttachmentCreateUpdate> attachments = new ArrayList<>();
         attachments.add(attachment);
 
-        DocumentCreateUpdateDTO documentCreateDTO = new DocumentCreateUpdateDTO();
+        DocumentCreateUpdate documentCreateDTO = new DocumentCreateUpdate();
         documentCreateDTO.setName(documentName);
         documentCreateDTO.setTypeId(documentTypeId);
         documentCreateDTO.setChannel(channelDTO);
@@ -1231,15 +1231,15 @@ class DocumentControllerTest extends AbstractTest {
         final String channelName = "TEST_CHANNEL_NAME";
         final String documentTypeId = "202";
         final String attachmentMimeTypeId = "152";
-        ChannelCreateUpdateDTO channelDTO = new ChannelCreateUpdateDTO();
+        ChannelCreateUpdate channelDTO = new ChannelCreateUpdate();
         channelDTO.setName(channelName);
-        AttachmentCreateUpdateDTO attachment = new AttachmentCreateUpdateDTO();
+        AttachmentCreateUpdate attachment = new AttachmentCreateUpdate();
         attachment.setName(attachmentName);
         attachment.setMimeTypeId(attachmentMimeTypeId);
-        List<AttachmentCreateUpdateDTO> attachments = new ArrayList<>();
+        List<AttachmentCreateUpdate> attachments = new ArrayList<>();
         attachments.add(attachment);
 
-        DocumentCreateUpdateDTO documentCreateDTO = new DocumentCreateUpdateDTO();
+        DocumentCreateUpdate documentCreateDTO = new DocumentCreateUpdate();
         documentCreateDTO.setName(documentName);
         documentCreateDTO.setTypeId(documentTypeId);
         documentCreateDTO.setSpecification(null);
@@ -1255,7 +1255,7 @@ class DocumentControllerTest extends AbstractTest {
                 .post(BASE_PATH);
 
         postResponse.then().statusCode(201);
-        DocumentDetailDTO documentDTO = postResponse.as(DocumentDetailDTO.class);
+        DocumentDetail documentDTO = postResponse.as(DocumentDetail.class);
 
         assertThat(documentDTO.getId()).isNotNull();
         assertThat(documentDTO.getName()).isEqualTo(documentName);
@@ -1276,15 +1276,15 @@ class DocumentControllerTest extends AbstractTest {
         final String channelName = "TEST_CHANNEL_NAME";
         final String documentTypeId = "202";
         final String attachmentMimeTypeId = "200";
-        ChannelCreateUpdateDTO channelDTO = new ChannelCreateUpdateDTO();
+        ChannelCreateUpdate channelDTO = new ChannelCreateUpdate();
         channelDTO.setName(channelName);
-        AttachmentCreateUpdateDTO attachment = new AttachmentCreateUpdateDTO();
+        AttachmentCreateUpdate attachment = new AttachmentCreateUpdate();
         attachment.setName(attachmentName);
         attachment.setMimeTypeId(attachmentMimeTypeId);
-        List<AttachmentCreateUpdateDTO> attachments = new ArrayList<>();
+        List<AttachmentCreateUpdate> attachments = new ArrayList<>();
         attachments.add(attachment);
 
-        DocumentCreateUpdateDTO documentCreateDTO = new DocumentCreateUpdateDTO();
+        DocumentCreateUpdate documentCreateDTO = new DocumentCreateUpdate();
         documentCreateDTO.setName(documentName);
         documentCreateDTO.setTypeId(documentTypeId);
         documentCreateDTO.setChannel(channelDTO);
@@ -1316,19 +1316,19 @@ class DocumentControllerTest extends AbstractTest {
         final String channelName = "TEST_CHANNEL_NAME";
         final String documentTypeId = "202";
         final String attachmentMimeTypeId = "152";
-        ChannelCreateUpdateDTO channelDTO = new ChannelCreateUpdateDTO();
+        ChannelCreateUpdate channelDTO = new ChannelCreateUpdate();
         channelDTO.setName(channelName);
-        AttachmentCreateUpdateDTO attachment = new AttachmentCreateUpdateDTO();
+        AttachmentCreateUpdate attachment = new AttachmentCreateUpdate();
         attachment.setName(attachmentName);
         attachment.setMimeTypeId(attachmentMimeTypeId);
-        TimePeriodDTO timePeriodDTO = new TimePeriodDTO();
+        TimePeriod timePeriodDTO = new TimePeriod();
         timePeriodDTO.setStartDateTime(OffsetDateTime.now());
         timePeriodDTO.setEndDateTime(OffsetDateTime.now().plusMonths(12));
         attachment.setValidFor(timePeriodDTO);
-        List<AttachmentCreateUpdateDTO> attachments = new ArrayList<>();
+        List<AttachmentCreateUpdate> attachments = new ArrayList<>();
         attachments.add(attachment);
 
-        DocumentCreateUpdateDTO documentCreateDTO = new DocumentCreateUpdateDTO();
+        DocumentCreateUpdate documentCreateDTO = new DocumentCreateUpdate();
         documentCreateDTO.setName(documentName);
         documentCreateDTO.setTypeId(documentTypeId);
         documentCreateDTO.setChannel(channelDTO);
@@ -1343,7 +1343,7 @@ class DocumentControllerTest extends AbstractTest {
                 .post(BASE_PATH);
 
         postResponse.then().statusCode(201);
-        DocumentDetailDTO documentDTO = postResponse.as(DocumentDetailDTO.class);
+        DocumentDetail documentDTO = postResponse.as(DocumentDetail.class);
 
         assertThat(documentDTO.getId()).isNotNull();
         assertThat(documentDTO.getName()).isEqualTo(documentName);
@@ -1476,48 +1476,48 @@ class DocumentControllerTest extends AbstractTest {
     void testSuccessfulUpdateCollectionsInDocument() {
         final String documentTypeId = "201";
 
-        DocumentRelationshipCreateUpdateDTO dto1 = new DocumentRelationshipCreateUpdateDTO();
+        DocumentRelationshipCreateUpdate dto1 = new DocumentRelationshipCreateUpdate();
         dto1.setId("1");
         dto1.setType("TEST_TYPE_1");
-        DocumentRelationshipCreateUpdateDTO dto2 = new DocumentRelationshipCreateUpdateDTO();
+        DocumentRelationshipCreateUpdate dto2 = new DocumentRelationshipCreateUpdate();
         dto2.setType("TEST_TYPE_2");
-        Set<DocumentRelationshipCreateUpdateDTO> relationships = Set.of(dto1, dto2);
+        Set<DocumentRelationshipCreateUpdate> relationships = Set.of(dto1, dto2);
 
-        DocumentCharacteristicCreateUpdateDTO existingCharacteristic = new DocumentCharacteristicCreateUpdateDTO();
+        DocumentCharacteristicCreateUpdate existingCharacteristic = new DocumentCharacteristicCreateUpdate();
         existingCharacteristic.setId("1");
         existingCharacteristic.setName("TEST_Name_1");
-        DocumentCharacteristicCreateUpdateDTO newCharacteristic = new DocumentCharacteristicCreateUpdateDTO();
+        DocumentCharacteristicCreateUpdate newCharacteristic = new DocumentCharacteristicCreateUpdate();
         newCharacteristic.setName("TEST_Name_2");
-        Set<DocumentCharacteristicCreateUpdateDTO> characteristics = Set.of(existingCharacteristic,
+        Set<DocumentCharacteristicCreateUpdate> characteristics = Set.of(existingCharacteristic,
                 newCharacteristic);
 
-        RelatedPartyRefCreateUpdateDTO existingRelatedParty = new RelatedPartyRefCreateUpdateDTO();
+        RelatedPartyRefCreateUpdate existingRelatedParty = new RelatedPartyRefCreateUpdate();
         existingRelatedParty.setId("1");
         existingRelatedParty.setName("TEST_Name_1");
-        RelatedPartyRefCreateUpdateDTO newRelatedParty = new RelatedPartyRefCreateUpdateDTO();
+        RelatedPartyRefCreateUpdate newRelatedParty = new RelatedPartyRefCreateUpdate();
         newRelatedParty.setName("TEST_Name_2");
-        Set<RelatedPartyRefCreateUpdateDTO> relatedParties = Set.of(existingRelatedParty, newRelatedParty);
+        Set<RelatedPartyRefCreateUpdate> relatedParties = Set.of(existingRelatedParty, newRelatedParty);
 
-        CategoryCreateUpdateDTO existingCategory = new CategoryCreateUpdateDTO();
+        CategoryCreateUpdate existingCategory = new CategoryCreateUpdate();
         existingCategory.setId("1");
         existingCategory.setName("TEST_Name_1");
-        CategoryCreateUpdateDTO newCategory = new CategoryCreateUpdateDTO();
+        CategoryCreateUpdate newCategory = new CategoryCreateUpdate();
         newCategory.setName("TEST_Name_2");
-        Set<CategoryCreateUpdateDTO> categories = Set.of(existingCategory, newCategory);
+        Set<CategoryCreateUpdate> categories = Set.of(existingCategory, newCategory);
 
-        AttachmentCreateUpdateDTO existingAttachment = new AttachmentCreateUpdateDTO();
+        AttachmentCreateUpdate existingAttachment = new AttachmentCreateUpdate();
         existingAttachment.setId("101");
         existingAttachment.setName("TEST_Name_1");
         existingAttachment.setMimeTypeId("152");
-        AttachmentCreateUpdateDTO newAttachment = new AttachmentCreateUpdateDTO();
+        AttachmentCreateUpdate newAttachment = new AttachmentCreateUpdate();
         newAttachment.setName("TEST_Name_2");
         newAttachment.setMimeTypeId("151");
-        List<AttachmentCreateUpdateDTO> attachments = List.of(existingAttachment, newAttachment);
+        List<AttachmentCreateUpdate> attachments = List.of(existingAttachment, newAttachment);
 
-        DocumentCreateUpdateDTO documentCreateDTO = new DocumentCreateUpdateDTO();
+        DocumentCreateUpdate documentCreateDTO = new DocumentCreateUpdate();
         documentCreateDTO.setName(NAME_OF_DOCUMENT_1);
         documentCreateDTO.setTypeId(documentTypeId);
-        documentCreateDTO.setChannel(new ChannelCreateUpdateDTO());
+        documentCreateDTO.setChannel(new ChannelCreateUpdate());
         documentCreateDTO.setAttachments(attachments);
         documentCreateDTO.setDocumentRelationships(relationships);
         documentCreateDTO.setCharacteristics(characteristics);
@@ -1534,13 +1534,13 @@ class DocumentControllerTest extends AbstractTest {
 
         putResponse.then().statusCode(201);
 
-        DocumentDetailDTO documentDetailDTO = given()
+        DocumentDetail documentDetailDTO = given()
                 .auth()
                 .oauth2(keycloakTestClient.getClientAccessToken(USER))
                 .accept(MediaType.APPLICATION_JSON)
                 .when()
                 .get(BASE_PATH + DIRECTORY_SEPERATOR + EXISTING_DOCUMENT_ID)
-                .as(DocumentDetailDTO.class);
+                .as(DocumentDetail.class);
 
         assertThat(documentDetailDTO.getId()).isEqualTo(EXISTING_DOCUMENT_ID);
         assertThat(documentDetailDTO.getName()).isEqualTo(NAME_OF_DOCUMENT_1);
@@ -1555,63 +1555,63 @@ class DocumentControllerTest extends AbstractTest {
         assertThat(documentDetailDTO.getRelatedObject()).isNull();
 
         assertThat(documentDetailDTO.getDocumentRelationships()).hasSize(2);
-        List<DocumentRelationshipDTO> relationships1 = documentDetailDTO.getDocumentRelationships()
+        List<DocumentRelationship> relationships1 = documentDetailDTO.getDocumentRelationships()
                 .stream().filter(p -> p.getId().equals("1")).toList();
         assertThat(relationships1).hasSize(1);
-        DocumentRelationshipDTO existingDocumentRelationship = relationships1.get(0);
+        DocumentRelationship existingDocumentRelationship = relationships1.get(0);
         assertThat(existingDocumentRelationship.getType()).isEqualTo("TEST_TYPE_1");
-        List<DocumentRelationshipDTO> newRelationship = documentDetailDTO.getDocumentRelationships()
+        List<DocumentRelationship> newRelationship = documentDetailDTO.getDocumentRelationships()
                 .stream().filter(p -> !p.getId().equals("1")).toList();
         assertThat(newRelationship).hasSize(1);
-        DocumentRelationshipDTO existingDocumentRelationship2 = newRelationship.get(0);
+        DocumentRelationship existingDocumentRelationship2 = newRelationship.get(0);
         assertThat(existingDocumentRelationship2.getType()).isEqualTo("TEST_TYPE_2");
 
         assertThat(documentDetailDTO.getCharacteristics()).hasSize(2);
-        List<DocumentCharacteristicDTO> list1 = documentDetailDTO.getCharacteristics()
+        List<DocumentCharacteristic> list1 = documentDetailDTO.getCharacteristics()
                 .stream().filter(p -> p.getId().equals("1")).toList();
         assertThat(list1).hasSize(1);
-        DocumentCharacteristicDTO existingCharacteristicDTO = list1.get(0);
+        DocumentCharacteristic existingCharacteristicDTO = list1.get(0);
         assertThat(existingCharacteristicDTO.getName()).isEqualTo("TEST_Name_1");
-        List<DocumentCharacteristicDTO> list2 = documentDetailDTO.getCharacteristics()
+        List<DocumentCharacteristic> list2 = documentDetailDTO.getCharacteristics()
                 .stream().filter(p -> !p.getId().equals("1")).toList();
         assertThat(list2).hasSize(1);
-        DocumentCharacteristicDTO newCharacteristicDTO = list2.get(0);
+        DocumentCharacteristic newCharacteristicDTO = list2.get(0);
         assertThat(newCharacteristicDTO.getName()).isEqualTo("TEST_Name_2");
 
         assertThat(documentDetailDTO.getRelatedParties()).hasSize(2);
-        List<RelatedPartyRefDTO> listRelatedParties1 = documentDetailDTO.getRelatedParties()
+        List<RelatedPartyRef> listRelatedParties1 = documentDetailDTO.getRelatedParties()
                 .stream().filter(p -> p.getId().equals("1")).toList();
         assertThat(listRelatedParties1).hasSize(1);
-        RelatedPartyRefDTO existingRelatedPartyDTO = listRelatedParties1.get(0);
+        RelatedPartyRef existingRelatedPartyDTO = listRelatedParties1.get(0);
         assertThat(existingRelatedPartyDTO.getName()).isEqualTo("TEST_Name_1");
-        List<RelatedPartyRefDTO> listRelatedParties2 = documentDetailDTO.getRelatedParties()
+        List<RelatedPartyRef> listRelatedParties2 = documentDetailDTO.getRelatedParties()
                 .stream().filter(p -> !p.getId().equals("1")).toList();
         assertThat(listRelatedParties2).hasSize(1);
-        RelatedPartyRefDTO newRelatedPartyDTO = listRelatedParties2.get(0);
+        RelatedPartyRef newRelatedPartyDTO = listRelatedParties2.get(0);
         assertThat(newRelatedPartyDTO.getName()).isEqualTo("TEST_Name_2");
 
         assertThat(documentDetailDTO.getCategories()).hasSize(2);
-        List<CategoryDTO> listCategories1 = documentDetailDTO.getCategories()
+        List<Category> listCategories1 = documentDetailDTO.getCategories()
                 .stream().filter(p -> p.getId().equals("1")).toList();
         assertThat(listCategories1).hasSize(1);
-        CategoryDTO existingCategoryDTO = listCategories1.get(0);
+        Category existingCategoryDTO = listCategories1.get(0);
         assertThat(existingCategoryDTO.getName()).isEqualTo("TEST_Name_1");
-        List<CategoryDTO> listCategories2 = documentDetailDTO.getCategories()
+        List<Category> listCategories2 = documentDetailDTO.getCategories()
                 .stream().filter(p -> !p.getId().equals("1")).toList();
         assertThat(listCategories2).hasSize(1);
-        CategoryDTO newCategoryDTO = listCategories2.get(0);
+        Category newCategoryDTO = listCategories2.get(0);
         assertThat(newCategoryDTO.getName()).isEqualTo("TEST_Name_2");
 
         assertThat(documentDetailDTO.getAttachments()).hasSize(3);
-        List<AttachmentDTO> listAttachment1 = documentDetailDTO.getAttachments()
+        List<Attachment> listAttachment1 = documentDetailDTO.getAttachments()
                 .stream().filter(p -> p.getId().equals("101")).toList();
         assertThat(listAttachment1).hasSize(1);
-        AttachmentDTO existingAttachmentDTO = listAttachment1.get(0);
+        Attachment existingAttachmentDTO = listAttachment1.get(0);
         assertThat(existingAttachmentDTO.getMimeType().getId()).isEqualTo("152");
-        List<AttachmentDTO> listAttachment2 = documentDetailDTO.getAttachments()
+        List<Attachment> listAttachment2 = documentDetailDTO.getAttachments()
                 .stream().filter(p -> !p.getId().equals("101")).toList();
         assertThat(listAttachment2).hasSize(2);
-        AttachmentDTO newAttachmentDTO = listAttachment2.get(0);
+        Attachment newAttachmentDTO = listAttachment2.get(0);
         assertThat(newAttachmentDTO.getMimeType().getId()).isEqualTo("151");
     }
 
@@ -1619,18 +1619,18 @@ class DocumentControllerTest extends AbstractTest {
     @DisplayName("Returns exception when trying to update nonexistent document.")
     void testFailedUpdateDocumentById() {
         final String documentTypeId = "1";
-        ChannelCreateUpdateDTO channelDTO = new ChannelCreateUpdateDTO();
+        ChannelCreateUpdate channelDTO = new ChannelCreateUpdate();
         final String channelName = "TEST_CHANNEL_NAME";
         channelDTO.setName(channelName);
         final String attachmentMimeTypeId = "2";
-        List<AttachmentCreateUpdateDTO> attachments = new ArrayList<>();
-        AttachmentCreateUpdateDTO attachment = new AttachmentCreateUpdateDTO();
+        List<AttachmentCreateUpdate> attachments = new ArrayList<>();
+        AttachmentCreateUpdate attachment = new AttachmentCreateUpdate();
         final String attachmentName = "TEST_UPDATE_ATTACHMENT_NAME";
         attachment.setName(attachmentName);
         attachment.setMimeTypeId(attachmentMimeTypeId);
         attachments.add(attachment);
 
-        DocumentCreateUpdateDTO documentCreateDTO = new DocumentCreateUpdateDTO();
+        DocumentCreateUpdate documentCreateDTO = new DocumentCreateUpdate();
         documentCreateDTO.setName("TEST_UPDATE_DOCUMENT_NAME");
         documentCreateDTO.setTypeId(documentTypeId);
         documentCreateDTO.setChannel(channelDTO);
@@ -1664,7 +1664,7 @@ class DocumentControllerTest extends AbstractTest {
                 .get(BASE_PATH + "/channels");
         getResponse.then().statusCode(OK.getStatusCode());
 
-        List<ChannelDTO> channels = getResponse.as(getChannelDTOTypeRef());
+        List<Channel> channels = getResponse.as(getChannelDTOTypeRef());
         assertThat(channels).hasSize(2);
     }
 
@@ -1751,7 +1751,7 @@ class DocumentControllerTest extends AbstractTest {
                 .when()
                 .put(FILE_BASE_PATH + BUCKET_NAME + "/" + MINIO_FILE_PATH_3);
         putResponse.then().statusCode(201);
-        FileInfoDTO file = putResponse.as(FileInfoDTO.class);
+        FileInfo file = putResponse.as(FileInfo.class);
 
         assertThat(file.getPath()).isEqualTo(MINIO_FILE_PATH_3);
         assertThat(file.getContentType()).isEqualTo(SAMPLE_FILE_TYPE);
@@ -1778,12 +1778,12 @@ class DocumentControllerTest extends AbstractTest {
     //         assertThat(actualMessage).isEqualTo(expectedMessage);
     //     }
 
-    private TypeRef<List<ChannelDTO>> getChannelDTOTypeRef() {
+    private TypeRef<List<Channel>> getChannelDTOTypeRef() {
         return new TypeRef<>() {
         };
     }
 
-    private TypeRef<PageResultDTO<DocumentDetailDTO>> getDocumentDetailDTOTypeRef() {
+    private TypeRef<PageResults<DocumentDetail>> getDocumentDetailDTOTypeRef() {
         return new TypeRef<>() {
         };
 
@@ -1862,22 +1862,22 @@ class DocumentControllerTest extends AbstractTest {
     @Test
     @DisplayName("Bulk Update of existing document ids")
     void testSuccessBulkUpdate() {
-        ChannelCreateUpdateDTO channel = new ChannelCreateUpdateDTO();
+        ChannelCreateUpdate channel = new ChannelCreateUpdate();
         final String channelName = "TEST_CHANNEL_NAME";
         channel.setName(channelName);
-        DocumentCreateUpdateDTO doc1 = new DocumentCreateUpdateDTO();
+        DocumentCreateUpdate doc1 = new DocumentCreateUpdate();
         doc1.setId(EXISTING_DOCUMENT_ID);
         doc1.setName(UPDATED_DOCUMENT_NAME);
         doc1.setTypeId(UPDATED_DOCUMENT_TYPE);
         doc1.setDescription(UPDATED_DOCUMENT_DESCRIPTION);
         doc1.setChannel(channel);
-        DocumentCreateUpdateDTO doc2 = new DocumentCreateUpdateDTO();
+        DocumentCreateUpdate doc2 = new DocumentCreateUpdate();
         doc2.setId(EXISTING_DOCUMENT_ID_2);
         doc2.setName(UPDATED_DOCUMENT_NAME);
         doc2.setTypeId(UPDATED_DOCUMENT_TYPE);
         doc2.setDescription(UPDATED_DOCUMENT_DESCRIPTION);
         doc2.setChannel(channel);
-        List<DocumentCreateUpdateDTO> dtoList = new ArrayList<>();
+        List<DocumentCreateUpdate> dtoList = new ArrayList<>();
         dtoList.add(doc1);
         dtoList.add(doc2);
         Response postResponse = given()
@@ -1894,16 +1894,16 @@ class DocumentControllerTest extends AbstractTest {
     @Test
     @DisplayName("Bulk Update of non-existing document ids")
     void testFailedBulkUpdate() {
-        ChannelCreateUpdateDTO channelDto = new ChannelCreateUpdateDTO();
+        ChannelCreateUpdate channelDto = new ChannelCreateUpdate();
         final String channelName = "TEST_CHANNEL_NAME";
         channelDto.setName(channelName);
-        DocumentCreateUpdateDTO doc1 = new DocumentCreateUpdateDTO();
+        DocumentCreateUpdate doc1 = new DocumentCreateUpdate();
         doc1.setId(NONEXISTENT_DOCUMENT_ID);
         doc1.setName(UPDATED_DOCUMENT_NAME);
         doc1.setTypeId(UPDATED_DOCUMENT_TYPE);
         doc1.setDescription(UPDATED_DOCUMENT_DESCRIPTION);
         doc1.setChannel(channelDto);
-        List<DocumentCreateUpdateDTO> dtoList = new ArrayList<>();
+        List<DocumentCreateUpdate> dtoList = new ArrayList<>();
         dtoList.add(doc1);
         Response postResponse = given()
                 .auth()

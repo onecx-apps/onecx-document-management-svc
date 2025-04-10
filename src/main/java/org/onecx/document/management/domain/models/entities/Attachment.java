@@ -73,7 +73,7 @@ public class Attachment extends TraceableEntity {
      */
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "MIMETYPE_GUID")
-    private SupportedMimeType mimeType;
+    private SupportedMimeTypes mimeType;
 
     @Transient
     private String file;

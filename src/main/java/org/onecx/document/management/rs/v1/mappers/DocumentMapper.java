@@ -12,7 +12,7 @@ import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-import org.onecx.document.management.domain.criteria.DocumentSearchCriteria;
+import org.onecx.document.management.domain.criteria.DocumentSearchCriterias;
 import org.onecx.document.management.domain.models.entities.Attachment;
 import org.onecx.document.management.domain.models.entities.Category;
 import org.onecx.document.management.domain.models.entities.Channel;
@@ -22,7 +22,7 @@ import org.onecx.document.management.domain.models.entities.DocumentRelationship
 import org.onecx.document.management.domain.models.entities.RelatedObjectRef;
 import org.onecx.document.management.domain.models.entities.RelatedPartyRef;
 import org.onecx.document.management.domain.models.entities.StorageUploadAudit;
-import org.onecx.document.management.rs.v1.models.PageResultDTO;
+import org.onecx.document.management.rs.v1.models.PageResults;
 import org.tkit.quarkus.jpa.daos.PageResult;
 import org.tkit.quarkus.rs.mappers.OffsetDateTimeMapper;
 
@@ -36,11 +36,11 @@ public interface DocumentMapper {
     @Mapping(target = "removeRelatedPartiesItem", ignore = true)
     @Mapping(target = "removeCategoriesItem", ignore = true)
     @Mapping(target = "removeAttachmentsItem", ignore = true)
-    DocumentDetailDTO mapDetail(Document document);
+    DocumentDetail mapDetail(Document document);
 
-    List<StorageUploadAuditDTO> mapStorageUploadAudit(List<StorageUploadAudit> audit);
+    List<StorageUploadAudit> mapStorageUploadAudit(List<StorageUploadAudit> audit);
 
-    Stream<DocumentDetailDTO> mapDetailBulk(Stream<Document> document);
+    Stream<DocumentDetail> mapDetailBulk(Stream<Document> document);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "type", ignore = true)
@@ -48,13 +48,13 @@ public interface DocumentMapper {
     @Mapping(target = "attachments", ignore = true)
     @Mapping(target = "controlTraceabilityManual", ignore = true)
     @Mapping(target = "persisted", ignore = true)
-    Document map(DocumentCreateUpdateDTO createUpdateDTO);
+    Document map(DocumentCreateUpdate createUpdateDTO);
 
     @Mapping(target = "startDate", ignore = true)
     @Mapping(target = "endDate", ignore = true)
-    DocumentSearchCriteria map(DocumentSearchCriteriaDTO searchCriteriaDTO);
+    DocumentSearchCriterias map(DocumentSearchCriteria searchCriteriaDTO);
 
-    PageResultDTO<DocumentDetailDTO> mapToPageResultDTO(PageResult<Document> page);
+    PageResults<DocumentDetail> mapToPageResultDTO(PageResult<Document> page);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "type", ignore = true)
@@ -68,7 +68,7 @@ public interface DocumentMapper {
     @Mapping(target = "categories", ignore = true)
     @Mapping(target = "controlTraceabilityManual", ignore = true)
     @Mapping(target = "persisted", ignore = true)
-    Document update(DocumentCreateUpdateDTO dto,
+    Document update(DocumentCreateUpdate dto,
             @MappingTarget Document document);
 
     @Mapping(target = "id", ignore = true)
@@ -81,7 +81,7 @@ public interface DocumentMapper {
     @Mapping(target = "characteristics", ignore = true)
     @Mapping(target = "relatedParties", ignore = true)
     @Mapping(target = "categories", ignore = true)
-    List<Document> updateBulk(List<DocumentCreateUpdateDTO> dto, @MappingTarget List<Document> document);
+    List<Document> updateBulk(List<DocumentCreateUpdate> dto, @MappingTarget List<Document> document);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "creationDate", ignore = true)
@@ -91,7 +91,7 @@ public interface DocumentMapper {
     @Mapping(target = "controlTraceabilityManual", ignore = true)
     @Mapping(target = "modificationCount", ignore = true)
     @Mapping(target = "persisted", ignore = true)
-    DocumentRelationship updateDocumentRelationship(DocumentRelationshipCreateUpdateDTO dto,
+    DocumentRelationship updateDocumentRelationship(DocumentRelationshipCreateUpdate dto,
             @MappingTarget DocumentRelationship entity);
 
     @Mapping(target = "creationDate", ignore = true)
@@ -102,7 +102,7 @@ public interface DocumentMapper {
     @Mapping(target = "modificationCount", ignore = true)
     @Mapping(target = "persisted", ignore = true)
     @Mapping(target = "id", ignore = true)
-    DocumentRelationship mapDocumentRelationship(DocumentRelationshipCreateUpdateDTO dto);
+    DocumentRelationship mapDocumentRelationship(DocumentRelationshipCreateUpdate dto);
 
     @Mapping(target = "creationDate", ignore = true)
     @Mapping(target = "creationUser", ignore = true)
@@ -112,7 +112,7 @@ public interface DocumentMapper {
     @Mapping(target = "modificationCount", ignore = true)
     @Mapping(target = "persisted", ignore = true)
     @Mapping(target = "id", ignore = true)
-    DocumentCharacteristic updateDocumentCharacteristic(DocumentCharacteristicCreateUpdateDTO dto,
+    DocumentCharacteristic updateDocumentCharacteristic(DocumentCharacteristicCreateUpdate dto,
             @MappingTarget DocumentCharacteristic entity);
 
     @Mapping(target = "creationDate", ignore = true)
@@ -123,7 +123,7 @@ public interface DocumentMapper {
     @Mapping(target = "modificationCount", ignore = true)
     @Mapping(target = "persisted", ignore = true)
     @Mapping(target = "id", ignore = true)
-    DocumentCharacteristic mapDocumentCharacteristic(DocumentCharacteristicCreateUpdateDTO dto);
+    DocumentCharacteristic mapDocumentCharacteristic(DocumentCharacteristicCreateUpdate dto);
 
     @Mapping(target = "creationDate", ignore = true)
     @Mapping(target = "creationUser", ignore = true)
@@ -133,7 +133,7 @@ public interface DocumentMapper {
     @Mapping(target = "modificationCount", ignore = true)
     @Mapping(target = "persisted", ignore = true)
     @Mapping(target = "id", ignore = true)
-    RelatedPartyRef updateRelatedPartyRef(RelatedPartyRefCreateUpdateDTO dto, @MappingTarget RelatedPartyRef entity);
+    RelatedPartyRef updateRelatedPartyRef(RelatedPartyRefCreateUpdate dto, @MappingTarget RelatedPartyRef entity);
 
     @Mapping(target = "creationDate", ignore = true)
     @Mapping(target = "creationUser", ignore = true)
@@ -143,7 +143,7 @@ public interface DocumentMapper {
     @Mapping(target = "modificationCount", ignore = true)
     @Mapping(target = "persisted", ignore = true)
     @Mapping(target = "id", ignore = true)
-    RelatedPartyRef mapRelatedPartyRef(RelatedPartyRefCreateUpdateDTO dto);
+    RelatedPartyRef mapRelatedPartyRef(RelatedPartyRefCreateUpdate dto);
 
     @Mapping(target = "creationDate", ignore = true)
     @Mapping(target = "creationUser", ignore = true)
@@ -153,7 +153,7 @@ public interface DocumentMapper {
     @Mapping(target = "modificationCount", ignore = true)
     @Mapping(target = "persisted", ignore = true)
     @Mapping(target = "id", ignore = true)
-    Category updateCategory(CategoryCreateUpdateDTO dto, @MappingTarget Category entity);
+    Category updateCategory(CategoryCreateUpdate dto, @MappingTarget Category entity);
 
     @Mapping(target = "creationDate", ignore = true)
     @Mapping(target = "creationUser", ignore = true)
@@ -163,7 +163,7 @@ public interface DocumentMapper {
     @Mapping(target = "modificationCount", ignore = true)
     @Mapping(target = "persisted", ignore = true)
     @Mapping(target = "id", ignore = true)
-    Category mapCategory(CategoryCreateUpdateDTO dto);
+    Category mapCategory(CategoryCreateUpdate dto);
 
     @Mapping(target = "creationDate", ignore = true)
     @Mapping(target = "creationUser", ignore = true)
@@ -179,7 +179,7 @@ public interface DocumentMapper {
     @Mapping(target = "storage", ignore = true)
     @Mapping(target = "externalStorageURL", ignore = true)
     @Mapping(target = "storageUploadStatus", ignore = true)
-    Attachment updateAttachment(AttachmentCreateUpdateDTO dto, @MappingTarget Attachment entity);
+    Attachment updateAttachment(AttachmentCreateUpdate dto, @MappingTarget Attachment entity);
 
     @Mapping(target = "creationDate", ignore = true)
     @Mapping(target = "creationUser", ignore = true)
@@ -195,9 +195,9 @@ public interface DocumentMapper {
     @Mapping(target = "externalStorageURL", ignore = true)
     @Mapping(target = "storageUploadStatus", ignore = true)
     @Mapping(target = "mimeType", ignore = true)
-    Attachment mapAttachment(AttachmentCreateUpdateDTO dto);
+    Attachment mapAttachment(AttachmentCreateUpdate dto);
 
-    AttachmentDTO mapAttachment(Attachment attachment);
+    Attachment mapAttachment(Attachment attachment);
 
     @Mapping(target = "creationDate", ignore = true)
     @Mapping(target = "creationUser", ignore = true)
@@ -207,7 +207,7 @@ public interface DocumentMapper {
     @Mapping(target = "modificationCount", ignore = true)
     @Mapping(target = "persisted", ignore = true)
     @Mapping(target = "id", ignore = true)
-    Channel updateChannel(ChannelCreateUpdateDTO dto,
+    Channel updateChannel(ChannelCreateUpdate dto,
             @MappingTarget Channel entity);
 
     @Mapping(target = "creationDate", ignore = true)
@@ -218,9 +218,9 @@ public interface DocumentMapper {
     @Mapping(target = "modificationCount", ignore = true)
     @Mapping(target = "persisted", ignore = true)
     @Mapping(target = "id", ignore = true)
-    Channel mapChannel(ChannelCreateUpdateDTO dto);
+    Channel mapChannel(ChannelCreateUpdate dto);
 
-    List<ChannelDTO> mapChannels(List<Channel> channel);
+    List<Channel> mapChannels(List<Channel> channel);
 
     @Mapping(target = "creationDate", ignore = true)
     @Mapping(target = "creationUser", ignore = true)
@@ -230,7 +230,7 @@ public interface DocumentMapper {
     @Mapping(target = "modificationCount", ignore = true)
     @Mapping(target = "persisted", ignore = true)
     @Mapping(target = "id", ignore = true)
-    void updateRelatedObjectRef(RelatedObjectRefCreateUpdateDTO dto,
+    void updateRelatedObjectRef(RelatedObjectRefCreateUpdate dto,
             @MappingTarget RelatedObjectRef entity);
 
     @Mapping(target = "creationDate", ignore = true)
@@ -241,32 +241,32 @@ public interface DocumentMapper {
     @Mapping(target = "modificationCount", ignore = true)
     @Mapping(target = "persisted", ignore = true)
     @Mapping(target = "id", ignore = true)
-    RelatedObjectRef mapRelatedObjectRef(RelatedObjectRefCreateUpdateDTO dto);
+    RelatedObjectRef mapRelatedObjectRef(RelatedObjectRefCreateUpdate dto);
 
     default void updateTraceableCollectionsInDocument(Document document,
-            DocumentCreateUpdateDTO updateDTO) {
+            DocumentCreateUpdate updateDTO) {
         updateTraceableCollection(document.getDocumentRelationships(),
                 updateDTO.getDocumentRelationships(),
                 DocumentRelationship::getId,
-                DocumentRelationshipCreateUpdateDTO::getId,
+                DocumentRelationshipCreateUpdate::getId,
                 this::updateDocumentRelationship,
                 this::mapDocumentRelationship);
         updateTraceableCollection(document.getCharacteristics(),
                 updateDTO.getCharacteristics(),
                 DocumentCharacteristic::getId,
-                DocumentCharacteristicCreateUpdateDTO::getId,
+                DocumentCharacteristicCreateUpdate::getId,
                 this::updateDocumentCharacteristic,
                 this::mapDocumentCharacteristic);
         updateTraceableCollection(document.getRelatedParties(),
                 updateDTO.getRelatedParties(),
                 RelatedPartyRef::getId,
-                RelatedPartyRefCreateUpdateDTO::getId,
+                RelatedPartyRefCreateUpdate::getId,
                 this::updateRelatedPartyRef,
                 this::mapRelatedPartyRef);
         updateTraceableCollection(document.getCategories(),
                 updateDTO.getCategories(),
                 Category::getId,
-                CategoryCreateUpdateDTO::getId,
+                CategoryCreateUpdate::getId,
                 this::updateCategory, this::mapCategory);
     }
 
@@ -318,35 +318,35 @@ public interface DocumentMapper {
     }
 
     default void updateBulkTraceableCollectionsInDocument(List<Document> document,
-            List<DocumentCreateUpdateDTO> updateDTO) {
+            List<DocumentCreateUpdate> updateDTO) {
         for (Document documentbulk : document) {
-            for (DocumentCreateUpdateDTO updatebulk : updateDTO) {
+            for (DocumentCreateUpdate updatebulk : updateDTO) {
                 updateTraceableCollection(documentbulk.getDocumentRelationships(),
                         updatebulk.getDocumentRelationships(),
                         DocumentRelationship::getId,
-                        DocumentRelationshipCreateUpdateDTO::getId,
+                        DocumentRelationshipCreateUpdate::getId,
                         this::updateDocumentRelationship,
                         this::mapDocumentRelationship);
                 updateTraceableCollection(documentbulk.getCharacteristics(),
                         updatebulk.getCharacteristics(),
                         DocumentCharacteristic::getId,
-                        DocumentCharacteristicCreateUpdateDTO::getId,
+                        DocumentCharacteristicCreateUpdate::getId,
                         this::updateDocumentCharacteristic,
                         this::mapDocumentCharacteristic);
                 updateTraceableCollection(documentbulk.getRelatedParties(),
                         updatebulk.getRelatedParties(),
                         RelatedPartyRef::getId,
-                        RelatedPartyRefCreateUpdateDTO::getId,
+                        RelatedPartyRefCreateUpdate::getId,
                         this::updateRelatedPartyRef,
                         this::mapRelatedPartyRef);
                 updateTraceableCollection(documentbulk.getCategories(),
                         updatebulk.getCategories(),
                         Category::getId,
-                        CategoryCreateUpdateDTO::getId,
+                        CategoryCreateUpdate::getId,
                         this::updateCategory, this::mapCategory);
             }
         }
     }
 
-    List<DocumentDetailDTO> mapDocuments(List<Document> documents);
+    List<DocumentDetail> mapDocuments(List<Document> documents);
 }

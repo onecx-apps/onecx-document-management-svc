@@ -22,8 +22,8 @@ import org.onecx.document.management.test.AbstractTest;
 import org.tkit.quarkus.security.test.GenerateKeycloakClient;
 import org.tkit.quarkus.test.WithDBData;
 
-import gen.org.onecx.document.management.rs.v1.model.DocumentTypeCreateUpdateDTO;
-import gen.org.onecx.document.management.rs.v1.model.DocumentTypeDTO;
+import gen.org.onecx.document.management.rs.v1.model.DocumentType;
+import gen.org.onecx.document.management.rs.v1.model.DocumentTypeCreateUpdate;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.response.Response;
@@ -46,7 +46,7 @@ class DocumentTypeControllerTest extends AbstractTest {
     @DisplayName("Saves type of document with the required fields with validated data.")
     void testSuccessfulCreateDocumentType() {
         final String testDocumentTypeName = "DOCUMENT_TYPE_1";
-        DocumentTypeCreateUpdateDTO documentTypeCreateDTO = new DocumentTypeCreateUpdateDTO();
+        DocumentTypeCreateUpdate documentTypeCreateDTO = new DocumentTypeCreateUpdate();
         documentTypeCreateDTO.setName(testDocumentTypeName);
 
         Response postResponse = given().auth()
@@ -57,14 +57,14 @@ class DocumentTypeControllerTest extends AbstractTest {
                 .post(BASE_PATH);
         postResponse.then().statusCode(CREATED.getStatusCode());
 
-        DocumentTypeDTO dto = postResponse.as(DocumentTypeDTO.class);
+        DocumentType dto = postResponse.as(DocumentType.class);
         assertThat(dto.getName()).isEqualTo(documentTypeCreateDTO.getName());
     }
 
     @Test
     @DisplayName("Saves type of document without name.")
     void testFailedCreateDocumentTypeWithoutName() {
-        DocumentTypeCreateUpdateDTO documentTypeCreateDTO = new DocumentTypeCreateUpdateDTO();
+        DocumentTypeCreateUpdate documentTypeCreateDTO = new DocumentTypeCreateUpdate();
         documentTypeCreateDTO.setName(null);
 
         Response postResponse = given().auth()
@@ -102,7 +102,7 @@ class DocumentTypeControllerTest extends AbstractTest {
                 .get(BASE_PATH);
         getResponse.then().statusCode(OK.getStatusCode());
 
-        List<DocumentTypeDTO> documentTypes = getResponse.as(getDocumentTypeDTOTypeRef());
+        List<DocumentType> documentTypes = getResponse.as(getDocumentTypeDTOTypeRef());
         assertThat(documentTypes).hasSize(2);
     }
 
@@ -150,7 +150,7 @@ class DocumentTypeControllerTest extends AbstractTest {
     @DisplayName("Updates name in type of document.")
     void testSuccessfulUpdateNameInDocumentType() {
         final String documentTypeName = "TEST_UPDATE_DOCUMENT_TYPE_NAME";
-        DocumentTypeCreateUpdateDTO documentTypeUpdateDTO = new DocumentTypeCreateUpdateDTO();
+        DocumentTypeCreateUpdate documentTypeUpdateDTO = new DocumentTypeCreateUpdate();
         documentTypeUpdateDTO.setName(documentTypeName);
 
         Response putResponse = given().auth()
@@ -161,7 +161,7 @@ class DocumentTypeControllerTest extends AbstractTest {
                 .put(BASE_PATH + "/" + EXISTING_DOCUMENT_TYPE_ID);
         putResponse.then().statusCode(CREATED.getStatusCode());
 
-        DocumentTypeDTO dto = putResponse.as(DocumentTypeDTO.class);
+        DocumentType dto = putResponse.as(DocumentType.class);
         assertThat(dto.getId()).isEqualTo(EXISTING_DOCUMENT_TYPE_ID);
         assertThat(dto.getName()).isEqualTo(documentTypeName);
     }
@@ -170,7 +170,7 @@ class DocumentTypeControllerTest extends AbstractTest {
     @DisplayName("Returns exception when trying to update type of document for a nonexistent id.")
     void testFailedUpdateDocumentTypeById() {
         final String documentTypeName = "TEST_UPDATE_DOCUMENT_TYPE_NAME";
-        DocumentTypeCreateUpdateDTO documentTypeUpdateDTO = new DocumentTypeCreateUpdateDTO();
+        DocumentTypeCreateUpdate documentTypeUpdateDTO = new DocumentTypeCreateUpdate();
         documentTypeUpdateDTO.setName(documentTypeName);
 
         Response putResponse = given().auth()
@@ -201,7 +201,7 @@ class DocumentTypeControllerTest extends AbstractTest {
                 .get(BASE_PATH);
         getResponse.then().statusCode(OK.getStatusCode());
 
-        List<DocumentTypeDTO> typesOfDocuments = getResponse.as(getDocumentTypeDTOTypeRef());
+        List<DocumentType> typesOfDocuments = getResponse.as(getDocumentTypeDTOTypeRef());
         assertThat(typesOfDocuments).hasSize(3);
         assertThat(typesOfDocuments.get(0).getId()).isIn(EXISTING_DOCUMENT_TYPE_IDS);
         assertThat(typesOfDocuments.get(0).getName()).isIn(EXISTING_DOCUMENT_TYPE_NAMES);
@@ -221,7 +221,7 @@ class DocumentTypeControllerTest extends AbstractTest {
                 .get(BASE_PATH + "/" + EXISTING_DOCUMENT_TYPE_ID);
 
         response.then().statusCode(200);
-        DocumentTypeDTO documentTypeDTO = response.as(DocumentTypeDTO.class);
+        DocumentType documentTypeDTO = response.as(DocumentType.class);
 
         assertThat(documentTypeDTO.getId()).isEqualTo(EXISTING_DOCUMENT_TYPE_ID);
         assertThat(documentTypeDTO.getName()).isEqualTo(NAME_OF_DOCUMENT_TYPE_1);
@@ -247,7 +247,7 @@ class DocumentTypeControllerTest extends AbstractTest {
         assertThat(rfcProblemDTO.getType()).isEqualTo("REST_EXCEPTION");
     }
 
-    private TypeRef<List<DocumentTypeDTO>> getDocumentTypeDTOTypeRef() {
+    private TypeRef<List<DocumentType>> getDocumentTypeDTOTypeRef() {
         return new TypeRef<>() {
         };
     }

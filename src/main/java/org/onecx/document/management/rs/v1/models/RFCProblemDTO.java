@@ -7,7 +7,7 @@ import jakarta.validation.Valid;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import gen.org.onecx.document.management.rs.v1.model.RFCProblemDetailDTO;
+import gen.org.onecx.document.management.rs.v1.model.RFCProblemDetail;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -67,5 +67,5 @@ public class RFCProblemDTO {
     private @Valid String instance = null;
 
     @JsonProperty(value = "problems")
-    private @Valid List<RFCProblemDetailDTO> problems = new ArrayList<>();
+    private @Valid List<RFCProblemDetail> problems = new ArrayList<>();
 }
