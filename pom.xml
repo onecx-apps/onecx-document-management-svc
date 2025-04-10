@@ -139,6 +139,7 @@
                 <artifactId>openapi-generator-maven-plugin</artifactId>
                 <configuration>
                     <generatorName>jaxrs-spec</generatorName>
+                    <modelNameSuffix>DTO</modelNameSuffix>
                     <generateApiTests>false</generateApiTests>
                     <generateApiDocumentation>true</generateApiDocumentation>
                     <generateModelTests>false</generateModelTests>

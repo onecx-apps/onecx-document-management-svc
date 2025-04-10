@@ -43,7 +43,7 @@ import gen.org.onecx.document.management.rs.v1.DocumentControllerV1Api;
 import gen.org.onecx.document.management.rs.v1.model.DocumentCreateUpdateDTO;
 import gen.org.onecx.document.management.rs.v1.model.DocumentResponseDTO;
 import gen.org.onecx.document.management.rs.v1.model.DocumentSearchCriteriaDTO;
-import gen.org.onecx.document.management.rs.v1.model.LifeCycleState;
+import gen.org.onecx.document.management.rs.v1.model.LifeCycleStateDTO;
 import io.minio.errors.*;
 import io.quarkus.logging.Log;
 import io.quarkus.scheduler.Scheduled;
@@ -129,7 +129,7 @@ public class DocumentController implements DocumentControllerV1Api {
     @Transactional
     public Response getDocumentByCriteria(String channelName, String createdBy, String endDate, String id, String name,
             String objectReferenceId, String objectReferenceType, Integer page, Integer size, String startDate,
-            List<LifeCycleState> state, List<String> typeId) {
+            List<LifeCycleStateDTO> state, List<String> typeId) {
         Log.info(CLASS_NAME, "Entered getDocumentByCriteria method", null);
         DocumentSearchCriteriaDTO criteriaDTO = new DocumentSearchCriteriaDTO();
         criteriaDTO.setChannelName(channelName);
@@ -428,7 +428,7 @@ public class DocumentController implements DocumentControllerV1Api {
     @Transactional
     public Response showAllDocumentsByCriteria(String channelName, String createdBy, String endDate, String id, String name,
             String objectReferenceId, String objectReferenceType, Integer page, Integer size, String startDate,
-            List<LifeCycleState> state, List<String> typeId) {
+            List<LifeCycleStateDTO> state, List<String> typeId) {
         Log.info(CLASS_NAME, "Entered showAllDocumentsByCriteria method", null);
         DocumentSearchCriteriaDTO criteriaDTO = new DocumentSearchCriteriaDTO();
         criteriaDTO.setChannelName(channelName);

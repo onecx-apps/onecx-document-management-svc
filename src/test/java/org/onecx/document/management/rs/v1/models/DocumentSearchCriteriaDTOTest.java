@@ -12,7 +12,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.onecx.document.management.test.AbstractTest;
 
 import gen.org.onecx.document.management.rs.v1.model.DocumentSearchCriteriaDTO;
-import gen.org.onecx.document.management.rs.v1.model.LifeCycleState;
+import gen.org.onecx.document.management.rs.v1.model.LifeCycleStateDTO;
 import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
@@ -26,7 +26,7 @@ class DocumentSearchCriteriaDTOTest extends AbstractTest {
         DocumentSearchCriteriaDTO criteria = new DocumentSearchCriteriaDTO();
         criteria.setId("001");
         criteria.setName("Important_Document");
-        criteria.setLifeCycleState(List.of(LifeCycleState.DRAFT, LifeCycleState.REVIEW));
+        criteria.setLifeCycleState(List.of(LifeCycleStateDTO.DRAFT, LifeCycleStateDTO.REVIEW));
         criteria.setDocumentTypeId(List.of("1", "2"));
         criteria.setChannelName("Channel1");
         criteria.setStartDate("2022-07-05");
@@ -39,7 +39,7 @@ class DocumentSearchCriteriaDTOTest extends AbstractTest {
 
         String id = criteria.getId();
         String name = criteria.getName();
-        List<LifeCycleState> lifeCycleState = criteria.getLifeCycleState();
+        List<LifeCycleStateDTO> lifeCycleState = criteria.getLifeCycleState();
         List<String> documentTypeId = criteria.getDocumentTypeId();
         String channelName = criteria.getChannelName();
         String startDate = criteria.getStartDate();
@@ -52,7 +52,7 @@ class DocumentSearchCriteriaDTOTest extends AbstractTest {
 
         assertThat(id, equalTo("001"));
         assertThat(name, equalTo("Important_Document"));
-        assertThat(lifeCycleState, contains(LifeCycleState.DRAFT, LifeCycleState.REVIEW));
+        assertThat(lifeCycleState, contains(LifeCycleStateDTO.DRAFT, LifeCycleStateDTO.REVIEW));
         assertThat(documentTypeId, contains("1", "2"));
         assertThat(channelName, equalTo("Channel1"));
         assertThat(startDate, equalTo("2022-07-05"));

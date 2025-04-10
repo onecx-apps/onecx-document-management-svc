@@ -50,7 +50,7 @@ class DocumentControllerTest extends AbstractTest {
     private static final String DOCUMENT_CREATION_USER = "test";
     private static final String DESCRIPTION_OF_DOCUMENT_1 = "description_1";
     private static final String VERSION_OF_DOCUMENT_1 = "v_1";
-    private static final LifeCycleState STATUS_OF_DOCUMENT_1 = LifeCycleState.DRAFT;
+    private static final LifeCycleStateDTO STATUS_OF_DOCUMENT_1 = LifeCycleStateDTO.DRAFT;
     private static final String CHANNEL_ID_OF_DOCUMENT_1 = "1";
     private static final String RELATED_OBJECT_ID_OF_DOCUMENT_1 = "1";
     private static final String RELATED_OBJECT_REF_ID_OF_DOCUMENT = "43";
@@ -976,7 +976,7 @@ class DocumentControllerTest extends AbstractTest {
         DocumentCreateUpdateDTO documentCreateDTO = new DocumentCreateUpdateDTO();
         final String documentName = "TEST_DOCUMENT_NAME";
         final String documentDescription = "TEST_DOCUMENT_DESCRIPTION";
-        final LifeCycleState documentState = LifeCycleState.ARCHIVED;
+        final LifeCycleStateDTO documentState = LifeCycleStateDTO.ARCHIVED;
         final String documentVersion = "TEST_DOCUMENT_VERSION";
         documentCreateDTO.setName(documentName);
         documentCreateDTO.setDescription(documentDescription);
