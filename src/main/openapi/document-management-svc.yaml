@@ -13,8 +13,12 @@ tags:
 paths:
   /v1/document:
     get:
-      security:
-        - oauth2: [ ocx-doc:all, ocx-doc:write, ocx-doc:read]
+      x-onecx:
+        permissions:
+          themes:
+            - read
+      #      security:
+      #        - oauth2: [ ocx-doc:all, ocx-doc:write, ocx-doc:read]
       tags:
         - DocumentControllerV1
       description: Gets documents by criteria
@@ -103,8 +107,12 @@ paths:
         "401":
           description: Not Authorized
     post:
-      security:
-        - oauth2: [ ocx-doc:all, ocx-doc:write]
+      x-onecx:
+        permissions:
+          themes:
+            - write
+      #      security:
+      #        - oauth2: [ ocx-doc:all, ocx-doc:write]
       tags:
         - DocumentControllerV1
       description: Create Document
@@ -453,8 +461,12 @@ paths:
                 $ref: '#/components/schemas/RFCProblem'
   /v1/document/bulkupdate:
     put:
-      security:
-        - oauth2: [ ocx-doc:all]
+      x-onecx:
+        permissions:
+          themes:
+            - write
+      #      security:
+      #        - oauth2: [ ocx-doc:all]
       tags:
         - DocumentControllerV1
       description: Bulk Update an document
@@ -514,8 +526,12 @@ paths:
                 $ref: '#/components/schemas/RFCProblem'
   /v1/document/delete-bulk-documents:
     delete:
-      security:
-        - oauth2: [ ocx-doc:all]
+      x-onecx:
+        permissions:
+          themes:
+            - delete
+#      security:
+#        - oauth2: [ ocx-doc:all]
       tags:
         - DocumentControllerV1
       description: Delete Multiple Document by Ids
@@ -548,8 +564,12 @@ paths:
           description: Not Authorized
   /v1/document/file/delete-bulk-attachment:
     delete:
-      security:
-        - oauth2: [ ocx-doc:all, ocx-doc:write]
+      x-onecx:
+        permissions:
+          themes:
+            - delete
+#      security:
+#        - oauth2: [ ocx-doc:all, ocx-doc:write]
       tags:
         - DocumentControllerV1
       description: Delete attachment's files in bulk
@@ -606,8 +626,12 @@ paths:
                 $ref: '#/components/schemas/RestException'
   /v1/document/file/{documentId}/attachments:
     get:
-      security:
-        - oauth2: [ ocx-doc:all, ocx-doc:write, ocx-doc:read]
+      x-onecx:
+        permissions:
+          themes:
+            - read
+#      security:
+#        - oauth2: [ ocx-doc:all, ocx-doc:write, ocx-doc:read]
       tags:
         - DocumentControllerV1
       description: Get all the attachments of the document packaged in a zip file
@@ -646,8 +670,12 @@ paths:
           description: Not Allowed
   /v1/document/files/upload/failed/{id}:
     get:
-      security:
-        - oauth2: [ ocx-doc:all, ocx-doc:write, ocx-doc:read]
+      x-onecx:
+        permissions:
+          themes:
+            - read
+#      security:
+#        - oauth2: [ ocx-doc:all, ocx-doc:write, ocx-doc:read]
       tags:
         - DocumentControllerV1
       description: Get data of all the failed attachment based on document ID
@@ -685,8 +713,12 @@ paths:
           description: Not Authorized
   /v1/document/show-all-documents:
     get:
-      security:
-        - oauth2: [ ocx-doc:all, ocx-doc:write, ocx-doc:read]
+      x-onecx:
+        permissions:
+          themes:
+            - read
+#      security:
+#        - oauth2: [ ocx-doc:all, ocx-doc:write, ocx-doc:read]
       tags:
         - DocumentControllerV1
       description: Gets all documents by criteria
@@ -778,8 +810,12 @@ paths:
           description: Not Authorized
   /v1/document/{id}:
     get:
-      security:
-        - oauth2: [ ocx-doc:all, ocx-doc:write, ocx-doc:read]
+      x-onecx:
+        permissions:
+          themes:
+            - read
+#      security:
+#        - oauth2: [ ocx-doc:all, ocx-doc:write, ocx-doc:read]
       tags:
         - DocumentControllerV1
       description: Gets Document by Id
@@ -814,8 +850,12 @@ paths:
         "401":
           description: Not Authorized
     put:
-      security:
-        - oauth2: [ ocx-doc:all, ocx-doc:write]
+      x-onecx:
+        permissions:
+          themes:
+            - write
+#      security:
+#        - oauth2: [ ocx-doc:all, ocx-doc:write]
       tags:
         - DocumentControllerV1
       description: Update an document
@@ -855,8 +895,12 @@ paths:
         "401":
           description: Not Authorized
     delete:
-      security:
-        - oauth2: [ ocx-doc:all, ocx-doc:write]
+      x-onecx:
+        permissions:
+          themes:
+            - delete
+#      security:
+#        - oauth2: [ ocx-doc:all, ocx-doc:write]
       tags:
         - DocumentControllerV1
       description: Delete Document by Id
