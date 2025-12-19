@@ -1,4 +1,4 @@
-# OneCX Document-Management-Service
+# OneCX Document Management Service
 A getting started guide for local development can be found here [OneCX Document Management Service](https://onecx.github.io/docs/document-management/current/svc/index.html).
 The documentation about Document Management in general can be found here [OneCX Document Management](https://onecx.github.io/docs/document-management/current/general/index.html).
 
